@@ -14,6 +14,10 @@ spring:
     restart:
       enabled: true
 
+  redis:
+    host: nadev.xyz
+    database: 0
+    password: sicau
 
 server:
   port: 8080
