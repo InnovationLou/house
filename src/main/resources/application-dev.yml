@@ -1,0 +1,19 @@
+spring:
+  profiles: dev
+
+  datasource:
+    username: root
+    password: 479803313
+    url: jdbc:mysql://nadev.xyz:3306/house?useSSL=false&serverTimezone=Asia/Shanghai
+
+  jpa:
+    show-sql: false
+
+  # 热重启
+  devtools:
+    restart:
+      enabled: true
+
+
+server:
+  port: 8080
