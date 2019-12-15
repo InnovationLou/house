@@ -10,15 +10,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * null
+ * 房源图片
  */
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 @DynamicInsert
-@Table(name = "managerinfo")
-public class Managerinfo {
+@Table(name = "house_img")
+public class HouseImg {
 
 	/**
 	 * null
@@ -27,19 +27,19 @@ public class Managerinfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
-	private Integer id;
+	private Long id;
 
 	/**
-	 * null
+	 * 房屋ID
 	 * default value: null
 	 */
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "house_id", nullable = true)
+	private Integer houseId;
 
 	/**
-	 * null
+	 * 图片链接
 	 * default value: null
 	 */
-	@Column(name = "pwd", nullable = false)
-	private String pwd;
+	@Column(name = "img_url", nullable = true)
+	private String imgUrl;
 }

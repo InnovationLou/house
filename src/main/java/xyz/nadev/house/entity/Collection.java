@@ -10,15 +10,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * null
+ * 房源收藏信息
  */
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 @DynamicInsert
-@Table(name = "systemmsg")
-public class Systemmsg {
+@Table(name = "collection")
+public class Collection {
 
 	/**
 	 * null
@@ -27,33 +27,27 @@ public class Systemmsg {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
-	private Integer id;
+	private Long id;
 
 	/**
 	 * null
 	 * default value: null
 	 */
-	@Column(name = "time", nullable = false)
-	private String time;
+	@Column(name = "user_id", nullable = false)
+	private Integer userId;
 
 	/**
 	 * null
 	 * default value: null
 	 */
-	@Column(name = "con", nullable = false)
-	private String con;
+	@Column(name = "house_id", nullable = false)
+	private Integer houseId;
 
 	/**
 	 * null
-	 * default value: null
+	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "imageindex", nullable = false)
-	private String imageindex;
-
-	/**
-	 * null
-	 * default value: 'no'
-	 */
-	@Column(name = "isdelete", nullable = false)
-	private String isdelete;
+	@Column(name = "gmt_create", nullable = false)
+	@CreatedDate
+	private java.util.Date gmtCreate;
 }

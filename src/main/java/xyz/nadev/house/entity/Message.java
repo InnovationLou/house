@@ -17,8 +17,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 @DynamicInsert
-@Table(name = "swipperpics")
-public class Swipperpics {
+@Table(name = "message")
+public class Message {
 
 	/**
 	 * null
@@ -30,23 +30,24 @@ public class Swipperpics {
 	private Integer id;
 
 	/**
-	 * null
+	 * 内容
 	 * default value: null
 	 */
-	@Column(name = "sm", nullable = false)
-	private String sm;
+	@Column(name = "content", nullable = true)
+	private String content;
+
+	/**
+	 * 图片链接
+	 * default value: null
+	 */
+	@Column(name = "img_url", nullable = true)
+	private String imgUrl;
 
 	/**
 	 * null
-	 * default value: null
+	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "imageindex", nullable = false)
-	private String imageindex;
-
-	/**
-	 * null
-	 * default value: 'no'
-	 */
-	@Column(name = "isdelete", nullable = false)
-	private String isdelete;
+	@Column(name = "gmt_create", nullable = true)
+	@CreatedDate
+	private java.util.Date gmtCreate;
 }

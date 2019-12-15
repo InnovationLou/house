@@ -1,4 +1,4 @@
 package xyz.nadev.house.service;
 
-public interface HousesetsService {
+public interface HouseService {
 }
