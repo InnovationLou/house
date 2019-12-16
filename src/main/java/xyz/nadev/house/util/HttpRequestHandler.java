@@ -107,7 +107,7 @@ public class HttpRequestHandler
      * @throws NoSuchAlgorithmException
      * @throws KeyManagementException
      */
-    public static String httpPost(String url, String xmlObj, TransferDto model, String path)
+    public static String httpRequestPost(String url, String xmlObj, TransferDto model, String path)
         throws IOException, KeyStoreException, UnrecoverableKeyException,
         NoSuchAlgorithmException, KeyManagementException
     {

@@ -651,7 +651,7 @@ public class WePayUtil {
             logger.info("request xml = " + reqXmlStr);
             //使用https访问接口
             //3.加载证书请求接口
-            String result = HttpRequestHandler.httpPost(enpayuser, reqXmlStr.toString(),
+            String result = HttpRequestHandler.httpRequestPost(enpayuser, reqXmlStr.toString(),
                     model, CERT_PATH);
             if(result.contains("CDATA[FAIL]")){
                 logger.error(result);
