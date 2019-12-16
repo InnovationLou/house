@@ -25,7 +25,7 @@ public class User {
 	 * default value: null
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Integer id;
 
@@ -76,7 +76,7 @@ public class User {
 	 * default value: 0
 	 */
 	@Column(name = "gender", nullable = false)
-	private Boolean gender;
+	private Integer gender;
 
 	/**
 	 * 创建时间
@@ -99,7 +99,7 @@ public class User {
 	 * default value: 0
 	 */
 	@Column(name = "landlord", nullable = false)
-	private Boolean landlord;
+	private Integer landlord;
 
 	/**
 	 * 认证了房东 有相关的图片链接 身份证

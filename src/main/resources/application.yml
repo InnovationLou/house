@@ -3,3 +3,6 @@ spring:
     active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+wx:
+  app-id: wxb074058eecd9197e
+  app-secret: 588024cd080496f92a8739218d3c1b45

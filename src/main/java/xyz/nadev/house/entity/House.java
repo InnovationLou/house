@@ -25,7 +25,7 @@ public class House {
 	 * default value: null
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Integer id;
 
@@ -48,14 +48,14 @@ public class House {
 	 * default value: 0
 	 */
 	@Column(name = "released", nullable = false)
-	private Boolean released;
+	private Integer released;
 
 	/**
 	 * 是否出租
 	 * default value: 0
 	 */
 	@Column(name = "rented", nullable = false)
-	private Boolean rented;
+	private Integer rented;
 
 	/**
 	 * 房客,租房者id
@@ -104,7 +104,7 @@ public class House {
 	 * default value: null
 	 */
 	@Column(name = "floor", nullable = true)
-	private Boolean floor;
+	private Integer floor;
 
 	/**
 	 * null
@@ -148,77 +148,77 @@ public class House {
 	 * default value: 0
 	 */
 	@Column(name = "has_elevator", nullable = true)
-	private Boolean hasElevator;
+	private Integer hasElevator;
 
 	/**
 	 * 是否有电视
 	 * default value: 0
 	 */
 	@Column(name = "has_televison", nullable = true)
-	private Boolean hasTelevison;
+	private Integer hasTelevison;
 
 	/**
 	 * 是否有冰箱
 	 * default value: 0
 	 */
 	@Column(name = "has_refrigerator", nullable = true)
-	private Boolean hasRefrigerator;
+	private Integer hasRefrigerator;
 
 	/**
 	 * 是否有洗衣机
 	 * default value: 0
 	 */
 	@Column(name = "has_washer", nullable = true)
-	private Boolean hasWasher;
+	private Integer hasWasher;
 
 	/**
 	 * 是否有空调
 	 * default value: 0
 	 */
 	@Column(name = "has_air_conditioner", nullable = true)
-	private Boolean hasAirConditioner;
+	private Integer hasAirConditioner;
 
 	/**
 	 * 热水器
 	 * default value: 0
 	 */
 	@Column(name = "has_heater", nullable = true)
-	private Boolean hasHeater;
+	private Integer hasHeater;
 
 	/**
 	 * 床
 	 * default value: 0
 	 */
 	@Column(name = "has_bed", nullable = true)
-	private Boolean hasBed;
+	private Integer hasBed;
 
 	/**
 	 * 暖气
 	 * default value: 0
 	 */
 	@Column(name = "has_heating", nullable = true)
-	private Boolean hasHeating;
+	private Integer hasHeating;
 
 	/**
 	 * 宽带
 	 * default value: 0
 	 */
 	@Column(name = "has_bordband", nullable = true)
-	private Boolean hasBordband;
+	private Integer hasBordband;
 
 	/**
 	 * 衣柜
 	 * default value: 0
 	 */
 	@Column(name = "has_wardrobe", nullable = true)
-	private Boolean hasWardrobe;
+	private Integer hasWardrobe;
 
 	/**
 	 * 煤气
 	 * default value: 0
 	 */
 	@Column(name = "has_gas", nullable = true)
-	private Boolean hasGas;
+	private Integer hasGas;
 
 	/**
 	 * 省份

@@ -4,6 +4,7 @@ import org.apache.commons.cli.oss.KeyStores;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
@@ -42,7 +43,7 @@ public class HttpRequestHandler
 
     /**
      * 加载证书
-     * 
+     *
      * @param path
      * @throws IOException
      * @throws KeyStoreException
@@ -93,7 +94,7 @@ public class HttpRequestHandler
 
     /**
      * 通过Https往API post xml数据
-     * 
+     *
      * @param url
      *            API地址
      * @param xmlObj
@@ -107,7 +108,7 @@ public class HttpRequestHandler
      * @throws NoSuchAlgorithmException
      * @throws KeyManagementException
      */
-    public static String httpsRequest(String url, String xmlObj, TransferDto model, String path)
+    public static String httpPost(String url, String xmlObj, TransferDto model, String path)
         throws IOException, KeyStoreException, UnrecoverableKeyException,
         NoSuchAlgorithmException, KeyManagementException
     {
@@ -155,7 +156,7 @@ public class HttpRequestHandler
         {
             httpPost.abort();
         }
-
         return result;
     }
+
 }
