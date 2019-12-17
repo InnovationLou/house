@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
-import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
 @RestController
@@ -23,7 +22,7 @@ public class UserController {
     @ApiOperation(value = "检查token是否过期")
     @GetMapping("/token/{token}")
     public ResponseVO checkToken(@PathVariable String token) {
-        return ControllerUtil.getSuccessResultBySelf(false);
+        return userService.checkToken(token);
     }
 
     @ApiOperation("登录")
@@ -34,15 +33,15 @@ public class UserController {
 
     @ApiOperation("修改用户信息")
     @PostMapping("/info")
-    public ResponseVO updateUserInfo(User user) {
-        return userService.save(user);
+    public ResponseVO updateUserInfo(@RequestHeader("Authorization") String token, User user) {
+        return userService.updateUser(token, user);
     }
 
     @ApiOperation("获取用户信息")
     @GetMapping("/info")
-    public ResponseVO selectInfo() {
+    public ResponseVO selectInfo(@RequestHeader("Authorization") String token) {
         //暂未写获取已登录用户信息
-        return userService.getUserInfo();
+        return userService.getUserInfo(token);
     }
 
     @ApiOperation("注册用户")

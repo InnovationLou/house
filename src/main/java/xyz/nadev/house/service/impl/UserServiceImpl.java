@@ -18,6 +18,7 @@ import xyz.nadev.house.repository.UserRepository;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.util.UUIDUtil;
+import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
 import java.io.IOException;
@@ -92,7 +93,8 @@ public class UserServiceImpl implements UserService {
             openId = jsonObject.getString("openid");
             if (openId == null) {
                 logger.error(responseTxt);
-                return null;}
+                return null;
+            }
         }
         return openId;
     }
@@ -109,23 +111,36 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 保存/更新user
+     * 保存user
      *
      * @param user :
      * @return: boolean
      */
     @Override
-    public ResponseVO save(User user) {
+    public ResponseVO saveUser(User user) {
         try {
-            if (user.getId() != null) {
-                User old = resp.findByOpenId(user.getOpenId());
-                EntityUtil.update(user, old);
-            }
             resp.save(user);
         } catch (Exception e) {
             return ControllerUtil.getFalseResultMsgBySelf("保存出错");
         }
         return ControllerUtil.getSuccessResultBySelf("保存成功");
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param token :
+     * @param user  :
+     * @return: xyz.nadev.house.vo.ResponseVO
+     */
+    @Override
+    public ResponseVO updateUser(String token, User user) {
+        String openId = redisTemplate.opsForValue().get(token);
+        if (openId == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
+        User old = findByOpenId(openId);
+        EntityUtil.update(user, old);
+        resp.save(user);
+        return ControllerUtil.getSuccessResultBySelf("修改成功");
     }
 
     /**
@@ -142,7 +157,7 @@ public class UserServiceImpl implements UserService {
             return ControllerUtil.getFalseResultMsgBySelf("未获取到openId");
         if (findByOpenId(openId) != null) return ControllerUtil.getFalseResultMsgBySelf("用户已存在");
         user.setOpenId(openId);
-        return save(user);
+        return saveUser(user);
     }
 
     /**
@@ -170,8 +185,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO checkToken(String token) {
-        if (redisTemplate.hasKey(token)) return ControllerUtil.getSuccessResultBySelf("当前token可用");
-        return ControllerUtil.getFalseResultMsgBySelf("token已过期");
+        if (redisTemplate.hasKey(token)) return ControllerUtil.getSuccessResultBySelf("token可用");
+        return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
     }
 
     /**
@@ -180,8 +195,11 @@ public class UserServiceImpl implements UserService {
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     @Override
-    public ResponseVO getUserInfo() {
-        redisTemplate.opsForValue().get("");
-        return null;
+    public ResponseVO getUserInfo(String token) {
+        String openId = redisTemplate.opsForValue().get(token);
+        if (openId == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
+        User user = findByOpenId(openId);
+        if (user == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.USER_NOT_EXIST);
+        return ControllerUtil.getSuccessResultBySelf(user);
     }
 }

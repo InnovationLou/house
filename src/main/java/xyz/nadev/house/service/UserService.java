@@ -39,12 +39,21 @@ public interface UserService {
     User findByOpenId(String openId);
 
     /**
-     * 保存/更新user
+     * 保存user
      *
      * @param user :
      * @return: boolean
      */
-    ResponseVO save(User user);
+    ResponseVO saveUser(User user);
+
+    /**
+     * 更新用户信息
+     *
+     * @param token :
+     * @param user  :
+     * @return: xyz.nadev.house.vo.ResponseVO
+     */
+    ResponseVO updateUser(String token, User user);
 
     /**
      * 用户注册
@@ -76,5 +85,5 @@ public interface UserService {
      *
      * @return: xyz.nadev.house.vo.ResponseVO
      */
-    ResponseVO getUserInfo();
+    ResponseVO getUserInfo(String token);
 }

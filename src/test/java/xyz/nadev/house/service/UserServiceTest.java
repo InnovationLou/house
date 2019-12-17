@@ -44,22 +44,39 @@ class UserServiceTest {
     void save() {
         User user = userService.findById(1);
         user.setNickName("nadev");
-        userService.save(user);
+        userService.saveUser(user);
 
         User newUser = new User();
         newUser.setOpenId("1X98M5D_n2lS0nsBAfYSDABoBmh1");
         newUser.setNickName("via");
-        userService.save(newUser);
+        userService.saveUser(newUser);
         System.out.println(userService.findById(1).toString());
     }
 
     @Test
     void login() {
-        userService.login("033KP6S70M0DqF1nDdS70WdRR70KP6Sh");
+        System.out.println(userService.login("043APZPy1b4gS906ecQy13SjQy1APZP6").toString());
     }
 
     @Test
     void testRedis() {
         System.out.println(redisTemplate.opsForValue().get("ad2763027cb847aaac53319e69d80396"));
+    }
+
+    @Test
+    void getUserInfo() {
+        System.out.println(userService.getUserInfo("9b36ef9a79034b53b1c747a2068a945b").toString());
+    }
+
+    @Test
+    void checkToken() {
+        System.out.println(userService.checkToken("9b36ef9a79034b53b1c747a2068a945b").toString());
+    }
+
+    @Test
+    void updateUser() {
+        User user = new User();
+        user.setGender(1);
+        System.out.printf("", userService.updateUser("9b36ef9a79034b53b1c747a2068a945b", user).toString());
     }
 }

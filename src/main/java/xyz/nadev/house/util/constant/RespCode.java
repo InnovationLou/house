@@ -13,19 +13,8 @@ public class RespCode {
 
     public static final String MSG_SERVER_ERROR = "服务器故障";
 
-    public static final String MSG_INVALID_OPERATION = "非法操作";
+    public static final String MSG_WITHOUT_AUTH = "未经认证或认证过期";
 
-    public static final String MSG_UN_ATHENTICATED = "未经身份认证";
+    public static final String USER_NOT_EXIST = "用户不存在";
 
-    public static final String MSG_UN_AUTHORIZED = "未经授权";
-
-    public static final String MSG_NOT_FOUND_DATA = "参数错误或数据不存在";
-
-    public static final String MSG_INCOMPLETE_DATA = "参数不完整";
-
-    public static final String MSG_VALIDATION_ERROR = "用户名或密码错误";
-
-    public static final String MSG_UNKNOWN_ERROR = "未知错误";
-
-    public static final String MSG_STAGE_ERROR = "您选择的阶段状态未开启";
 }
