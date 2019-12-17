@@ -15,6 +15,7 @@ import xyz.nadev.house.vo.TransferDto;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -139,6 +140,7 @@ public class WePayUtil {
             return content.getBytes();
         }
         try {
+            System.out.println("指定编码集后的"+content.getBytes(charset).length);
             return content.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("MD5签名过程中出现错误,指定的编码集不对,您目前指定的编码集是:" + charset);
@@ -664,6 +666,26 @@ public class WePayUtil {
             e.printStackTrace();
             return new ResultEntity(false, e.getMessage());
         }
+    }
+
+
+    //获取用户登录的IP
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
+            //多次反向代理后会有多个ip值，第一个ip才是真实ip
+            int index = ip.indexOf(",");
+            if (index != -1) {
+                return ip.substring(0, index);
+            } else {
+                return ip;
+            }
+        }
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
     }
 
 }

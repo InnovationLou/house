@@ -6,3 +6,10 @@ spring:
 wx:
   app-id: wxf23c68d0aea36deb
   app-secret: abbb49494ab61bbd3d0abc9f7bcca309
+  mch-id: 1567855211
+  mch-sceret: qazxswedcvfr123454321hKNJUijOP6G
+  notify-url: 127.0.0.1:8080/pay/wxNotify
+  pay-url: https://api.mch.weixin.qq.com/pay/unifiedorder
+  trade-type: JSAPI
+  body: 小鱼公寓-充值订单-微信小程序
+
