@@ -28,7 +28,7 @@ public interface UserService {
      * @param code : 小程序js code
      * @return: java.lang.String
      */
-    String getOpenId(String code) throws IOException;
+    String getWxOpenId(String code) throws IOException;
 
     /**
      * 根据openId查找用户
@@ -70,4 +70,11 @@ public interface UserService {
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     ResponseVO checkToken(String token);
+
+    /**
+     * 返回用户信息
+     *
+     * @return: xyz.nadev.house.vo.ResponseVO
+     */
+    ResponseVO getUserInfo();
 }

@@ -40,8 +40,8 @@ public class HouseOrder {
 	 * 随机生成的订单号
 	 * default value: null
 	 */
-	@Column(name = "order_id", nullable = false)
-	private String orderId;
+	@Column(name = "out_trade_no", nullable = false)
+	private String outTradeNo;
 
 	/**
 	 * 微信生成预支付订单号

@@ -4,5 +4,5 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 wx:
-  app-id: wxb074058eecd9197e
-  app-secret: 588024cd080496f92a8739218d3c1b45
+  app-id: wxf23c68d0aea36deb
+  app-secret: abbb49494ab61bbd3d0abc9f7bcca309

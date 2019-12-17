@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
      * @return: java.lang.String
      */
     @Override
-    public String getOpenId(String code) {
+    public String getWxOpenId(String code) {
         String openId = null;
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid="
                 + appId + "&secret=" + appSecret
@@ -90,7 +90,9 @@ public class UserServiceImpl implements UserService {
         if (responseTxt != null) {
             JSONObject jsonObject = JSONObject.parseObject(responseTxt);
             openId = jsonObject.getString("openid");
-            if (openId == null) return null;
+            if (openId == null) {
+                logger.error(responseTxt);
+                return null;}
         }
         return openId;
     }
@@ -135,12 +137,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO register(User user, String code) {
-        String openId = getOpenId(code);
+        String openId = getWxOpenId(code);
         if (openId == null)
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("未获取到openId");
+        if (findByOpenId(openId) != null) return ControllerUtil.getFalseResultMsgBySelf("用户已存在");
         user.setOpenId(openId);
-        save(user);
-        return login(code);
+        return save(user);
     }
 
     /**
@@ -151,7 +153,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO login(String code) {
-        String openId = getOpenId(code);
+        String openId = getWxOpenId(code);
         if (openId == null) return ControllerUtil.getFalseResultMsgBySelf("请求openId失败");
         User user = findByOpenId(openId);
         if (user == null) return ControllerUtil.getFalseResultMsgBySelf("用户未注册");
@@ -168,7 +170,18 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO checkToken(String token) {
-        if (redisTemplate.hasKey(token)) return ControllerUtil.getSuccessResultBySelf("当前token在线");
+        if (redisTemplate.hasKey(token)) return ControllerUtil.getSuccessResultBySelf("当前token可用");
         return ControllerUtil.getFalseResultMsgBySelf("token已过期");
+    }
+
+    /**
+     * 返回用户信息
+     *
+     * @return: xyz.nadev.house.vo.ResponseVO
+     */
+    @Override
+    public ResponseVO getUserInfo() {
+        redisTemplate.opsForValue().get("");
+        return null;
     }
 }

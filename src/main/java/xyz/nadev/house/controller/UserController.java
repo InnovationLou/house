@@ -38,12 +38,17 @@ public class UserController {
         return userService.save(user);
     }
 
+    @ApiOperation("获取用户信息")
+    @GetMapping("/info")
+    public ResponseVO selectInfo() {
+        //暂未写获取已登录用户信息
+        return userService.getUserInfo();
+    }
+
     @ApiOperation("注册用户")
     @PostMapping("/register")
     public ResponseVO register(User user, String code) {
-        logger.info(user.toString());
-        logger.info(code);
-        return null;
+        return userService.register(user, code);
     }
 
 }

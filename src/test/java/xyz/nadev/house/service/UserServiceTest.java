@@ -1,6 +1,5 @@
 package xyz.nadev.house.service;
 
-import net.minidev.json.JSONUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import xyz.nadev.house.entity.User;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 @SpringBootTest
 class UserServiceTest {
@@ -26,7 +24,7 @@ class UserServiceTest {
     @Test
     void getOpenId() {
         try {
-            System.out.println(userService.getOpenId("043BzF671NyikM1vni371CVz671BzF60"));
+            System.out.println(userService.getWxOpenId("033aLrQm0bzuUl1zRePm0EejQm0aLrQr"));
         } catch (IOException e) {
             e.printStackTrace();
         }
