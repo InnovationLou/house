@@ -79,6 +79,13 @@ public class User {
 	private Integer gender;
 
 	/**
+	 * 钱包余额
+	 * default value: 0.00
+	 */
+	@Column(name = "money", nullable = false)
+	private Double money;
+
+	/**
 	 * 创建时间
 	 * default value: CURRENT_TIMESTAMP
 	 */
