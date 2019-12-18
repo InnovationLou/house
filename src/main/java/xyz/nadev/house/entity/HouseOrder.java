@@ -30,11 +30,11 @@ public class HouseOrder {
 	private Long id;
 
 	/**
-	 * 用户open_id
+	 * 用户id
 	 * default value: null
 	 */
 	@Column(name = "open_id", nullable = false)
-	private Long openId;
+	private String openId;
 
 	/**
 	 * 随机生成的订单号
@@ -52,7 +52,7 @@ public class HouseOrder {
 
 	/**
 	 * 总金额
-	 * default value: null
+	 * default value: 0.00
 	 */
 	@Column(name = "total_fee", nullable = false)
 	private Double totalFee;

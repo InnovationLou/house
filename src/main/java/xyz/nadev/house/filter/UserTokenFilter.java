@@ -1,5 +1,6 @@
 package xyz.nadev.house.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -12,8 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
-public class AuthenticationTokenFilter extends OncePerRequestFilter {
+public class UserTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;

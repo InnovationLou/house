@@ -1,19 +1,17 @@
 package xyz.nadev.house.controller;
 
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.vo.ResponseVO;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
-    public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     UserService userService;

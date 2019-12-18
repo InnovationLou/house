@@ -30,7 +30,7 @@ public class House {
 	private Integer id;
 
 	/**
-	 * 房东用户id
+	 * 房东openid
 	 * default value: null
 	 */
 	@Column(name = "user_id", nullable = false)

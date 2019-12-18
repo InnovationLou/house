@@ -1,6 +1,8 @@
 package xyz.nadev.house.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.flogger.Flogger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,11 +27,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
-    public static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     // 设置key有效期,实现登录超时 单位分钟
     private static final int USER_LOGIN_TIMEOUT = 30;
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
             HttpResponse response = httpClient.execute(httpGet);
             responseTxt = EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
-            logger.error(e.toString());
+            log.error(e.toString());
             return null;
         } finally {
             httpGet.abort();
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
             JSONObject jsonObject = JSONObject.parseObject(responseTxt);
             openId = jsonObject.getString("openid");
             if (openId == null) {
-                logger.error(responseTxt);
+                log.error(responseTxt);
                 return null;
             }
         }
