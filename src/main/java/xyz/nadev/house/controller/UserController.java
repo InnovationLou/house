@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
+import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
+import java.math.BigDecimal;
+
 @Slf4j
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -38,6 +42,7 @@ public class UserController {
     @ApiOperation("获取用户信息")
     @GetMapping("/info")
     public ResponseVO selectInfo(@RequestHeader("Authorization") String token) {
+        //暂未写获取已登录用户信息
         return userService.getUserInfo(token);
     }
 
@@ -45,6 +50,12 @@ public class UserController {
     @PostMapping("/register")
     public ResponseVO register(User user, String code) {
         return userService.register(user, code);
+    }
+
+    @ApiOperation("发起提现请求")
+    @PostMapping("/launchWithdraw")
+    public ResponseVO register(String openId,BigDecimal money) {
+        return ControllerUtil.getDataResult(userService.launchWithdraw(openId, money));
     }
 
 }

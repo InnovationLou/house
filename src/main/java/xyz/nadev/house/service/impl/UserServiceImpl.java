@@ -1,22 +1,21 @@
 package xyz.nadev.house.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.flogger.Flogger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import xyz.nadev.house.entity.User;
-import xyz.nadev.house.service.UserService;
+import xyz.nadev.house.entity.Withdraw;
 import xyz.nadev.house.repository.UserRepository;
+import xyz.nadev.house.repository.WithdrawRepository;
+import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.util.UUIDUtil;
@@ -24,7 +23,9 @@ import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -39,12 +40,15 @@ public class UserServiceImpl implements UserService {
     RedisTemplate<String, String> redisTemplate;
 
     @Autowired
+    WithdrawRepository withdrawRepository;
+
+    @Autowired
     UserRepository resp;
 
-    @Value("${wx.app-id}")
+    @Value("${wx.app.id}")
     String appId;
 
-    @Value("${wx.app-secret}")
+    @Value("${wx.app.secret}")
     String appSecret;
 
     @Override
@@ -211,5 +215,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO getUserInfo(String token) {
         return ControllerUtil.getSuccessResultBySelf(findByToken(token));
+    }
+
+    /**
+     * 用于用户发起提现
+     *
+     * @param openId
+     * @param money
+     * @return
+     */
+    @Override
+    public ResponseVO launchWithdraw(String openId, BigDecimal money) {
+        Withdraw withdraw = new Withdraw();
+        User user = resp.findByOpenId(openId);
+        try {
+            //price1.compareTo()price2
+            //price1 大于price2返回1，price1 等于price2返回0，price1 小于price2返回-1
+            if (money.compareTo(user.getMoney()) == 1) {
+                return ControllerUtil.getFalseResultMsgBySelf("金额不足");
+            }
+            String withdrawMent = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
+            System.out.println("生成的16位提现订单号：" + withdrawMent);
+            BigDecimal afterWithdrawMoney = user.getMoney().subtract(money);
+            System.out.println("余额-提现额=新金额" + user.getMoney() + "-" + money + "=" + afterWithdrawMoney);
+            //更新用户余额
+            user.setMoney(afterWithdrawMoney);
+            //保存提现表信息
+            withdraw.setOpenId(openId);
+            withdraw.setMoney(money);
+            withdraw.setWithdrawMent(withdrawMent);
+            resp.save(user);
+            withdrawRepository.save(withdraw);
+        } catch (Exception e) {
+            return ControllerUtil.getFalseResultMsgBySelf("保存错误");
+        }
+        return ControllerUtil.getDataResult(withdraw);
     }
 }

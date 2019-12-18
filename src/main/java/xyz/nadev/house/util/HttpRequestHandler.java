@@ -24,8 +24,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 
 
-public class HttpRequestHandler
-{
+public class HttpRequestHandler {
 
     // 连接超时时间，默认10秒
     private int socketTimeout = 10000;
@@ -50,38 +49,30 @@ public class HttpRequestHandler
      * @throws KeyManagementException
      */
     private static void initCert(String path, TransferDto transfer)
-        throws IOException, KeyStoreException, UnrecoverableKeyException,
-        NoSuchAlgorithmException, KeyManagementException
-    {
+            throws IOException, KeyStoreException, UnrecoverableKeyException,
+            NoSuchAlgorithmException, KeyManagementException {
         // 拼接证书的路径   //这个依赖是加载的本地依赖
         KeyStore keyStore = KeyStores.getInstance("PKCS12", path, transfer.map());
 
         // 加载本地的证书进行https加密传输
         FileInputStream instream = new FileInputStream(new File(path));
-        try
-        {
+        try {
             keyStore.load(instream, transfer.getMchid().toCharArray()); // 加载证书密码，默认为商户ID
-        }
-        catch (CertificateException e)
-        {
+        } catch (CertificateException e) {
             e.printStackTrace();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        }
-        finally
-        {
+        } finally {
             instream.close();
         }
 
         // Trust own CA and all self-signed certs
         SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore,
-            transfer.getMchid().toCharArray()).build();
+                transfer.getMchid().toCharArray()).build();
         // Allow TLSv1 protocol only
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext,
-            new String[] {"TLSv1"}, null,
-            SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+                new String[]{"TLSv1"}, null,
+                SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
 
         httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
 
@@ -93,12 +84,9 @@ public class HttpRequestHandler
     /**
      * 通过Https往API post xml数据
      *
-     * @param url
-     *            API地址
-     * @param xmlObj
-     *            要提交的XML数据对象
-     * @param path
-     *            当前目录，用于加载证书
+     * @param url    API地址
+     * @param xmlObj 要提交的XML数据对象
+     * @param path   当前目录，用于加载证书
      * @return
      * @throws IOException
      * @throws KeyStoreException
@@ -107,9 +95,8 @@ public class HttpRequestHandler
      * @throws KeyManagementException
      */
     public static String httpRequestPost(String url, String xmlObj, TransferDto model, String path)
-        throws IOException, KeyStoreException, UnrecoverableKeyException,
-        NoSuchAlgorithmException, KeyManagementException
-    {
+            throws IOException, KeyStoreException, UnrecoverableKeyException,
+            NoSuchAlgorithmException, KeyManagementException {
         // 加载证书
         initCert(path, model);
 
@@ -125,33 +112,22 @@ public class HttpRequestHandler
         // 设置请求器的配置
         httpPost.setConfig(requestConfig);
 
-        try
-        {
+        try {
             HttpResponse response = httpClient.execute(httpPost);
 
             HttpEntity entity = response.getEntity();
 
             result = EntityUtils.toString(entity, "UTF-8");
 
-        }
-        catch (ConnectionPoolTimeoutException e)
-        {
+        } catch (ConnectionPoolTimeoutException e) {
 
-        }
-        catch (ConnectTimeoutException e)
-        {
+        } catch (ConnectTimeoutException e) {
 
-        }
-        catch (SocketTimeoutException e)
-        {
+        } catch (SocketTimeoutException e) {
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
 
-        }
-        finally
-        {
+        } finally {
             httpPost.abort();
         }
         return result;

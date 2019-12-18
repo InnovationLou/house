@@ -4,6 +4,7 @@ import xyz.nadev.house.entity.User;
 import xyz.nadev.house.vo.ResponseVO;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {
@@ -93,4 +94,12 @@ public interface UserService {
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     ResponseVO getUserInfo(String token);
+
+    /**
+     * 用于用户发起提现
+     * @param openId
+     * @param money
+     * @return
+     */
+    ResponseVO launchWithdraw(String openId, BigDecimal money);
 }
