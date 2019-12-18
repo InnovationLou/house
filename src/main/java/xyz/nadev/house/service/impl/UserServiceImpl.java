@@ -112,6 +112,19 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 拿token查当前登录用户
+     *
+     * @param token :
+     * @return: xyz.nadev.house.entity.User
+     */
+    @Override
+    public User findByToken(String token) {
+        String openId = redisTemplate.opsForValue().get(token);
+        if (openId == null) return null;
+        return resp.findByOpenId(openId);
+    }
+
+    /**
      * 保存user
      *
      * @param user :
@@ -197,10 +210,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO getUserInfo(String token) {
-        String openId = redisTemplate.opsForValue().get(token);
-        if (openId == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
-        User user = findByOpenId(openId);
-        if (user == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.USER_NOT_EXIST);
-        return ControllerUtil.getSuccessResultBySelf(user);
+        return ControllerUtil.getSuccessResultBySelf(findByToken(token));
     }
 }

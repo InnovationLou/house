@@ -38,7 +38,6 @@ public class UserController {
     @ApiOperation("获取用户信息")
     @GetMapping("/info")
     public ResponseVO selectInfo(@RequestHeader("Authorization") String token) {
-        //暂未写获取已登录用户信息
         return userService.getUserInfo(token);
     }
 

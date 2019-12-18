@@ -39,6 +39,13 @@ public interface UserService {
     User findByOpenId(String openId);
 
     /**
+     * 拿token查当前登录用户
+     * @param token :
+     * @return: xyz.nadev.house.entity.User
+     */
+    User findByToken(String token);
+
+    /**
      * 保存user
      *
      * @param user :

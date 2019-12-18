@@ -79,4 +79,9 @@ class UserServiceTest {
         user.setGender(1);
         System.out.printf("", userService.updateUser("9b36ef9a79034b53b1c747a2068a945b", user).toString());
     }
+
+    @Test
+    void findByToken() {
+        System.out.println(userService.findByToken("a297939a253d47a2afc411956b376f09"));
+    }
 }
