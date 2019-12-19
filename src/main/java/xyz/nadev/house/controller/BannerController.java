@@ -5,10 +5,7 @@ import io.swagger.models.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.Banner;
 import xyz.nadev.house.service.BannerService;
 import xyz.nadev.house.vo.ResponseVO;
@@ -22,19 +19,19 @@ public class BannerController {
     BannerService bannerService;
 
     @ApiOperation("获取所有banner")
-    @GetMapping("/getBanners")
+    @GetMapping("")
     public ResponseVO getAllBanner(){
         return bannerService.getAllBanner();
     }
 
     @ApiOperation("根据前端传的url返回banner")
-    @GetMapping("/bannerByUrl")
-    public ResponseVO getBannerByUrl(String url){
+    @GetMapping("/url/{url}")
+    public ResponseVO getBannerByUrl(@PathVariable String url){
         return bannerService.getBannerByUrl(url);
     }
 
     @ApiOperation("上传banner")
-    @PostMapping("/upload")
+    @PostMapping("")
     public ResponseVO uploadBanner(Banner banner){
         return bannerService.uploadBanner(banner);
     }

@@ -20,25 +20,25 @@ public class HouseController {
     HouseService houseService;
 
     @ApiOperation("通过id查house")
-    @GetMapping("/getHouseById/{id}")
+    @GetMapping("/{id}")
     public ResponseVO getHouseById(@PathVariable Integer id){
         return houseService.getHouseById(id);
     }
 
     @ApiOperation("查看所有房源信息")
-    @GetMapping("/getAllHouses")
+    @GetMapping("")
     public ResponseVO getAllHouses(){
         return houseService.houseList();
     }
 
     @ApiOperation("新增房源信息")
-    @PostMapping("/newHouse")
+    @PostMapping("")
     public ResponseVO AddHouse(House house){
         return houseService.addHouse(house);
     }
 
     @ApiOperation("修改房源信息")
-    @PostMapping("/modifyHouse")
+    @PutMapping("")
     public ResponseVO modifyHouse(House house){
         return houseService.modifyHouse(house);
     }
