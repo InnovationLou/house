@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface BannerRepository extends JpaRepository<Banner, Integer>{
-
+    Banner findBannerByImgUrl(String url);
 }
