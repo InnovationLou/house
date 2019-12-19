@@ -1,6 +1,5 @@
 package xyz.nadev.house.entity;
 
-
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,31 +13,22 @@ import java.math.BigDecimal;
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 @DynamicInsert
-@Table(name = "withdraw")
-public class Withdraw {
+@Table(name = "transfer_record")
+public class TransferRecord {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
-  private long id;
-  @Column(name = "open_id")
-  private String openId;
+  private Long id;
   @Column(name = "withdraw_ment")
   private String withdrawMent;
-  @Column(name = "gmt_create")
-  private java.util.Date gmtCreate;
-  @Column(name = "gmt_modify")
-  private java.util.Date gmtModify;
-  @Column(name = "money")
-  private BigDecimal money;
-  @Column(name = "is_finish")
-  private Integer isFinish;
-  @Column(name = "remark")
-  private String  remark;
-  @Column(name = "withdraw_status")
-  private Integer withdrawStatus;
   @Column(name = "wx_id")
   private String wxId;
-
+  @Column(name = "transfer_money")
+  private BigDecimal transferMoney;
+  @Column(name = "gmt_create")
+  private  java.util.Date gmtCreate;
+  @Column(name = "gmt_modify")
+  private  java.util.Date gmtModify;
 
 
 }

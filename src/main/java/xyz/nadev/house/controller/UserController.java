@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
+import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
@@ -19,6 +20,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    WxPayService wxPayService;
 
 
     @ApiOperation(value = "检查token是否过期")
@@ -52,10 +56,16 @@ public class UserController {
         return userService.register(user, code);
     }
 
-    @ApiOperation("发起提现请求")
+    @ApiOperation("用户发起提现请求")
     @PostMapping("/launchWithdraw")
-    public ResponseVO register(String openId,BigDecimal money) {
-        return ControllerUtil.getDataResult(userService.launchWithdraw(openId, money));
+    public ResponseVO register(@RequestHeader("Authorization")String token, BigDecimal money, String wxId) {
+        return ControllerUtil.getDataResult(userService.launchWithdraw(token, money,wxId));
     }
 
+
+    @ApiOperation("用户发起退款请求")
+    @PostMapping("/refund/{outTradeNo}")
+    public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String outTradeNo){
+        return ControllerUtil.getDataResult(wxPayService.doRefund(outTradeNo, token)) ;
+    }
 }

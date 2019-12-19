@@ -57,7 +57,7 @@ public class HttpRequestHandler {
         // 加载本地的证书进行https加密传输
         FileInputStream instream = new FileInputStream(new File(path));
         try {
-            keyStore.load(instream, transfer.getMchid().toCharArray()); // 加载证书密码，默认为商户ID
+            keyStore.load(instream, transfer.getMch_id().toCharArray()); // 加载证书密码，默认为商户ID
         } catch (CertificateException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -68,7 +68,7 @@ public class HttpRequestHandler {
 
         // Trust own CA and all self-signed certs
         SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore,
-                transfer.getMchid().toCharArray()).build();
+                transfer.getMch_id().toCharArray()).build();
         // Allow TLSv1 protocol only
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext,
                 new String[]{"TLSv1"}, null,

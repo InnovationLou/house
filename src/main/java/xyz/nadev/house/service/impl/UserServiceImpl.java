@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.entity.Withdraw;
+import xyz.nadev.house.repository.HouseOrderRepository;
 import xyz.nadev.house.repository.UserRepository;
 import xyz.nadev.house.repository.WithdrawRepository;
 import xyz.nadev.house.service.UserService;
@@ -41,6 +42,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     WithdrawRepository withdrawRepository;
+
+    @Autowired
+    HouseOrderRepository houseOrderRepository;
+
+    @Autowired
+    WxPayServiceImpl wxPayServiceImpl;
 
     @Autowired
     UserRepository resp;
@@ -220,14 +227,18 @@ public class UserServiceImpl implements UserService {
     /**
      * 用于用户发起提现
      *
-     * @param openId
+     * @param token
      * @param money
      * @return
      */
     @Override
-    public ResponseVO launchWithdraw(String openId, BigDecimal money) {
+    public ResponseVO launchWithdraw(String token, BigDecimal money,String wxid) {
+        User user = findByToken(token);
+        if (user == null){
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
         Withdraw withdraw = new Withdraw();
-        User user = resp.findByOpenId(openId);
+        String openId = user.getOpenId();
         try {
             //price1.compareTo()price2
             //price1 大于price2返回1，price1 等于price2返回0，price1 小于price2返回-1
@@ -241,14 +252,18 @@ public class UserServiceImpl implements UserService {
             //更新用户余额
             user.setMoney(afterWithdrawMoney);
             //保存提现表信息
+            withdraw.setWxId(wxid);
             withdraw.setOpenId(openId);
             withdraw.setMoney(money);
             withdraw.setWithdrawMent(withdrawMent);
-            resp.save(user);
+
             withdrawRepository.save(withdraw);
+            resp.save(user);
         } catch (Exception e) {
             return ControllerUtil.getFalseResultMsgBySelf("保存错误");
         }
         return ControllerUtil.getDataResult(withdraw);
     }
+
+
 }

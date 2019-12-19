@@ -97,9 +97,10 @@ public interface UserService {
 
     /**
      * 用于用户发起提现
-     * @param openId
+     * @param token
      * @param money
      * @return
      */
-    ResponseVO launchWithdraw(String openId, BigDecimal money);
+    ResponseVO launchWithdraw(String token, BigDecimal money ,String wxid);
+
 }

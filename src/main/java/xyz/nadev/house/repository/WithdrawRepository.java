@@ -7,5 +7,5 @@ import xyz.nadev.house.entity.Withdraw;
 @Repository
 public interface WithdrawRepository extends JpaRepository<Withdraw,Integer> {
     Withdraw findByOpenId(String openId);
-    Withdraw findByOpenIdAndWithdrawMent(String openId, String withdrawMent);
+    Withdraw findByWithdrawMent(String withdrawMent);
 }

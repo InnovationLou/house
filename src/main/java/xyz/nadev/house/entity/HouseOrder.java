@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * null
@@ -55,7 +56,7 @@ public class HouseOrder {
 	 * default value: 0.00
 	 */
 	@Column(name = "total_fee", nullable = false)
-	private Double totalFee;
+	private BigDecimal totalFee;
 
 	/**
 	 * 订单生成时间

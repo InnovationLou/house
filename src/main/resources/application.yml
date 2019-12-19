@@ -14,11 +14,12 @@ wx:
     notify: 127.0.0.1:8080/pay/wxNotify
     pay: https://api.mch.weixin.qq.com/pay/unifiedorder
     transfer: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
+    refund: https://api.mch.weixin.qq.com/secapi/pay/refund
   trade:
     type: JSAPI
   body: 小鱼公寓-充值订单-微信小程序
   desc: happy
-  certPath: c://system
+  certPath: D:\wxCertUtil\WXCertUtil\cert\apiclient_cert.p12
 
 
 tim:

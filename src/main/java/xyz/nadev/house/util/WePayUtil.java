@@ -12,7 +12,6 @@ import org.w3c.dom.NodeList;
 import xyz.nadev.house.vo.ResultEntity;
 import xyz.nadev.house.vo.TransferDto;
 
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
@@ -84,21 +83,20 @@ public class WePayUtil {
         }
         return prestr;
     }
+
     /**
-     * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
+     * 这个工具用来将用户退款的请求参数拿来转换为map对象
      * @return 拼接后字符串
      */
-    public static String createLinkString(TransferDto dto) {
+    public static String transferRefundRequestToMap(TransferDto dto) {
         Map<String, String> dtoMap = new HashMap<>();
-        dtoMap.put("amount",String.valueOf(dto.getAmount()));
-        dtoMap.put("check_name",dto.getCheck_name());
-        dtoMap.put("desc",dto.getDesc());
-        dtoMap.put("mch_appid",dto.getMch_appid());
-        dtoMap.put("mchid",dto.getMchid());
-        dtoMap.put("nonce_str",dto.getNon_str());
-        dtoMap.put("openid",dto.getOpenid());
-        dtoMap.put("partner_trade_no",dto.getPartner_trade_no());
-        dtoMap.put("spbill_create_ip",dto.getSpbill_create_ip());
+        dtoMap.put("appid",dto.getAppid());
+        dtoMap.put("mch_id",dto.getMch_id());
+        dtoMap.put("nonce_str",dto.getNonce_str());
+        dtoMap.put("out_trade_no",dto.getOut_trade_no());
+        dtoMap.put("total_fee",String.valueOf(dto.getTotal_fee()) );
+        dtoMap.put("refund_fee",String.valueOf(dto.getRefund_fee()));
+        dtoMap.put("out_refund_no",dto.getOut_refund_no());
         return createLinkString(dtoMap);
     }
 
@@ -145,32 +143,6 @@ public class WePayUtil {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("MD5签名过程中出现错误,指定的编码集不对,您目前指定的编码集是:" + charset);
         }
-    }
-
-
-    /**
-     * 元转换成分
-     * @return
-     */
-    public static String getMoney(String amount) {
-        if(amount==null){
-            return "";
-        }
-        // 金额转化为分为单位
-        String currency =  amount.replaceAll("\\$|\\￥|\\,", "");  //处理包含, ￥ 或者$的金额
-        int index = currency.indexOf(".");
-        int length = currency.length();
-        Long amLong = 0l;
-        if(index == -1){
-            amLong = Long.valueOf(currency+"00");
-        }else if(length - index >= 3){
-            amLong = Long.valueOf((currency.substring(0, index+3)).replace(".", ""));
-        }else if(length - index == 2){
-            amLong = Long.valueOf((currency.substring(0, index+2)).replace(".", "")+0);
-        }else{
-            amLong = Long.valueOf((currency.substring(0, index+1)).replace(".", "")+"00");
-        }
-        return amLong.toString();
     }
 
     /**
@@ -308,8 +280,6 @@ public class WePayUtil {
         return this.processResponseXml(respXml,key);
     }
 
-
-
     /**
      * 处理 HTTPS API返回数据，转换成Map对象。return_code为SUCCESS时，验证签名。
      * @param xmlStr API返回的XML格式数据
@@ -343,7 +313,6 @@ public class WePayUtil {
         }
     }
 
-
     /**
      * 判断xml数据的sign是否有效，必须包含sign字段，否则返回false。
      *
@@ -355,7 +324,6 @@ public class WePayUtil {
         // 返回数据的签名方式和请求中给定的签名方式是一致的
         return isSignatureValid(reqData, key, SignType.MD5);
     }
-
 
     /**
      * 判断签名是否正确，必须包含sign字段，否则返回false。
@@ -373,7 +341,6 @@ public class WePayUtil {
         String sign = data.get("sign");
         return generateSignature(data, key, signType).equals(sign);
     }
-
 
     /**
      * 生成签名. 注意，若含有sign_type字段，必须和signType参数保持一致。
@@ -407,9 +374,6 @@ public class WePayUtil {
         }
     }
 
-
-
-
     /**
      * 生成签名
      *
@@ -420,8 +384,6 @@ public class WePayUtil {
     public static String generateSignature(final Map<String, String> data, String key) throws Exception {
         return generateSignature(data, key, SignType.MD5);
     }
-
-
 
     /**
      * 将Map转换为XML格式的字符串
@@ -463,7 +425,6 @@ public class WePayUtil {
         return output;
     }
 
-
     /**
      * XML格式字符串转换为Map
      *
@@ -494,8 +455,6 @@ public class WePayUtil {
         }
         return data;
     }
-
-
 
     /**
      * 不需要证书的请求
@@ -553,8 +512,6 @@ public class WePayUtil {
         return resp;
     }
 
-
-
     /**
      * 生成 MD5
      *
@@ -590,58 +547,101 @@ public class WePayUtil {
         return sb.toString().toUpperCase();
     }
 
-
-    public static final String NOTIFY_SUCCESS = "<xml>\n" +
-            "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
-            "  <return_msg><![CDATA[OK]]></return_msg>\n" +
-            "</xml>";
-    public static final String NOTIFY_FAIL_SERVER_ERROR = "<xml>\n" +
-            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-            "  <return_msg><![CDATA[internal error occured!]]></return_msg>\n" +
-            "</xml>";
-    public static final String NOTIFY_FAIL_IO_ERROR = "<xml>\n" +
-            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-            "  <return_msg><![CDATA[IO EXCEPTION,输入流有问题]]></return_msg>\n" +
-            "</xml>";
-    public static final String NOTIFY_FAIL_WRONG_RETURN_CODE = "<xml>\n" +
-            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-            "  <return_msg><![无效的或者错误的return_code]]></return_msg>\n" +
-            "</xml>";
-    public static final String NOTIFY_FAIL_UNKNOWN_DATA = "<xml>\n" +
-            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-            "  <return_msg><![无法验证数据的合法性，请重新尝试]]></return_msg>\n" +
-            "</xml>";
-    public static final String NOTIFY_FAIL_REPEAT_ERROR ="<xml>\n" +
-            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-            "  <return_msg><![该订单已经支付，请勿重复回调!]]></return_msg>\n" +
-            "</xml>";
-
+    //获取用户登录的IP工具
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
+            //多次反向代理后会有多个ip值，第一个ip才是真实ip
+            int index = ip.indexOf(",");
+            if (index != -1) {
+                return ip.substring(0, index);
+            } else {
+                return ip;
+            }
+        }
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
+    }
 
     /**
-     * 企业付款到个人零钱核心代码 该方法实现企业付款给个人
-     * @param appkey 小程序的appKey
-     * @param certPath 加密pem文件的位置
-     * @param model 封装请求信息的对象
-     * @param enpayuser 企业付款的微信api地址
+     * 传入参数为out_trade_no用于用户退款   因为不同api请求参数命名不一样 必须修改才能用
+     * @param out_trade_no
+     * @param appkey
+     * @param certPath
+     * @param model
      * @return
+     * @throws Exception
      */
-    public static ResultEntity doTransfers(String enpayuser, String appkey, String certPath, TransferDto model) throws Exception {
+    public static ResultEntity doRefundTransfers(String out_trade_no, String appkey, String certPath, TransferDto model) throws Exception {
         //appkey 和 certPath传入
         String APP_KEY = appkey;
         String CERT_PATH = certPath;
 
         try {
-            //1.计算参数签名
-            String paramStr = createLinkString(model);
+            //1.计算参数签名  先将transferDto 转换为map
+            String paramStr = transferRefundRequestToMap(model);
             String mysign = paramStr + "&key=" + APP_KEY;
             String sign = MD5(mysign).toUpperCase();
 
             //2.封装请求参数
             StringBuilder reqXmlStr = new StringBuilder();
             reqXmlStr.append("<xml>");
-            reqXmlStr.append("<mchid>" + model.getMchid() + "</mchid>");
-            reqXmlStr.append("<mch_appid>" + model.getMch_appid() + "</mch_appid>");
-            reqXmlStr.append("<nonce_str>" + model.getNon_str() + "</nonce_str>");
+            reqXmlStr.append("<appid>" + model.getAppid() + "</appid>");
+            reqXmlStr.append("<mch_id>" + model.getMch_id() + "</mch_id>");
+            reqXmlStr.append("<nonce_str>" + model.getNonce_str() + "</nonce_str>");
+            reqXmlStr.append("<out_trade_no>" + model.getOut_trade_no() + "</out_trade_no>");
+            reqXmlStr.append("<out_refund_no>" + model.getOut_refund_no() + "</out_refund_no>");
+            reqXmlStr.append("<total_fee>" + model.getTotal_fee() + "</total_fee>");
+            reqXmlStr.append("<refund_fee>" + model.getRefund_fee() + "</refund_fee>");
+            reqXmlStr.append("<sign>" + sign + "</sign>");
+            reqXmlStr.append("</xml>");
+            logger.info("request xml = " + reqXmlStr);
+            //使用https访问接口
+
+            //3.加载证书请求接口
+            String result = HttpRequestHandler.httpRequestPost(out_trade_no, reqXmlStr.toString(),
+                    model, CERT_PATH);
+            if(result.contains("CDATA[FAIL]")){
+                logger.error(result);
+                return new ResultEntity(false, "调用微信接口失败, 具体信息请查看访问日志: " + result);
+            }else{
+                logger.error(result);
+                return new ResultEntity(true, result);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResultEntity(false, e.getMessage());
+        }
+    }
+
+    /**
+     * 企业付款到个人零钱核心代码 该方法实现企业付款给个人  待更改
+     * @param appkey 小程序的appKey
+     * @param certPath 加密pem文件的位置
+     * @param model 封装请求信息的对象
+     * @param enpayuser 企业付款的微信api地址
+     * @return
+     */
+    public static ResultEntity doPayTransfers(String enpayuser, String appkey, String certPath, TransferDto model) throws Exception {
+        //appkey 和 certPath传入
+        String APP_KEY = appkey;
+        String CERT_PATH = certPath;
+
+        try {
+            //1.计算参数签名
+            String paramStr = transferRefundRequestToMap(model);
+            String mysign = paramStr + "&key=" + APP_KEY;
+            String sign = MD5(mysign).toUpperCase();
+
+            //2.封装请求参数
+            StringBuilder reqXmlStr = new StringBuilder();
+            reqXmlStr.append("<xml>");
+            reqXmlStr.append("<mchid>" + model.getAppid() + "</mchid>");
+            reqXmlStr.append("<mch_appid>" + model.getMch_id() + "</mch_appid>");
+            reqXmlStr.append("<nonce_str>" + model.getNonce_str() + "</nonce_str>");
             reqXmlStr.append("<check_name>" + model.getCheck_name() + "</check_name>");
             reqXmlStr.append("<openid>" + model.getOpenid() + "</openid>");
             reqXmlStr.append("<amount>" + model.getAmount() + "</amount>");
@@ -669,23 +669,32 @@ public class WePayUtil {
     }
 
 
-    //获取用户登录的IP
-    public static String getIpAddr(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
-            //多次反向代理后会有多个ip值，第一个ip才是真实ip
-            int index = ip.indexOf(",");
-            if (index != -1) {
-                return ip.substring(0, index);
-            } else {
-                return ip;
-            }
-        }
-        ip = request.getHeader("X-Real-IP");
-        if (ip != null && !ip.equals("") && !"unKnown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-        return request.getRemoteAddr();
-    }
+
+
+
+    public static final String NOTIFY_SUCCESS = "<xml>\n" +
+            "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+            "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+            "</xml>";
+    public static final String NOTIFY_FAIL_SERVER_ERROR = "<xml>\n" +
+            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+            "  <return_msg><![CDATA[internal error occured!]]></return_msg>\n" +
+            "</xml>";
+    public static final String NOTIFY_FAIL_IO_ERROR = "<xml>\n" +
+            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+            "  <return_msg><![CDATA[IO EXCEPTION,输入流有问题]]></return_msg>\n" +
+            "</xml>";
+    public static final String NOTIFY_FAIL_WRONG_RETURN_CODE = "<xml>\n" +
+            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+            "  <return_msg><![无效的或者错误的return_code]]></return_msg>\n" +
+            "</xml>";
+    public static final String NOTIFY_FAIL_UNKNOWN_DATA = "<xml>\n" +
+            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+            "  <return_msg><![无法验证数据的合法性，请重新尝试]]></return_msg>\n" +
+            "</xml>";
+    public static final String NOTIFY_FAIL_REPEAT_ERROR ="<xml>\n" +
+            "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+            "  <return_msg><![该订单已经支付，请勿重复回调!]]></return_msg>\n" +
+            "</xml>";
 
 }

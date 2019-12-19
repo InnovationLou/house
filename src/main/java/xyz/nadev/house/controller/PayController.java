@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.nadev.house.service.WxPayService;
@@ -26,7 +27,7 @@ public class PayController {
 
     @ApiOperation(value = "获取预支付信息")
     @PostMapping("/prepayInfo")
-    public ResponseVO order(String openId, BigDecimal money, HttpServletRequest request) throws Exception {
+    public ResponseVO order(@RequestHeader("Authorization") String token, BigDecimal money, HttpServletRequest request) throws Exception {
 
         //12位随机字符串
         String out_trade_no = WePayUtil.getNonceStr();
@@ -34,7 +35,7 @@ public class PayController {
         System.out.println("---------------程序进来了--------------------");
 //        System.out.println(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 32));
 
-        Object object = wxPayService.unifiedOrder(out_trade_no, money, openId, request);
+        Object object = wxPayService.unifiedOrder(out_trade_no, money, token, request);
         return ControllerUtil.getSuccessResultBySelf(object);
     }
 
@@ -49,10 +50,9 @@ public class PayController {
         }
     }
 
-    @PostMapping("/someone")
-    private ResponseVO paySomeone() {
-        return null;
+    @ApiOperation(value = "管理员处理提现请求")
+    @PostMapping("/withdraw/{withdrawMent}")
+    private ResponseVO payWithdraw(String withdrawMent, Boolean option) {
+        return ControllerUtil.getDataResult(wxPayService.dealWithdraw(withdrawMent,option));
     }
-
-
 }
