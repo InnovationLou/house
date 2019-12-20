@@ -1,4 +1,4 @@
-package xyz.nadev.house.vo;
+package xyz.nadev.house.VO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -13,9 +13,9 @@ import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.IPUtil;
 import xyz.nadev.house.util.WePayUtil;
-import xyz.nadev.house.vo.ResponseVO;
-import xyz.nadev.house.vo.ResultEntity;
-import xyz.nadev.house.vo.TransferDto;
+import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.VO.ResultEntity;
+import xyz.nadev.house.VO.TransferDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;

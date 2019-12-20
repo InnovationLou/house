@@ -21,7 +21,7 @@ import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.util.UUIDUtil;
 import xyz.nadev.house.util.constant.RespCode;
-import xyz.nadev.house.vo.ResponseVO;
+import xyz.nadev.house.VO.ResponseVO;
 
 import java.io.IOException;
 import java.math.BigDecimal;

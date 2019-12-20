@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import xyz.nadev.house.vo.ResultEntity;
-import xyz.nadev.house.vo.TransferDto;
+import xyz.nadev.house.VO.ResultEntity;
+import xyz.nadev.house.VO.TransferDto;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

@@ -1,14 +1,13 @@
 package xyz.nadev.house.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.Banner;
 import xyz.nadev.house.service.BannerService;
-import xyz.nadev.house.vo.ResponseVO;
+import xyz.nadev.house.VO.ResponseVO;
 
 @RestController
 @RequestMapping("/banner")

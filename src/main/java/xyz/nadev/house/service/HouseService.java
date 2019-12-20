@@ -1,11 +1,19 @@
 package xyz.nadev.house.service;
 
+import xyz.nadev.house.VO.ResponseVO;
 import xyz.nadev.house.entity.House;
-import xyz.nadev.house.vo.ResponseVO;
 
 import java.util.List;
 
 public interface HouseService {
+    /**
+     * 根据条件筛选房屋
+     *
+     * @param house   : 条件
+     * @param pageNum : 页数
+     * @return: xyz.nadev.house.vo.ResponseVO
+     */
+    ResponseVO findByCondition(House house, int pageNum);
 
     /**
      * 获取所有房源记录

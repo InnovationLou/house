@@ -1,5 +1,5 @@
 
-package xyz.nadev.house.vo;
+package xyz.nadev.house.VO;
 
 
 public class ResultEntity

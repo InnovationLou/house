@@ -1,4 +1,4 @@
-package xyz.nadev.house.vo;
+package xyz.nadev.house.VO;
 
 import java.beans.Transient;
 import java.util.HashMap;

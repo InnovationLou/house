@@ -8,7 +8,7 @@ import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.vo.ResponseVO;
+import xyz.nadev.house.VO.ResponseVO;
 
 import java.math.BigDecimal;
 

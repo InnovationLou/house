@@ -17,6 +17,16 @@ class HouseServiceTest {
     HouseService houseService;
 
     @Test
+    void findByCondition() {
+        House house = new House();
+        house.setLat(29.987096);
+        house.setLng(102.996122);
+//        house.setDistrict("雨城区");
+//        house.setCash(1);
+//        house.setHasComplete(0);
+        System.out.println(houseService.findByCondition(house, 1).toString());
+    }
+
     void houseList() {
         System.out.println(houseService.houseList());
     }
@@ -27,7 +37,7 @@ class HouseServiceTest {
 
     @Test
     void addHouse() {
-        House house=new House();
+        House house = new House();
         house.setUserId(10001);
         house.setHouseInfo("testtesttest");
         house.setReleased(0);
@@ -41,16 +51,16 @@ class HouseServiceTest {
 
     @Test
     void modifyHouse() {
-        Integer id=2;
-        House house=houseService.findHouseById(id);
+        Integer id = 2;
+        House house = houseService.findHouseById(id);
         System.out.println(house);
         house.setHouseInfo("123456789");
         System.out.println(houseService.modifyHouse(house));
     }
 
     @Test
-    void findHouseById(){
-        Integer id=2;
+    void findHouseById() {
+        Integer id = 2;
         System.out.println(houseService.findHouseById(id));
     }
 }

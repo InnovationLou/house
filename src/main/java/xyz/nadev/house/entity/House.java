@@ -268,4 +268,53 @@ public class House {
 	 */
 	@Column(name = "lng", nullable = true)
 	private Double lng;
+
+	/**
+	 * 户型1 一室 2 二室 3 三室
+	 * default value: null
+	 */
+	@Column(name = "house_type", nullable = true)
+	private Integer houseType;
+
+	/**
+	 * 周边配套是否齐全
+	 * default value: 0
+	 */
+	@Column(name = "has_complete", nullable = true)
+	private Integer hasComplete;
+
+	/**
+	 * 可短租
+	 * default value: 0
+	 */
+	@Column(name = "short_rent", nullable = true)
+	private Integer shortRent;
+
+	/**
+	 * 女生合租
+	 * default value: null
+	 */
+	@Column(name = "girl_shared", nullable = true)
+	private Integer girlShared;
+
+	/**
+	 * 男生合租
+	 * default value: null
+	 */
+	@Column(name = "boy_shared", nullable = true)
+	private Integer boyShared;
+
+	/**
+	 * 有独立阳台
+	 * default value: null
+	 */
+	@Column(name = "has_balcony", nullable = true)
+	private Integer hasBalcony;
+
+	/**
+	 * 1 整租 0 合租
+	 * default value: 0
+	 */
+	@Column(name = "rent_type", nullable = true)
+	private Integer rentType;
 }

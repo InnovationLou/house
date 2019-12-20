@@ -1,23 +1,27 @@
 package xyz.nadev.house.controller;
 
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xyz.nadev.house.VO.ResponseVO;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.service.HouseService;
-import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.vo.ResponseVO;
 
+@Slf4j
 @RestController
 @RequestMapping("/house")
 public class HouseController {
 
-    public static final Logger logger= LoggerFactory.getLogger(HouseController.class);
-
     @Autowired
     HouseService houseService;
+
+    @ApiOperation("条件筛选房屋")
+    @GetMapping("")
+    public ResponseVO getHouse(House house, int page) {
+        return houseService.findByCondition(house, page);
+    }
+
 
     @ApiOperation("通过id查house")
     @GetMapping("/{id}")
@@ -25,11 +29,6 @@ public class HouseController {
         return houseService.getHouseById(id);
     }
 
-    @ApiOperation("查看所有房源信息")
-    @GetMapping("")
-    public ResponseVO getAllHouses(){
-        return houseService.houseList();
-    }
 
     @ApiOperation("新增房源信息")
     @PostMapping("")

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import xyz.nadev.house.service.TimService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.TLSSigAPIv2;
-import xyz.nadev.house.vo.ResponseVO;
+import xyz.nadev.house.VO.ResponseVO;
 
 @Slf4j
 @Service
