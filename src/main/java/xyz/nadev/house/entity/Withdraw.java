@@ -31,11 +31,11 @@ public class Withdraw {
   @Column(name = "money")
   private BigDecimal money;
   @Column(name = "is_finish")
-  private Integer isFinish;
+  private Boolean isFinish;
   @Column(name = "remark")
   private String  remark;
   @Column(name = "withdraw_status")
-  private Integer withdrawStatus;
+  private Boolean withdrawStatus;
   @Column(name = "wx_id")
   private String wxId;
 

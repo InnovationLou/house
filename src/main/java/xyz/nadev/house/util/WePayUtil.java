@@ -604,11 +604,11 @@ public class WePayUtil {
             //3.加载证书请求接口
             String result = HttpRequestHandler.httpRequestPost(out_trade_no, reqXmlStr.toString(),
                     model, CERT_PATH);
-            if(result.contains("CDATA[FAIL]")){
-                logger.error(result);
-                return new ResultEntity(false, "调用微信接口失败, 具体信息请查看访问日志: " + result);
+            if(result.contains("<result_code><![CDATA[FAIL]]></result_code>")){
+                logger.info(result);
+                return new ResultEntity(false, "调用微信接口成功, 业务提交失败，详情请看: " + result);
             }else{
-                logger.error(result);
+                logger.info(result);
                 return new ResultEntity(true, result);
             }
         } catch (Exception e) {

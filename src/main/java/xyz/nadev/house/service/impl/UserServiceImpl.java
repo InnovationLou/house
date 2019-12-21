@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import xyz.nadev.house.config.WxPayConfig;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.entity.Withdraw;
 import xyz.nadev.house.repository.HouseOrderRepository;
@@ -25,6 +26,7 @@ import xyz.nadev.house.VO.ResponseVO;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -233,9 +235,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO launchWithdraw(String token, BigDecimal money,String wxid) {
+        //用token拿到当前用户信息
         User user = findByToken(token);
         if (user == null){
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            log.info("token不存在");
+            return null;
         }
         Withdraw withdraw = new Withdraw();
         String openId = user.getOpenId();
@@ -243,7 +247,7 @@ public class UserServiceImpl implements UserService {
             //price1.compareTo()price2
             //price1 大于price2返回1，price1 等于price2返回0，price1 小于price2返回-1
             if (money.compareTo(user.getMoney()) == 1) {
-                return ControllerUtil.getFalseResultMsgBySelf("金额不足");
+                return ControllerUtil.getFalseResultMsgBySelf("余额不足");
             }
             String withdrawMent = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
             System.out.println("生成的16位提现订单号：" + withdrawMent);
@@ -252,14 +256,18 @@ public class UserServiceImpl implements UserService {
             //更新用户余额
             user.setMoney(afterWithdrawMoney);
             //保存提现表信息
+            withdraw.setGmtCreate(new Date());
+            withdraw.setGmtModify(new Date());
             withdraw.setWxId(wxid);
             withdraw.setOpenId(openId);
             withdraw.setMoney(money);
             withdraw.setWithdrawMent(withdrawMent);
-
+            withdraw.setWithdrawStatus(WxPayConfig.WITHDRAW_NO_ERROR);
+            withdraw.setIsFinish(WxPayConfig.NOT_FINISHED);
             withdrawRepository.save(withdraw);
             resp.save(user);
         } catch (Exception e) {
+            log.error("保存提现记录失败");
             return ControllerUtil.getFalseResultMsgBySelf("保存错误");
         }
         return ControllerUtil.getDataResult(withdraw);

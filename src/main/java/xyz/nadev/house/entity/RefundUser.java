@@ -41,8 +41,8 @@ public class RefundUser {
 	 * 订单号
 	 * default value: null
 	 */
-	@Column(name = "payment", nullable = true)
-	private String payment;
+	@Column(name = "out_trade_no", nullable = true)
+	private String outTradeNo;
 
 	/**
 	 * 订单生成时间
@@ -66,4 +66,7 @@ public class RefundUser {
 	 */
 	@Column(name = "money", nullable = false)
 	private BigDecimal money;
+
+	@Column(name = "is_success")
+	private Boolean isSuccess;
 }

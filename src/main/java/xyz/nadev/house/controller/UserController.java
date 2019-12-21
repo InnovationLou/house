@@ -59,6 +59,7 @@ public class UserController {
     @ApiOperation("用户发起提现请求")
     @PostMapping("/launchWithdraw")
     public ResponseVO register(@RequestHeader("Authorization")String token, BigDecimal money, String wxId) {
+        //人工打款，由用户自己输入自己微信号
         return ControllerUtil.getDataResult(userService.launchWithdraw(token, money,wxId));
     }
 

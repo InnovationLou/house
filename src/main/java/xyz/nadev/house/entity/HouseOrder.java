@@ -93,5 +93,5 @@ public class HouseOrder {
 	 * default value: null
 	 */
 	@Column(name = "addr_ip", nullable = false)
-	private Long addrIp;
+	private String addrIp;
 }

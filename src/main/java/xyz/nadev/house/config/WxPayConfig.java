@@ -22,4 +22,8 @@ public class WxPayConfig {
 
     public static final Integer HOUSE_ORDER_NOT_PAID = 0;
     public static final Integer HOUSE_ORDER_PAID = 1;
+    public static final Boolean WITHDRAW_NO_ERROR = true;
+    public static final Boolean WITHDRAW_ERROR = false;
+    public static final Boolean FINISHED = true;
+    public static final Boolean NOT_FINISHED = false;
 }
