@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.service.HouseService;
 

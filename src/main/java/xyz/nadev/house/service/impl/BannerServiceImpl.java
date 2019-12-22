@@ -6,7 +6,7 @@ import xyz.nadev.house.entity.Banner;
 import xyz.nadev.house.service.BannerService;
 import xyz.nadev.house.repository.BannerRepository;
 import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 
 @Service
 public class BannerServiceImpl implements BannerService {

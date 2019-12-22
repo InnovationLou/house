@@ -8,7 +8,7 @@ import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 
 import java.math.BigDecimal;
 
@@ -60,13 +60,13 @@ public class UserController {
     @PostMapping("/launchWithdraw")
     public ResponseVO register(@RequestHeader("Authorization")String token, BigDecimal money, String wxId) {
         //人工打款，由用户自己输入自己微信号
-        return ControllerUtil.getDataResult(userService.launchWithdraw(token, money,wxId));
+        return userService.launchWithdraw(token, money,wxId);
     }
 
 
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
     public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String outTradeNo){
-        return ControllerUtil.getDataResult(wxPayService.doRefund(outTradeNo, token)) ;
+        return wxPayService.doRefund(outTradeNo, token);
     }
 }

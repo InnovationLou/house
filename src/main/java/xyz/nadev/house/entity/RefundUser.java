@@ -1,13 +1,14 @@
 package xyz.nadev.house.entity;
 
 import lombok.Data;
+
+import javax.persistence.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
@@ -38,17 +39,17 @@ public class RefundUser {
 	private String openId;
 
 	/**
-	 * 订单号
+	 * 付款的时候自己生成的订单号
 	 * default value: null
 	 */
-	@Column(name = "out_trade_no", nullable = true)
+	@Column(name = "out_trade_no", nullable = false)
 	private String outTradeNo;
 
 	/**
 	 * 订单生成时间
 	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "gmt_create", nullable = false)
+	@Column(name = "gmt_create", nullable = true)
 	@CreatedDate
 	private java.util.Date gmtCreate;
 
@@ -56,7 +57,7 @@ public class RefundUser {
 	 * 订单状态更改时间
 	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "gmt_modify", nullable = false)
+	@Column(name = "gmt_modify", nullable = true)
 	@LastModifiedDate
 	private java.util.Date gmtModify;
 
@@ -64,9 +65,13 @@ public class RefundUser {
 	 * 付款金额
 	 * default value: 0.00
 	 */
-	@Column(name = "money", nullable = false)
+	@Column(name = "money", nullable = true)
 	private BigDecimal money;
 
-	@Column(name = "is_success")
+	/**
+	 * 0为退款失败，1为退款成功
+	 * default value: null
+	 */
+	@Column(name = "is_success", nullable = true)
 	private Boolean isSuccess;
 }

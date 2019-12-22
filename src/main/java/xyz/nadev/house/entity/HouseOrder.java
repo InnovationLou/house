@@ -1,13 +1,14 @@
 package xyz.nadev.house.entity;
 
 import lombok.Data;
+
+import javax.persistence.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
@@ -55,14 +56,14 @@ public class HouseOrder {
 	 * 总金额
 	 * default value: 0.00
 	 */
-	@Column(name = "total_fee", nullable = false)
+	@Column(name = "total_fee", nullable = true)
 	private BigDecimal totalFee;
 
 	/**
 	 * 订单生成时间
 	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "gmt_create", nullable = false)
+	@Column(name = "gmt_create", nullable = true)
 	@CreatedDate
 	private java.util.Date gmtCreate;
 
@@ -70,7 +71,7 @@ public class HouseOrder {
 	 * 订单状态更改时间
 	 * default value: CURRENT_TIMESTAMP
 	 */
-	@Column(name = "gmt_modify", nullable = false)
+	@Column(name = "gmt_modify", nullable = true)
 	@LastModifiedDate
 	private java.util.Date gmtModify;
 
@@ -78,20 +79,20 @@ public class HouseOrder {
 	 * 是否已经支付,0未支付,1已支付
 	 * default value: null
 	 */
-	@Column(name = "is_paid", nullable = false)
+	@Column(name = "is_paid", nullable = true)
 	private Integer isPaid;
 
 	/**
 	 * 是否已完成，后台判断了密码后，才应该确认更改此字段
 	 * default value: null
 	 */
-	@Column(name = "is_finished", nullable = false)
+	@Column(name = "is_finished", nullable = true)
 	private Integer isFinished;
 
 	/**
 	 * 用户付款IP
 	 * default value: null
 	 */
-	@Column(name = "addr_ip", nullable = false)
+	@Column(name = "addr_ip", nullable = true)
 	private String addrIp;
 }

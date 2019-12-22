@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xyz.nadev.house.VO.HouseDTO;
+import xyz.nadev.house.vo.HouseDTO;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 
 import java.util.List;
 import java.util.Optional;

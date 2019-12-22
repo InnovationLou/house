@@ -1,6 +1,6 @@
 package xyz.nadev.house.service;
 
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 import xyz.nadev.house.entity.House;
 
 import java.util.List;

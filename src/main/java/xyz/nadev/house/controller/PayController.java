@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.WePayUtil;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -43,7 +43,7 @@ public class PayController {
     @PostMapping("/wxNotify")
     public ResponseVO notify(HttpServletRequest request) {
         try {
-            return ControllerUtil.getDataResult(wxPayService.wxNotify(request));
+            return wxPayService.wxNotify(request);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -53,6 +53,6 @@ public class PayController {
     @ApiOperation(value = "管理员处理提现请求")
     @PostMapping("/withdraw/{withdrawMent}")
     private ResponseVO payWithdraw(String withdrawMent, Boolean option) {
-        return ControllerUtil.getDataResult(wxPayService.dealWithdraw(withdrawMent, option));
+        return wxPayService.dealWithdraw(withdrawMent, option);
     }
 }

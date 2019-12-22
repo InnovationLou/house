@@ -1,8 +1,8 @@
 package xyz.nadev.house.service;
 
 import xyz.nadev.house.entity.Withdraw;
-import xyz.nadev.house.VO.ResponseVO;
-import xyz.nadev.house.VO.ResultEntity;
+import xyz.nadev.house.vo.ResponseVO;
+import xyz.nadev.house.vo.ResultEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -48,6 +48,5 @@ public interface WxPayService {
      * @return
      */
     ResponseVO doRefund(String outTradeNo, String token);
-
 
 }

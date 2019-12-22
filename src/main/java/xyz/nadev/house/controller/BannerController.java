@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.Banner;
 import xyz.nadev.house.service.BannerService;
-import xyz.nadev.house.VO.ResponseVO;
+import xyz.nadev.house.vo.ResponseVO;
 
 @RestController
 @RequestMapping("/banner")
