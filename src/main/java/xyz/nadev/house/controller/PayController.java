@@ -4,13 +4,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.service.WxPayService;
-import xyz.nadev.house.util.ControllerUtil;
-import xyz.nadev.house.util.WePayUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,28 +21,15 @@ public class PayController {
     private WxPayService wxPayService;
 
     @ApiOperation(value = "获取预支付信息")
-    @PostMapping("/prepayInfo")
+    @GetMapping("/prepayInfo/{money}")
     public ResponseVO order(@RequestHeader("Authorization") String token, BigDecimal money, HttpServletRequest request) throws Exception {
-
-        //12位随机字符串
-        String out_trade_no = WePayUtil.getNonceStr();
-
-        System.out.println("---------------程序进来了--------------------");
-//        System.out.println(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 32));
-
-        Object object = wxPayService.unifiedOrder(out_trade_no, money, token, request);
-        return ControllerUtil.getSuccessResultBySelf(object);
+        return wxPayService.unifiedOrder(money, token, request);
     }
 
     @ApiOperation(value = "微信回调接口")
     @PostMapping("/wxNotify")
-    public ResponseVO notify(HttpServletRequest request) {
-        try {
-            return wxPayService.wxNotify(request);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public ResponseVO notify(HttpServletRequest request) throws Exception {
+        return wxPayService.wxNotify(request);
     }
 
     @ApiOperation(value = "管理员处理提现请求")
@@ -55,4 +37,11 @@ public class PayController {
     private ResponseVO payWithdraw(String withdrawMent, Boolean option) {
         return wxPayService.dealWithdraw(withdrawMent, option);
     }
+
+    @ApiOperation(value = "如果有需要，管理员可以给用户余额添加金额")
+    @PostMapping("/someone")
+    public ResponseVO paySomeone(String openId, Double money) {
+        return wxPayService.paySomeone(openId, money);
+    }
+
 }

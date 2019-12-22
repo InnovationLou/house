@@ -1,6 +1,5 @@
 package xyz.nadev.house.service;
 
-import xyz.nadev.house.entity.Withdraw;
 import xyz.nadev.house.vo.ResponseVO;
 import xyz.nadev.house.vo.ResultEntity;
 
@@ -10,14 +9,13 @@ import java.math.BigDecimal;
 public interface WxPayService {
     /**
      * 预支付请求
-     * @param outTradeNo
      * @param money
      * @param token
      * @param request
      * @return
      * @throws Exception
      */
-    ResponseVO unifiedOrder(String outTradeNo, BigDecimal money, String token, HttpServletRequest request) throws Exception;
+    ResponseVO unifiedOrder(BigDecimal money, String token, HttpServletRequest request) throws Exception;
 
     /**
      * 微信回调处理接口
@@ -29,10 +27,11 @@ public interface WxPayService {
 
     /**
      * 付钱给提现那边
-     * @param withdraw
+     * @param openId
+     * @param amount
      * @return
      */
-    ResultEntity sendMoneyToWechatUser(Withdraw withdraw);
+    ResultEntity sendMoneyToWechatUser(String openId, BigDecimal amount);
 
     /**
      * 处理提现请求接口
@@ -48,5 +47,7 @@ public interface WxPayService {
      * @return
      */
     ResponseVO doRefund(String outTradeNo, String token);
+
+    ResponseVO paySomeone(String openId,Double money);
 
 }

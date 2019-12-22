@@ -99,6 +99,23 @@ public class WePayUtil {
         dtoMap.put("out_refund_no",dto.getOut_refund_no());
         return createLinkString(dtoMap);
     }
+    /**
+     * 这个工具用来将平台打款的请求参数拿来转换为map对象
+     * @return 拼接后字符串
+     */
+    public static String transferRequestToMap(TransferDto dto) {
+        Map<String, String> dtoMap = new HashMap<>();
+        dtoMap.put("mch_appid",dto.getAppid());
+        dtoMap.put("mchid",dto.getMch_id());
+        dtoMap.put("nonce_str",dto.getNonce_str());
+        dtoMap.put("partner_trade_no",dto.getPartner_trade_no());
+        dtoMap.put("openid",dto.getOpenid() );
+        dtoMap.put("check_name",dto.getCheck_name());
+        dtoMap.put("amount",String.valueOf(dto.getAmount()));
+        dtoMap.put("desc",dto.getDesc());
+        dtoMap.put("spbill_create_ip",dto.getSpbill_create_ip());
+        return createLinkString(dtoMap);
+    }
 
     /**
      * 除去数组中的空值和签名参数
@@ -618,7 +635,7 @@ public class WePayUtil {
     }
 
     /**
-     * 企业付款到个人零钱核心代码 该方法实现企业付款给个人  待更改
+     * 企业付款到个人零钱核心代码 该方法实现企业付款给个人
      * @param appkey 小程序的appKey
      * @param certPath 加密pem文件的位置
      * @param model 封装请求信息的对象
@@ -632,15 +649,15 @@ public class WePayUtil {
 
         try {
             //1.计算参数签名
-            String paramStr = transferRefundRequestToMap(model);
+            String paramStr = transferRequestToMap(model);
             String mysign = paramStr + "&key=" + APP_KEY;
             String sign = MD5(mysign).toUpperCase();
 
             //2.封装请求参数
             StringBuilder reqXmlStr = new StringBuilder();
             reqXmlStr.append("<xml>");
-            reqXmlStr.append("<mchid>" + model.getAppid() + "</mchid>");
-            reqXmlStr.append("<mch_appid>" + model.getMch_id() + "</mch_appid>");
+            reqXmlStr.append("<mchid>" + model.getMch_id() + "</mchid>");
+            reqXmlStr.append("<mch_appid>" + model.getAppid() + "</mch_appid>");
             reqXmlStr.append("<nonce_str>" + model.getNonce_str() + "</nonce_str>");
             reqXmlStr.append("<check_name>" + model.getCheck_name() + "</check_name>");
             reqXmlStr.append("<openid>" + model.getOpenid() + "</openid>");

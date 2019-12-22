@@ -71,8 +71,6 @@ public class WxPayServiceImpl implements WxPayService {
 
     /**
      * 用于微信统一下单，获得预支付信息
-     *
-     * @param out_trade_no
      * @param money
      * @param token
      * @param request
@@ -80,10 +78,12 @@ public class WxPayServiceImpl implements WxPayService {
      * @throws Exception
      */
     @Override
-    public ResponseVO unifiedOrder(String out_trade_no, BigDecimal money, String token, HttpServletRequest request) throws Exception {
+    public ResponseVO unifiedOrder(BigDecimal money, String token, HttpServletRequest request) throws Exception {
         //看token是否在,若存在，则添加信息到order表
         //终端IP
         String spbill_create_ip = WePayUtil.getIpAddr(request);
+        //12位随机字符串
+        String out_trade_no = WePayUtil.getNonceStr();
         User user = userServiceImpl.findByToken(token);
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf("token不存在");
@@ -241,40 +241,32 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     /**
-     * 微信支付Api打款给用户的方法，直接调用  待修改
+     * 微信支付Api打款给用户的方法，商户号到90天直接调用
      *
      * @param
      * @return
      */
     @Override
-    public ResultEntity sendMoneyToWechatUser(Withdraw withdraw) {
-        House house = new House();
-        try {
-            house = houseRepository.findByUserId(withdraw.getOpenId());
-            System.out.println("拿到USER：" + house.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("查询user时出错,USER ID:" + withdraw.getOpenId());
-        }
-        String openId = "";
-
+    public ResultEntity sendMoneyToWechatUser(String openId, BigDecimal amount) {
+        if (userServiceImpl.findByOpenId(openId)==null){return null;}
         TransferDto transferDto = new TransferDto();
-
-        //元转换为分
-        transferDto.setAmount((withdraw.getMoney().multiply(new BigDecimal(100))).intValue());
-        transferDto.setAppkey(appSecret);
-        transferDto.setSpbill_create_ip(IPUtil.getIPAddressByLast32());
-        transferDto.setCheck_name("NO_CHECK");
-        transferDto.setDesc(desc);
+        //生成Partner_trade_no
+        String partnerTradeNo = WePayUtil.getNonceStr();
         transferDto.setAppid(appId);  //申请商铺号的APPID
-        transferDto.setMch_name("fishHouse");
         transferDto.setMch_id(mchId);
         transferDto.setNonce_str(WePayUtil.getNonceStr());
+        transferDto.setPartner_trade_no(partnerTradeNo);
         transferDto.setOpenid(openId);
-        transferDto.setPartner_trade_no(withdraw.getWithdrawMent());
+        transferDto.setCheck_name("NO_CHECK");
+        //元转换为分
+        transferDto.setAmount((amount.multiply(new BigDecimal(100))).intValue());
+        transferDto.setAppkey(appSecret);
+        transferDto.setSpbill_create_ip(IPUtil.getIPAddressByLast32());
+        transferDto.setDesc(desc);
+        transferDto.setMch_name("fishHouse");
 
         String url = transfer;
-        String APP_KEY = appSecret;
+        String APP_KEY = mchSecret;
         String CERT_PATH = certPath;
         logger.info("做成transferDto: " + transferDto.toString());
         try {
@@ -291,7 +283,7 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     /**
-     * 为user添加回相应的提现金额
+     * 管理员处理提现请求，失败或拒绝则为user添加回相应的提现金额
      *
      * @param
      * @param
@@ -422,6 +414,26 @@ public class WxPayServiceImpl implements WxPayService {
             logger.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
             return null;
         }
+    }
+
+
+    /**
+     * 管理员给用户打款，默认打款到余额，由用户再发起提现请求
+     * 应该不得用的方法，
+     * @param openId
+     * @param money
+     * @return
+     */
+    @Override
+    public ResponseVO paySomeone(String openId, Double money) {
+        User user = userRepository.findByOpenId(openId);
+        if (user == null){
+            return null;
+        }
+        BigDecimal newMoney = user.getMoney().add(new BigDecimal(money));
+        user.setMoney(newMoney);
+        userRepository.save(user);
+        return ControllerUtil.getDataResult(user);
     }
 
 }
