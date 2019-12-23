@@ -1,7 +1,6 @@
 package xyz.nadev.house.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class WxPayServiceImpl implements WxPayService {
-    Logger logger = LoggerFactory.getLogger(WxPayServiceImpl.class);
 
     @Value("${wx.app.id}")
     private String appId;
@@ -71,6 +71,7 @@ public class WxPayServiceImpl implements WxPayService {
 
     /**
      * 用于微信统一下单，获得预支付信息
+     *
      * @param money
      * @param token
      * @param request
@@ -98,7 +99,7 @@ public class WxPayServiceImpl implements WxPayService {
             houseorderRepository.save(houseOrder);
             System.out.println("Openid:" + user.getOpenId() + "order表添加成功");
         } catch (Exception e) {
-            logger.error("用户表无此OpenID，添加失败");
+            log.error("用户表无此OpenID，添加失败");
             return null;
         }
 
@@ -197,7 +198,7 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     public ResponseVO wxNotify(HttpServletRequest request) throws Exception {
-        logger.info("-------------开始操作HouseOrder--------------");
+        log.info("-------------开始操作HouseOrder--------------");
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
         String line = null;
         StringBuilder sb = new StringBuilder();
@@ -208,10 +209,10 @@ public class WxPayServiceImpl implements WxPayService {
 
         //sb为微信返回的xml
         String notityXml = sb.toString();
-        logger.info("notify xml data：" + notityXml);
+        log.info("notify xml data：" + notityXml);
         String resXml = "";
         Map map = WePayUtil.xmlToMap(notityXml);
-        logger.info("notify map data:" + map.toString());
+        log.info("notify map data:" + map.toString());
         String returnCode = (String) map.get("return_code");
         String out_trade_no = (String) map.get("out_trade_no");
         String transaction_id = (String) map.get("transaction_id");
@@ -229,9 +230,9 @@ public class WxPayServiceImpl implements WxPayService {
                     resXml = WePayUtil.NOTIFY_SUCCESS;
                     return ControllerUtil.getDataResult(resXml);
                 } catch (Exception e) {
-                    logger.error("orderSecretRepository.save(orderSecret)异常发生");
+                    log.error("orderSecretRepository.save(orderSecret)异常发生");
                     resXml = WePayUtil.NOTIFY_FAIL_SERVER_ERROR;
-                    logger.error(resXml);
+                    log.error(resXml);
                     return ControllerUtil.getFalseResultMsgBySelf(resXml);
                 }
             }
@@ -248,7 +249,9 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     public ResultEntity sendMoneyToWechatUser(String openId, BigDecimal amount) {
-        if (userServiceImpl.findByOpenId(openId)==null){return null;}
+        if (userServiceImpl.findByOpenId(openId) == null) {
+            return null;
+        }
         TransferDto transferDto = new TransferDto();
         //生成Partner_trade_no
         String partnerTradeNo = WePayUtil.getNonceStr();
@@ -268,16 +271,16 @@ public class WxPayServiceImpl implements WxPayService {
         String url = transfer;
         String APP_KEY = mchSecret;
         String CERT_PATH = certPath;
-        logger.info("做成transferDto: " + transferDto.toString());
+        log.info("做成transferDto: " + transferDto.toString());
         try {
             ResultEntity resultEntity = WePayUtil.doPayTransfers(url, APP_KEY, CERT_PATH, transferDto);
-            logger.info("哈哈,调用成功:" + resultEntity.toString());
+            log.info("哈哈,调用成功:" + resultEntity.toString());
             if (resultEntity.isSuccess())
                 return resultEntity;
             else
                 return null;
         } catch (Exception e) {
-            logger.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
+            log.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
             return null;
         }
     }
@@ -301,7 +304,7 @@ public class WxPayServiceImpl implements WxPayService {
         if (option) {
             // 下面条语句用来调用微信后台支付功能
             // ResultEntity rs = sendMoneyToWechatUser(withDraw);
-            //logger.info("user successfully obtained the money.information:" + rs.toString());
+            //log.info("user successfully obtained the money.information:" + rs.toString());
             //String msg = rs.getMsg();
             //找到支付单号,填到数据库
             //withDraw.setWithdrawMent(msg.substring(msg.indexOf("<payment_no><![CDATA[") + "<payment_no><![CDATA[".length(), msg.indexOf("]]></payment_no>")));
@@ -350,68 +353,79 @@ public class WxPayServiceImpl implements WxPayService {
     /**
      * 用户退款
      *
-     * @param outTradeNo
      * @param token
+     * @param request
      * @return
      */
     @Override
-    public ResponseVO doRefund(String outTradeNo, String token) {
+    public ResponseVO doRefund(String token, HttpServletRequest request) throws Exception {
         //看token是否在,若存在，则添加信息到order表
         User user = userServiceImpl.findByToken(token);
         if (user == null) {
-            logger.info("失败，获得的token：" + token);
+            log.info("失败，获得的token：" + token);
             return ControllerUtil.getFalseResultMsgBySelf("token不存在");
         }
         String openId = user.getOpenId();
-        RefundUser refundUser = new RefundUser();
-        HouseOrder houseOrder = houseorderRepository.findByOpenIdAndOutTradeNo(openId, outTradeNo);
-        if (houseOrder == null) {
-            logger.info("失败,无此订单信息，获得的OpenId：" + token + "  outTradeNo: " + outTradeNo);
-            return ControllerUtil.getFalseResultMsgBySelf("无此订单记录");
-        }
-        BigDecimal refundMoney = houseOrder.getTotalFee();
-        String nonceStr = WePayUtil.getNonceStr();
-        //装填请求参数，8个，详情见https://api.mch.weixin.qq.com/secapi/pay/refund
-        TransferDto transferDto = new TransferDto();
-        transferDto.setAppid(appId);
-        transferDto.setMch_id(mchId);
-        transferDto.setNonce_str(nonceStr);
-        //	transaction_id 和out_trade_no二选一
-        transferDto.setOut_trade_no(outTradeNo);
-        transferDto.setOut_refund_no(WePayUtil.getNonceStr());
-        //元转换为分
-        transferDto.setTotal_fee((refundMoney.multiply(new BigDecimal(100))).intValue());
-        transferDto.setRefund_fee((refundMoney.multiply(new BigDecimal(100))).intValue());
-        logger.info("做成transferDto: " + transferDto.toString());
-
-        refundUser.setOpenId(openId);
-        refundUser.setOutTradeNo(outTradeNo);
-        refundUser.setGmtCreate(new Date());
-        refundUser.setGmtModify(new Date());
-        refundUser.setMoney(refundMoney);
-        try {
-            refundUserRepository.save(refundUser);
-        } catch (Exception e) {
-            logger.error("保存用户退款信息错误");
+        if (WePayUtil.checkSign(request, openId) == false) {
+            log.info("sign不正确");
+            return null;
         }
 
         try {
-            //  将退款请求进行处理
-            ResultEntity resultEntity = WePayUtil.doRefundTransfers(refundUrl, mchSecret, certPath, transferDto);
-            logger.info("哈哈,调用成功:" + resultEntity.toString());
-            if (resultEntity.isSuccess()) {
-                refundUser.setIsSuccess(true);
-            } else {
-                refundUser.setIsSuccess(false);
+            // 提取参数，失败则抛出异常
+            String outTradeNo = request.getParameter("outTradeNo");
+            RefundUser refundUser = new RefundUser();
+            HouseOrder houseOrder = houseorderRepository.findByOpenIdAndOutTradeNo(openId, outTradeNo);
+            if (houseOrder == null) {
+                log.info("失败,无此订单信息，获得的OpenId：" + token + "  outTradeNo: " + outTradeNo);
+                return ControllerUtil.getFalseResultMsgBySelf("无此订单记录");
             }
+            BigDecimal refundMoney = houseOrder.getTotalFee();
+            String nonceStr = WePayUtil.getNonceStr();
+            //装填请求参数，8个，详情见https://api.mch.weixin.qq.com/secapi/pay/refund
+            TransferDto transferDto = new TransferDto();
+            transferDto.setAppid(appId);
+            transferDto.setMch_id(mchId);
+            transferDto.setNonce_str(nonceStr);
+            //	transaction_id 和out_trade_no二选一
+            transferDto.setOut_trade_no(outTradeNo);
+            transferDto.setOut_refund_no(WePayUtil.getNonceStr());
+            //元转换为分
+            transferDto.setTotal_fee((refundMoney.multiply(new BigDecimal(100))).intValue());
+            transferDto.setRefund_fee((refundMoney.multiply(new BigDecimal(100))).intValue());
+            log.info("做成transferDto: " + transferDto.toString());
+
+            refundUser.setOpenId(openId);
+            refundUser.setOutTradeNo(outTradeNo);
+            refundUser.setGmtCreate(new Date());
+            refundUser.setGmtModify(new Date());
+            refundUser.setMoney(refundMoney);
             try {
                 refundUserRepository.save(refundUser);
             } catch (Exception e) {
-                logger.error("未成功更新退款状态");
+                log.error("保存用户退款信息错误");
             }
-            return ControllerUtil.getDataResult(resultEntity);
+
+            try {
+                //  将退款请求进行处理
+                ResultEntity resultEntity = WePayUtil.doRefundTransfers(refundUrl, mchSecret, certPath, transferDto);
+                log.info("哈哈,调用成功:" + resultEntity.toString());
+                if (resultEntity.isSuccess()) {
+                    refundUser.setIsSuccess(true);
+                } else {
+                    refundUser.setIsSuccess(false);
+                }
+                try {
+                    refundUserRepository.save(refundUser);
+                } catch (Exception e) {
+                    log.error("未成功更新退款状态");
+                }
+                return ControllerUtil.getDataResult(resultEntity);
+            } catch (Exception e) {
+                log.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
+                return null;
+            }
         } catch (Exception e) {
-            logger.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
             return null;
         }
     }
@@ -420,20 +434,35 @@ public class WxPayServiceImpl implements WxPayService {
     /**
      * 管理员给用户打款，默认打款到余额，由用户再发起提现请求
      * 应该不得用的方法，
-     * @param openId
-     * @param money
+     *
+     * @param request
      * @return
      */
     @Override
-    public ResponseVO paySomeone(String openId, Double money) {
-        User user = userRepository.findByOpenId(openId);
-        if (user == null){
+    public ResponseVO paySomeone(HttpServletRequest request) throws Exception {
+        Optional<User> user = userRepository.findById(Integer.valueOf(request.getParameter("userId")));
+        if (!user.isPresent()){
+            log.info("查找userId失败");
             return null;
         }
-        BigDecimal newMoney = user.getMoney().add(new BigDecimal(money));
-        user.setMoney(newMoney);
-        userRepository.save(user);
-        return ControllerUtil.getDataResult(user);
+        String openId = user.get().getOpenId();
+        if (WePayUtil.checkSign(request, openId) == false) {
+            log.info("sign不正确");
+            return null;
+        }
+        System.out.println(user.toString());
+        User saveUser = userRepository.findByOpenId(user.get().getOpenId());
+        try {
+
+            Double money = Double.valueOf(request.getParameter("money"));
+
+            BigDecimal newMoney = user.get().getMoney().add(new BigDecimal(money));
+            saveUser.setMoney(newMoney);
+            userRepository.save(saveUser);
+            return ControllerUtil.getDataResult(user);
+        }catch (Exception e){
+            return null;
+        }
     }
 
 }

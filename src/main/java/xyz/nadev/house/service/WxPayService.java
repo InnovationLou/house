@@ -42,12 +42,12 @@ public interface WxPayService {
 
     /**
      * 用户退款
-     * @param outTradeNo
      * @param token
+     * @param request
      * @return
      */
-    ResponseVO doRefund(String outTradeNo, String token);
+    ResponseVO doRefund(String token,HttpServletRequest request) throws Exception;
 
-    ResponseVO paySomeone(String openId,Double money);
+    ResponseVO paySomeone(HttpServletRequest request) throws Exception;
 
 }

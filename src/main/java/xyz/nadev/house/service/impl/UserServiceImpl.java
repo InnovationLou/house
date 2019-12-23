@@ -21,9 +21,11 @@ import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.util.UUIDUtil;
+import xyz.nadev.house.util.WePayUtil;
 import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -230,20 +232,28 @@ public class UserServiceImpl implements UserService {
      * 用于用户发起提现
      *
      * @param token
-     * @param money
+     * @param request
      * @return
      */
     @Override
-    public ResponseVO launchWithdraw(String token, BigDecimal money,String wxid) {
+    public ResponseVO launchWithdraw(String token, HttpServletRequest request) throws Exception {
         //用token拿到当前用户信息
         User user = findByToken(token);
         if (user == null){
             log.info("token不存在");
             return null;
         }
-        Withdraw withdraw = new Withdraw();
         String openId = user.getOpenId();
+        // 检查sign
+        if (WePayUtil.checkSign(request,openId)==false){
+            log.info("sign不正确");
+            return null;}
+        //取出需要的参数
+
+        Withdraw withdraw = new Withdraw();
         try {
+            BigDecimal money = BigDecimal.valueOf(Double.valueOf(request.getParameter("money")));
+            String wxId = request.getParameter("wxId");
             //price1.compareTo()price2
             //price1 大于price2返回1，price1 等于price2返回0，price1 小于price2返回-1
             if (money.compareTo(user.getMoney()) == 1) {
@@ -258,7 +268,7 @@ public class UserServiceImpl implements UserService {
             //保存提现表信息
             withdraw.setGmtCreate(new Date());
             withdraw.setGmtModify(new Date());
-            withdraw.setWxId(wxid);
+            withdraw.setWxId(wxId);
             withdraw.setOpenId(openId);
             withdraw.setMoney(money);
             withdraw.setWithdrawMent(withdrawMent);

@@ -40,8 +40,8 @@ public class PayController {
 
     @ApiOperation(value = "如果有需要，管理员可以给用户余额添加金额")
     @PostMapping("/someone")
-    public ResponseVO paySomeone(String openId, Double money) {
-        return wxPayService.paySomeone(openId, money);
+    public ResponseVO paySomeone(String userId, BigDecimal money ,String sign,HttpServletRequest request) throws Exception {
+        return wxPayService.paySomeone(request);
     }
 
 }

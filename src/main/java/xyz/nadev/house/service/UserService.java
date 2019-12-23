@@ -3,8 +3,8 @@ package xyz.nadev.house.service;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.vo.ResponseVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {
@@ -98,9 +98,9 @@ public interface UserService {
     /**
      * 用于用户发起提现
      * @param token
-     * @param money
+     * @param  request
      * @return
      */
-    ResponseVO launchWithdraw(String token, BigDecimal money ,String wxid);
+    ResponseVO launchWithdraw(String token, HttpServletRequest request) throws Exception;
 
 }
