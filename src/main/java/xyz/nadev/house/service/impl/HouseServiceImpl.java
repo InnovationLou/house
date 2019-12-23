@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.HouseDTO;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.service.HouseService;
@@ -36,11 +37,18 @@ public class HouseServiceImpl implements HouseService {
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     @Override
-    public ResponseVO findByCondition(House house, int pageNum) {
+    public ResponseVO findByCondition(House house, Integer distance, Integer pageNum) {
+
+        // 不传默认第一页
+        if (pageNum == null) pageNum = 1;
 
         StringBuilder sqlStr = new StringBuilder("SELECT *");
         Double lat = house.getLat();
         Double lng = house.getLng();
+
+        if (lat == null || lng == null) {
+            return ControllerUtil.getFalseResultMsgBySelf("经纬度缺失");
+        }
 
         // 存储参数
         List<Object> parmList = new ArrayList<>();
@@ -99,13 +107,13 @@ public class HouseServiceImpl implements HouseService {
                     " house.short_rent = 1");
         }
 
-        // 限女生合租
+        // 限女生租
         if (null != house.getGirlShared() && 0 != house.getGirlShared()) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
             sqlStr.append(
                     " house.girl_shared = 1");
         }
-        // 限男生合租
+        // 限男生租
         if (null != house.getBoyShared() && 0 != house.getBoyShared()) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
             sqlStr.append(
@@ -129,17 +137,23 @@ public class HouseServiceImpl implements HouseService {
         //	如果没有查询条件产生 删除where
         if (sqlStr.toString().endsWith("WHERE")) sqlStr.setLength(sqlStr.length() - 5);
 
-
+        // 限制距离
+        if (distance != null) {
+            sqlStr.append(
+                    " HAVING distance < ?");
+            parmList.add(distance);
+        }
+        
         // 按租金排序
         if (house.getCash() != null) {
             if (house.getCash() == 0)
                 sqlStr.append(" ORDER BY house.cash");
             else
                 sqlStr.append(" ORDER BY house.cash DESC");
-        } else if (house.getGmtCreate() != null)
+        } else if (house.getGmtCreate() != null) {
             // 按时间排序
-            sqlStr.append(" ORDER BY house.gmt_create");
-        else
+            sqlStr.append(" ORDER BY house.gmt_create DESC");
+        } else
             // 默认距离排序
             sqlStr.append(" ORDER BY distance");
         Query query = entityManager.createNativeQuery(sqlStr.toString(), HouseDTO.class);

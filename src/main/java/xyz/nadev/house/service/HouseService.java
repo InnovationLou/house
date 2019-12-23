@@ -13,10 +13,11 @@ public interface HouseService {
      * @param pageNum : 页数
      * @return: xyz.nadev.house.vo.ResponseVO
      */
-    ResponseVO findByCondition(House house, int pageNum);
+    ResponseVO findByCondition(House house, Integer distance, Integer pageNum);
 
     /**
      * 获取所有房源记录
+     *
      * @return
      */
     List<House> getAllHouses();
@@ -30,6 +31,7 @@ public interface HouseService {
 
     /**
      * 修改房源信息
+     *
      * @param house
      * @return
      */
@@ -37,9 +39,11 @@ public interface HouseService {
 
     /**
      * 获取房屋byId
+     *
      * @param id
      * @return
      */
     ResponseVO getHouseById(Integer id);
+
     House findHouseById(Integer id);
 }
