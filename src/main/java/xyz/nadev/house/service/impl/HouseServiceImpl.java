@@ -37,7 +37,7 @@ public class HouseServiceImpl implements HouseService {
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     @Override
-    public ResponseVO findByCondition(House house, Integer distance, Integer pageNum) {
+    public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum) {
 
         // 不传默认第一页
         if (pageNum == null) pageNum = 1;
@@ -139,18 +139,19 @@ public class HouseServiceImpl implements HouseService {
 
         // 限制距离
         if (distance != null) {
+            log.info(distance.toString());
             sqlStr.append(
                     " HAVING distance < ?");
             parmList.add(distance);
         }
-        
+
         // 按租金排序
         if (house.getCash() != null) {
             if (house.getCash() == 0)
                 sqlStr.append(" ORDER BY house.cash");
             else
                 sqlStr.append(" ORDER BY house.cash DESC");
-        } else if (house.getGmtCreate() != null) {
+        } else if (latest != null && latest == 1) {
             // 按时间排序
             sqlStr.append(" ORDER BY house.gmt_create DESC");
         } else

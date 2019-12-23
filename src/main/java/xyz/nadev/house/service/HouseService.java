@@ -13,7 +13,7 @@ public interface HouseService {
      * @param pageNum : 页数
      * @return: xyz.nadev.house.vo.ResponseVO
      */
-    ResponseVO findByCondition(House house, Integer distance, Integer pageNum);
+    ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum);
 
     /**
      * 获取所有房源记录

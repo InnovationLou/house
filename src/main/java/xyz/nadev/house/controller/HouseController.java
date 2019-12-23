@@ -18,8 +18,8 @@ public class HouseController {
 
     @ApiOperation("条件筛选房屋")
     @GetMapping("")
-    public ResponseVO getHouse(House house, Integer distance, Integer page) {
-        return houseService.findByCondition(house, distance, page);
+    public ResponseVO getHouse(House house, Integer distance, Integer latest, Integer page) {
+        return houseService.findByCondition(house, distance, latest, page);
     }
 
     @ApiOperation("通过id查house")
