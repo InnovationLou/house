@@ -24,7 +24,7 @@ class HouseServiceTest {
 //        house.setDistrict("雨城区");
 //        house.setCash(1);
 //        house.setHasComplete(0);
-        System.out.println(houseService.findByCondition(house, 20000, 1).toString());
+        System.out.println(houseService.findByCondition(house, 20000, null, 1).toString());
     }
 
     void houseList() {

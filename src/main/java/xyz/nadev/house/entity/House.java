@@ -317,4 +317,18 @@ public class House {
 	 */
 	@Column(name = "rent_type", nullable = true)
 	private Integer rentType;
+
+	/**
+	 * 标题图
+	 * default value: null
+	 */
+	@Column(name = "heading_img", nullable = true)
+	private String headingImg;
+
+	/**
+	 * 房源标签列表 ["精选", "近地铁"]
+	 * default value: null
+	 */
+	@Column(name = "tags", nullable = true)
+	private String tags;
 }
