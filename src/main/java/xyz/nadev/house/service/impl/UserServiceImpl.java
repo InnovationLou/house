@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -223,7 +224,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO getUserInfo(String token) {
-        return ControllerUtil.getSuccessResultBySelf(findByToken(token));
+        User user = findByToken(token);
+        // 抹去openId
+        if (user != null) {
+            user.setOpenId(null);
+        }
+        return ControllerUtil.getSuccessResultBySelf(user);
     }
 
     /**
@@ -234,10 +240,10 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public ResponseVO launchWithdraw(String token, BigDecimal money,String wxid) {
+    public ResponseVO launchWithdraw(String token, BigDecimal money, String wxid) {
         //用token拿到当前用户信息
         User user = findByToken(token);
-        if (user == null){
+        if (user == null) {
             log.info("token不存在");
             return null;
         }
