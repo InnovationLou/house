@@ -65,20 +65,6 @@ public class House {
 	private Integer tenantId;
 
 	/**
-	 * null
-	 * default value: null
-	 */
-	@Column(name = "gmt_start", nullable = false)
-	private java.util.Date gmtStart;
-
-	/**
-	 * null
-	 * default value: null
-	 */
-	@Column(name = "gmt_end", nullable = false)
-	private java.util.Date gmtEnd;
-
-	/**
 	 * 租金
 	 * default value: null
 	 */
@@ -331,4 +317,32 @@ public class House {
 	 */
 	@Column(name = "tags", nullable = true)
 	private String tags;
+
+	/**
+	 * 标题
+	 * default value: null
+	 */
+	@Column(name = "title", nullable = true)
+	private String title;
+
+	/**
+	 * 装修
+	 * default value: null
+	 */
+	@Column(name = "decoration", nullable = true)
+	private String decoration;
+
+	/**
+	 * 入住日期
+	 * default value: null
+	 */
+	@Column(name = "check_in_date", nullable = true)
+	private java.util.Date checkInDate;
+
+	/**
+	 * 看房
+	 * default value: null
+	 */
+	@Column(name = "inspection", nullable = true)
+	private String inspection;
 }
