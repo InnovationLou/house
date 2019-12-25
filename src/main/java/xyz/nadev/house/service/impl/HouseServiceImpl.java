@@ -177,7 +177,7 @@ public class HouseServiceImpl implements HouseService {
         if (sqlStr.toString().endsWith("WHERE")) sqlStr.setLength(sqlStr.length() - 5);
 
         // 限制距离
-        if (distance != null & distance != 0) {
+        if (distance != null && distance != 0) {
             sqlStr.append(
                     " HAVING distance < ?");
             parmList.add(distance);
