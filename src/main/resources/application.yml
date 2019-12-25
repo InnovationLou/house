@@ -8,7 +8,7 @@ spring:
 wx:
   app:
     id: wxf23c68d0aea36deb
-    secret: abbb49494ab61bbd3d0abc9f7bcca309
+    secret: 65ba3bb66a33a05102a5e35252aaa0ee
   mch:
     id: 1567855211
     secret: JKLo0o0o0JKLo0o0o0JKLo0o0o0JKLo0
