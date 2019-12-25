@@ -79,16 +79,15 @@ public class HouseServiceImpl implements HouseService {
         }
 
         // 户型筛选
-        if (null != house.getHouseType() && house.getHouseType() != 0) {
+        if (StringUtils.isNotBlank(house.getHouseType())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
-
             sqlStr.append(
-                    " house.house_type = ?"
+                    " house.house_type LIKE CONCAT(?, '%')"
             );
             parmList.add(house.getHouseType());
         }
 
-        //  是否押一付三
+        // 付款类型
         if (StringUtils.isNotBlank(house.getCashType())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
 
@@ -171,7 +170,7 @@ public class HouseServiceImpl implements HouseService {
         query.setFirstResult((pageNum - 1) * 10);
         query.setMaxResults(10);
 
-        List<Object> result = query.getResultList();
+        List<House> result = query.getResultList();
 
         return ControllerUtil.getSuccessResultBySelf(result);
     }

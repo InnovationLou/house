@@ -256,11 +256,11 @@ public class House {
 	private Double lng;
 
 	/**
-	 * 户型1 一室 2 二室 3 三室
+	 * 户型
 	 * default value: null
 	 */
 	@Column(name = "house_type", nullable = true)
-	private Integer houseType;
+	private String houseType;
 
 	/**
 	 * 周边配套是否齐全
