@@ -10,8 +10,8 @@ spring:
     multipart:
       # 设置单个文件和单个请求大小限制
       # 修改此处需同时修改COSUtil中的 FILE_SIZE_LIMIT
-      max-file-size: 1MB
-      max-request-size: 50MB
+      max-file-size: 20MB
+      max-request-size: 200MB
 wx:
   app:
     id: wxf23c68d0aea36deb
