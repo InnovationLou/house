@@ -24,7 +24,7 @@ class HouseServiceTest {
 //        house.setDistrict("雨城区");
 //        house.setCash(1);
 //        house.setHasComplete(0);
-        System.out.println(houseService.findByCondition(house, 20000, 1).toString());
+        System.out.println(houseService.findByCondition(house, 20000, null, 1).toString());
     }
 
     void houseList() {
@@ -44,8 +44,7 @@ class HouseServiceTest {
         house.setRented(0);
         house.setTenantId(10002);
         house.setOrientation("南");
-        house.setGmtStart(new Date());
-        house.setGmtEnd(new Date());
+
         System.out.println(houseService.addHouse(house));
     }
 
@@ -62,5 +61,17 @@ class HouseServiceTest {
     void findHouseById() {
         Integer id = 2;
         System.out.println(houseService.findHouseById(id));
+    }
+
+    @Test
+    void getCollectedHouses() {
+        Integer userId=10001;
+        System.out.println(houseService.getCollectedHouses(userId));
+    }
+
+    @Test
+    void getBrowsedHouses() {
+        Integer userId=10001;
+        System.out.println(houseService.getBrowsedHouses(userId));
     }
 }

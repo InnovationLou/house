@@ -30,7 +30,7 @@ public class BannerController {
     }
 
     @ApiOperation("上传banner")
-    @PostMapping("")
+    @PutMapping("")
     public ResponseVO uploadBanner(Banner banner){
         return bannerService.uploadBanner(banner);
     }

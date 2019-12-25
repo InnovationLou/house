@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xyz.nadev.house.util.constant.RespCode;
-import xyz.nadev.house.vo.HouseDTO;
+import xyz.nadev.house.entity.Browse;
+import xyz.nadev.house.entity.Collection;
 import xyz.nadev.house.entity.House;
+import xyz.nadev.house.repository.BrowseRepository;
+import xyz.nadev.house.repository.CollectionRepository;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.util.ControllerUtil;
@@ -27,15 +29,15 @@ public class HouseServiceImpl implements HouseService {
     private HouseRepository resp;
 
     @Autowired
+    private CollectionRepository collectionRepository;
+
+    @Autowired
+    private BrowseRepository browseRepository;
+
+    @Autowired
     EntityManager entityManager;
 
-    /**
-     * 根据条件筛选房屋
-     *
-     * @param house   : 条件
-     * @param pageNum : 页数
-     * @return: xyz.nadev.house.vo.ResponseVO
-     */
+
     @Override
     public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum) {
 
@@ -47,7 +49,9 @@ public class HouseServiceImpl implements HouseService {
         Double lng = house.getLng();
 
         if (lat == null || lng == null) {
-            return ControllerUtil.getFalseResultMsgBySelf("经纬度缺失");
+            // 天安门睡大街
+            lat = 39.903740;
+            lng = 116.397827;
         }
 
         // 存储参数
@@ -157,7 +161,7 @@ public class HouseServiceImpl implements HouseService {
         } else
             // 默认距离排序
             sqlStr.append(" ORDER BY distance");
-        Query query = entityManager.createNativeQuery(sqlStr.toString(), HouseDTO.class);
+        Query query = entityManager.createNativeQuery(sqlStr.toString(), House.class);
 
         // 注入参数
         for (int i = 0; i < parmList.size(); i++) {
@@ -217,5 +221,26 @@ public class HouseServiceImpl implements HouseService {
             return null;
         }
         return house.get();
+    }
+
+    @Override
+    public ResponseVO getCollectedHouses(Integer userId) {
+        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList=new ArrayList<>();
+        for (Collection c: collections) {
+            houseList.add(resp.findById(c.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
+    }
+
+    @Override
+    public ResponseVO getBrowsedHouses(Integer userId) {
+        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
+        List houseList=new ArrayList();
+        for (Browse b: history
+             ) {
+            houseList.add(resp.findById(b.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
     }
 }

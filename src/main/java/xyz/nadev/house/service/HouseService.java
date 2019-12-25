@@ -7,10 +7,12 @@ import java.util.List;
 
 public interface HouseService {
     /**
-     * 根据条件筛选房屋
+     * 条件筛选房屋
      *
-     * @param house   : 条件
-     * @param pageNum : 页数
+     * @param house    :
+     * @param distance :
+     * @param latest   :
+     * @param pageNum  :
      * @return: xyz.nadev.house.vo.ResponseVO
      */
     ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum);
@@ -46,4 +48,8 @@ public interface HouseService {
     ResponseVO getHouseById(Integer id);
 
     House findHouseById(Integer id);
+
+    ResponseVO getCollectedHouses(Integer userId);
+
+    ResponseVO getBrowsedHouses(Integer userId);
 }
