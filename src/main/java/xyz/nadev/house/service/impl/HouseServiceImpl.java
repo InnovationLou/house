@@ -76,6 +76,15 @@ public class HouseServiceImpl implements HouseService {
             parmList.add(house.getCity());
         }
 
+        // 朝向筛选
+        if (StringUtils.isNotBlank(house.getOrientation())) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            sqlStr.append(
+                    " house.orientation = ?"
+            );
+            parmList.add(house.getOrientation());
+        }
+
         // 地区筛选
         if (StringUtils.isNotBlank(house.getDistrict())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
