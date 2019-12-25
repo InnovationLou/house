@@ -39,7 +39,7 @@ public class HouseServiceImpl implements HouseService {
 
 
     @Override
-    public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum) {
+    public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer price, Integer pageNum) {
 
         // 不传默认第一页
         if (pageNum == null) pageNum = 1;
@@ -146,6 +146,33 @@ public class HouseServiceImpl implements HouseService {
                     " house.rent_type = 1");
         }
 
+        // 限制价格区间
+        if (price != null && price != 0) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            switch (price) {
+                case 1:
+                    sqlStr.append(
+                            " house.cash <= 1000");
+                    break;
+                case 2:
+                    sqlStr.append(
+                            " house.cash > 1000 AND house.cash <= 1500");
+                    break;
+                case 3:
+                    sqlStr.append(
+                            " house.cash > 1500 AND house.cash <= 2000");
+                    break;
+                case 4:
+                    sqlStr.append(
+                            " house.cash > 2000 AND house.cash <= 2500");
+                    break;
+                case 5:
+                    sqlStr.append(
+                            " house.cash > 2500");
+                    break;
+            }
+        }
+
         //	如果没有查询条件产生 删除where
         if (sqlStr.toString().endsWith("WHERE")) sqlStr.setLength(sqlStr.length() - 5);
 
@@ -181,6 +208,9 @@ public class HouseServiceImpl implements HouseService {
 
         List<House> result = query.getResultList();
 
+        if (result.isEmpty()) {
+            return ControllerUtil.getFalseResultMsgBySelf("未查找到数据");
+        }
         return ControllerUtil.getSuccessResultBySelf(result);
     }
 
