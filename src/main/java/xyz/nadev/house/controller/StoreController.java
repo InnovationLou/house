@@ -41,4 +41,10 @@ public class StoreController {
     public ResponseVO getImgs(@PathVariable Integer id) {
         return storeImgService.findById(id);
     }
+
+    @ApiOperation("根据地址关键字返回商铺信息列表")
+    @GetMapping("/search/{keyword}")
+    public ResponseVO search(@PathVariable String keyword) {
+        return storeService.search(keyword);
+    }
 }

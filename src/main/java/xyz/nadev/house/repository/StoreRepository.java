@@ -11,4 +11,8 @@ import java.util.List;
 public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     List<Store> findByType(String type);
+
+    @Query(value = "SELECT * FROM store WHERE address LIKE CONCAT('%',?1,'%')",
+            nativeQuery = true)
+    List<Store> search(String keyword);
 }

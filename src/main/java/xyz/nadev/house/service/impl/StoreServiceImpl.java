@@ -8,6 +8,7 @@ import xyz.nadev.house.service.StoreService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,12 +28,21 @@ public class StoreServiceImpl implements StoreService {
         return ControllerUtil.getSuccessResultBySelf(resp.findByType(type));
     }
 
-	@Override
-	public ResponseVO findById(Integer id) {
-		Optional<Store> storeOptional = resp.findById(id);
-		if (storeOptional.isPresent()){
-			return ControllerUtil.getSuccessResultBySelf(storeOptional.get());
-		}
-		return ControllerUtil.getFalseResultMsgBySelf("没有找到信息");
-	}
+    @Override
+    public ResponseVO findById(Integer id) {
+        Optional<Store> storeOptional = resp.findById(id);
+        if (storeOptional.isPresent()) {
+            return ControllerUtil.getSuccessResultBySelf(storeOptional.get());
+        }
+        return ControllerUtil.getFalseResultMsgBySelf("没有找到信息");
+    }
+
+    @Override
+    public ResponseVO search(String keyword) {
+        List<Store> storeList = resp.search(keyword);
+        if (storeList.isEmpty()) {
+            return ControllerUtil.getFalseResultMsgBySelf("未查询到数据");
+        }
+        return ControllerUtil.getSuccessResultBySelf(storeList);
+    }
 }

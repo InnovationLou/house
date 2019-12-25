@@ -12,4 +12,6 @@ public interface StoreService {
     ResponseVO findByType(String type);
 
     ResponseVO findById(Integer id);
+
+    ResponseVO search(String keyword);
 }
