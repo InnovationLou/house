@@ -5,7 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.nadev.house.entity.Browse;
+import xyz.nadev.house.entity.Collection;
 import xyz.nadev.house.entity.House;
+import xyz.nadev.house.repository.BrowseRepository;
+import xyz.nadev.house.repository.CollectionRepository;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.util.ControllerUtil;
@@ -23,6 +27,12 @@ import java.util.ArrayList;
 public class HouseServiceImpl implements HouseService {
     @Autowired
     private HouseRepository resp;
+
+    @Autowired
+    private CollectionRepository collectionRepository;
+
+    @Autowired
+    private BrowseRepository browseRepository;
 
     @Autowired
     EntityManager entityManager;
@@ -211,5 +221,26 @@ public class HouseServiceImpl implements HouseService {
             return null;
         }
         return house.get();
+    }
+
+    @Override
+    public ResponseVO getCollectedHouses(Integer userId) {
+        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList=new ArrayList<>();
+        for (Collection c: collections) {
+            houseList.add(resp.findById(c.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
+    }
+
+    @Override
+    public ResponseVO getBrowsedHouses(Integer userId) {
+        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
+        List houseList=new ArrayList();
+        for (Browse b: history
+             ) {
+            houseList.add(resp.findById(b.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
     }
 }

@@ -39,4 +39,16 @@ public class HouseController {
     public ResponseVO modifyHouse(House house) {
         return houseService.modifyHouse(house);
     }
+
+    @ApiOperation("获取用户收藏房源")
+    @GetMapping("/Collection/{id}")
+    public ResponseVO collectedHouses(@PathVariable Integer userId){
+        return houseService.getCollectedHouses(userId);
+    }
+
+    @ApiOperation("获取用户浏览过的房源")
+    @GetMapping("/browse")
+    public ResponseVO browsedHouses(Integer userId){
+        return houseService.getBrowsedHouses(userId);
+    }
 }

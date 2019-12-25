@@ -48,4 +48,8 @@ public interface HouseService {
     ResponseVO getHouseById(Integer id);
 
     House findHouseById(Integer id);
+
+    ResponseVO getCollectedHouses(Integer userId);
+
+    ResponseVO getBrowsedHouses(Integer userId);
 }
