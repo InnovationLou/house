@@ -67,6 +67,15 @@ public class HouseServiceImpl implements HouseService {
 
         sqlStr.append(" FROM house WHERE");
 
+        // 市区筛选
+        if (StringUtils.isNotBlank(house.getCity())) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            sqlStr.append(
+                    " house.city = ?"
+            );
+            parmList.add(house.getCity());
+        }
+
         // 地区筛选
         if (StringUtils.isNotBlank(house.getDistrict())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
@@ -224,9 +233,9 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO getCollectedHouses(Integer userId) {
-        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
-        List<Optional<House>> houseList=new ArrayList<>();
-        for (Collection c: collections) {
+        List<Collection> collections = collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList = new ArrayList<>();
+        for (Collection c : collections) {
             houseList.add(resp.findById(c.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
@@ -234,10 +243,10 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO getBrowsedHouses(Integer userId) {
-        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
-        List houseList=new ArrayList();
-        for (Browse b: history
-             ) {
+        List<Browse> history = browseRepository.findBrowsesByUserId(userId);
+        List houseList = new ArrayList();
+        for (Browse b : history
+        ) {
             houseList.add(resp.findById(b.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
