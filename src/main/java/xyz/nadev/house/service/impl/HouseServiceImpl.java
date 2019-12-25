@@ -177,8 +177,7 @@ public class HouseServiceImpl implements HouseService {
         if (sqlStr.toString().endsWith("WHERE")) sqlStr.setLength(sqlStr.length() - 5);
 
         // 限制距离
-        if (distance != null) {
-            log.info(distance.toString());
+        if (distance != null & distance != 0) {
             sqlStr.append(
                     " HAVING distance < ?");
             parmList.add(distance);
@@ -217,16 +216,6 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public List<House> getAllHouses() {
         return resp.findAll();
-    }
-
-    @Override
-    public ResponseVO houseList() {
-        List<House> list = null;
-        list = getAllHouses();
-        if (list.isEmpty()) {
-            return ControllerUtil.getFalseResultMsgBySelf("当前无房屋数据");
-        }
-        return ControllerUtil.getDataResult(list);
     }
 
     @Override
