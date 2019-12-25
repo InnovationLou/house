@@ -189,8 +189,8 @@ public class House {
 	 * 宽带
 	 * default value: 0
 	 */
-	@Column(name = "has_bordband", nullable = true)
-	private Integer hasBordband;
+	@Column(name = "has_boradband", nullable = true)
+	private Integer hasBoradband;
 
 	/**
 	 * 衣柜
@@ -200,7 +200,7 @@ public class House {
 	private Integer hasWardrobe;
 
 	/**
-	 * 煤气
+	 * 天然气
 	 * default value: 0
 	 */
 	@Column(name = "has_gas", nullable = true)
