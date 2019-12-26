@@ -50,4 +50,11 @@ public class Message {
 	@Column(name = "gmt_create", nullable = true)
 	@CreatedDate
 	private java.util.Date gmtCreate;
+
+	/**
+	 * 修改时间
+	 */
+	@Column(name = "gmt_modify",nullable = true)
+	@LastModifiedDate
+	private java.util.Date gmtModify;
 }
