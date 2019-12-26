@@ -270,7 +270,7 @@ public class UserServiceImpl implements UserService {
         // 检查sign
         if (WePayUtil.checkSign(request, openId) == false) {
             log.info("sign不正确");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("sign不正确");
         }
         //取出需要的参数
 
@@ -314,7 +314,7 @@ public class UserServiceImpl implements UserService {
             User user = findByToken(token);
             if (user == null) {
                 log.info("token不存在");
-                return null;
+                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
             }
             Integer userId = user.getId();
             Collection collection = new Collection();
@@ -324,7 +324,7 @@ public class UserServiceImpl implements UserService {
             return ControllerUtil.getDataResult("收藏成功");
         } catch (Exception e) {
             log.info("添加收藏记录失败");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("添加收藏记录失败");
         }
 
     }
@@ -335,7 +335,7 @@ public class UserServiceImpl implements UserService {
             User user = findByToken(token);
             if (user == null) {
                 log.info("token不存在");
-                return null;
+                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
             }
             Integer userId = user.getId();
             List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit, start);
@@ -356,7 +356,7 @@ public class UserServiceImpl implements UserService {
             User user = findByToken(token);
             if (user == null) {
                 log.info("token不存在");
-                return null;
+                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
             }
             List result = new ArrayList();
             List<Bill> bills = billRepository.findByUserId(user.getId());
@@ -366,17 +366,15 @@ public class UserServiceImpl implements UserService {
                 System.out.println("bill: " + bill.toString());
                 Optional<House> house = houseRepository.findById(bill.getHouseId());
                 System.out.println(house.toString());
-                map.put("houseInfo",house.get().getHouseInfo());
-                map.put("cashType",house.get().getCashType());
-                map.put("houseType",house.get().getHouseType());
-                map.put("payItem",bill.getPayItem());
-                map.put("money",bill.getMoney());
-                map.put("gmtCreate",bill.getGmtCreate());
-                map.put("isPaid",bill.getIsPaid());
-                map.put("remark",bill.getRemark());
-
+                map.put("houseInfo", house.get().getHouseInfo());
+                map.put("cashType", house.get().getCashType());
+                map.put("houseType", house.get().getHouseType());
+                map.put("payItem", bill.getPayItem());
+                map.put("money", bill.getMoney());
+                map.put("gmtCreate", bill.getGmtCreate());
+                map.put("isPaid", bill.getIsPaid());
+                map.put("remark", bill.getRemark());
                 result.add(map);
-
             }
             return ControllerUtil.getDataResult(result);
         } catch (Exception e) {
@@ -389,33 +387,32 @@ public class UserServiceImpl implements UserService {
         User user = findByToken(token);
         if (user == null) {
             log.info("token不存在");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
         }
         if (user.getLandlord() == 0) {
             List result = new ArrayList<>();
             List<HouseSign> houseSigns = houseSignRepository.findByUserId(user.getId());
-            System.out.println("houseSign:"+houseSigns.toString());
+            System.out.println("houseSign:" + houseSigns.toString());
             for (HouseSign houseSign : houseSigns) {
                 Optional<House> house = houseRepository.findById(houseSign.getHouseId());
-                Map<String,Object> map = new HashMap<>();
-                map.put("cashType",house.get().getCash());
-                map.put("houseInfo",house.get().getHouseInfo());
-                map.put("houseType",house.get().getHouseType());
-                map.put("gmtCreate",houseSign.getGmtCreate());
-                map.put("endCreate",houseSign.getEndCreate());
-                map.put("expDate",houseSign.getExpDate());
+                Map<String, Object> map = new HashMap<>();
+                map.put("cashType", house.get().getCash());
+                map.put("houseInfo", house.get().getHouseInfo());
+                map.put("houseType", house.get().getHouseType());
+                map.put("gmtCreate", houseSign.getGmtCreate());
+                map.put("endCreate", houseSign.getEndCreate());
+                map.put("expDate", houseSign.getExpDate());
                 //履行状态：当前日期.compareTo(截止日期)  = 0, < -1, > 1
                 if (new Date().compareTo(houseSign.getEndCreate()) > 0 && houseSign.getIsFulfill() != 0) {
                     houseSign.setIsFulfill(WxPayConfig.HOUSE_NOT_FULFILL);
                     houseSignRepository.save(houseSign);
                 }
-                map.put("isFulFill",houseSign.getIsFulfill());
+                map.put("isFulFill", houseSign.getIsFulfill());
                 result.add(map);
             }
             return ControllerUtil.getDataResult(result);
         }
         return null;
     }
-
 
 }

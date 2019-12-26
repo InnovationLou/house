@@ -94,9 +94,9 @@ public class WxPayServiceImpl implements WxPayService {
         HouseOrder houseOrder = new HouseOrder();
         try {
             try {
-                Integer lease =Integer.valueOf(request.getParameter("lease")) ;
+                Integer lease = Integer.valueOf(request.getParameter("lease"));
                 houseOrder.setLease(lease);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.info("不是租房订单");
             }
             houseOrder.setTotalFee(money);
@@ -110,7 +110,7 @@ public class WxPayServiceImpl implements WxPayService {
             System.out.println("Openid:" + user.getOpenId() + "order表添加成功");
         } catch (Exception e) {
             log.error("用户表无此OpenID，添加失败");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("用户表无此OpenID，添加失败");
         }
 
         Map<String, String> reqParams = new HashMap<>();
@@ -159,7 +159,7 @@ public class WxPayServiceImpl implements WxPayService {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("mapToXml失败");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("mapToXml失败");
         }
 
         //统一向微信后台下单，返回预支付的订单信息String
@@ -171,8 +171,8 @@ public class WxPayServiceImpl implements WxPayService {
             System.out.println("map:" + map);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("xmlToMap失败");
-            return null;
+            System.out.println("mapToXml失败");
+            return ControllerUtil.getFalseResultMsgBySelf("mapToXml失败");
         }
         String return_code = (String) map.get("return_code");//返回状态码
         String result_code = (String) map.get("result_code");//返回状态码
@@ -235,7 +235,7 @@ public class WxPayServiceImpl implements WxPayService {
             if (houseOrder != null) {
                 try {
                     //此账单若是cash房租类，并且有记录数
-                    if (houseOrder.getLease()!=null && houseOrder.getPayItem()=="cash"){
+                    if (houseOrder.getLease() != null && houseOrder.getPayItem() == "cash") {
                         HouseSign houseSign = new HouseSign();
                         houseSign.setId(houseOrder.getUserId());
                         houseSign.setHouseId(houseOrder.getHouseId());
@@ -243,7 +243,7 @@ public class WxPayServiceImpl implements WxPayService {
                         houseSign.setExpDate(houseOrder.getLease());
                         //结束日期：起止日期+有效期
                         Calendar calendar = Calendar.getInstance();
-                        calendar.add(calendar.MONTH,houseOrder.getLease());
+                        calendar.add(calendar.MONTH, houseOrder.getLease());
                         houseSign.setEndCreate(calendar.getTime());
                         houseSign.setIsFulfill(WxPayConfig.HOUSE_IS_FULFILL);
                         houseSignRepository.save(houseSign);
@@ -277,7 +277,7 @@ public class WxPayServiceImpl implements WxPayService {
 
             return ControllerUtil.getFalseResultMsgBySelf("没有此订单信息");
         }
-        return null;
+        return ControllerUtil.getFalseResultMsgBySelf("订单返回结果失败");
     }
 
     /**
@@ -416,7 +416,7 @@ public class WxPayServiceImpl implements WxPayService {
         String openId = user.getOpenId();
         if (WePayUtil.checkSign(request, openId) == false) {
             log.info("sign不正确");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("sign不正确");
         }
 
         try {
@@ -471,10 +471,10 @@ public class WxPayServiceImpl implements WxPayService {
                 return ControllerUtil.getDataResult(resultEntity);
             } catch (Exception e) {
                 log.error("emmm调用WePayUtil.doTransfers出现了异常:{msg}", e.getMessage());
-                return null;
+                return ControllerUtil.getFalseResultMsgBySelf("接口调用异常");
             }
         } catch (Exception e) {
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("参数提取失败");
         }
     }
 
@@ -491,12 +491,12 @@ public class WxPayServiceImpl implements WxPayService {
         Optional<User> user = userRepository.findById(Integer.valueOf(request.getParameter("userId")));
         if (!user.isPresent()) {
             log.info("查找userId失败");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("查找userId失败");
         }
         String openId = user.get().getOpenId();
         if (WePayUtil.checkSign(request, openId) == false) {
             log.info("sign不正确");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("sign不正确");
         }
         System.out.println(user.toString());
         User saveUser = userRepository.findByOpenId(user.get().getOpenId());
@@ -509,7 +509,7 @@ public class WxPayServiceImpl implements WxPayService {
             userRepository.save(saveUser);
             return ControllerUtil.getDataResult(user);
         } catch (Exception e) {
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("保存时发生异常");
         }
     }
 
