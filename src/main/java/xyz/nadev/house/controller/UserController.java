@@ -7,13 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
-import xyz.nadev.house.service.HouseRepairService;
-import xyz.nadev.house.service.HouseService;
-import xyz.nadev.house.service.UserService;
-import xyz.nadev.house.service.WxPayService;
+import xyz.nadev.house.service.*;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @Slf4j
 
@@ -29,6 +27,9 @@ public class UserController {
 
     @Autowired
     HouseRepairService repairService;
+
+    @Autowired
+    MessageService messageService;
 
     @Autowired
     WxPayService wxPayService;
@@ -125,5 +126,11 @@ public class UserController {
     public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, House house, String phone, String content,
                                    HouseRepairImg img){
         return repairService.uploadRepair(token, house, phone, content,img);
+    }
+
+    @ApiOperation("获得一段时间内的系统通知")
+    @GetMapping("/notifier/{days}")
+    public ResponseVO getNotifiesInMonth(@PathVariable Integer days){
+        return messageService.getNotifies(days);
     }
 }
