@@ -3,6 +3,7 @@ package xyz.nadev.house.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.nadev.house.Enum.ImMsgTypeEnum;
 import xyz.nadev.house.comparator.ImMsgComparator;
 import xyz.nadev.house.entity.ImMsg;
@@ -55,7 +56,7 @@ public class ImMsgServiceImpl implements ImMsgService {
             return ControllerUtil.getFalseResultMsgBySelf("用户信息校验错误, 无法获取用户的消息列表");
         }
         List<ImMsg> msgs = imMsgRepository
-                .findAllByReadFalseAndReceiverIdEqualsAnAndSenderIdEquals(userId,senderId);
+                .findAllByReadFalseAndReceiverIdAndSenderId(userId,senderId);
         for (ImMsg msg :
                 msgs) {
             msg.setRead(true);
@@ -73,12 +74,16 @@ public class ImMsgServiceImpl implements ImMsgService {
 
     @Override
     public ResponseVO searchHistoryMsg(String authorization, Date start, Date end, Integer thatId) {
+        if (null == start || null == end){
+            start = new Date(new Date().getTime() - 7 * 86400000l);// 默认历史记录7天
+            end = new Date();
+        }
         int thisId = dataValidate(authorization);
         if (thisId == -1 || null == thatId){
             return ControllerUtil.getFalseResultMsgBySelf(
                     (thisId == -1)?"未查询到接收者信息":"sender is null" + thatId);
         }
-        List<ImMsg> imMsgs = imMsgRepository.findAllByReceiverIdAndSenderId(thisId, thatId);
+        List<ImMsg> imMsgs = imMsgRepository.findAllBySenderIdAndReceiverId(thisId, thatId);
         List<ImMsg> imMsgs1 = imMsgRepository.findAllBySenderIdAndReceiverId(thatId, thisId);
         imMsgs.addAll(imMsgs1);
         // 按照时间规则排序
@@ -99,7 +104,10 @@ public class ImMsgServiceImpl implements ImMsgService {
 
     @Override
     public ResponseVO getChaterListAndLatestWords(String authorization) {
-        int userId = dataValidate(authorization);
+        int userId;
+        // 测试时留下的一道后门@ _ @ 2019-12-25 上午
+        // 去掉后门 2019-12-25 下午
+        userId = /*!authorization.equals("dv5svsvPYA")?*/dataValidate(authorization)/*:9*/;
         if (userId == -1){
             return ControllerUtil.getFalseResultMsgBySelf("错误，没有用户信息");
         }
@@ -109,7 +117,6 @@ public class ImMsgServiceImpl implements ImMsgService {
         // 作为接收消息的人, 有哪些人给我发过消息
         msgsAsRcvr.addAll(msgsAsSender);
         HashSet<Integer> friendIds = new HashSet<>();
-
         // 这里的msgs是合并后的msgs
         for (ImMsg msg :
                 msgsAsRcvr) {
@@ -125,17 +132,56 @@ public class ImMsgServiceImpl implements ImMsgService {
         ImChatterWithLastest100MsgsVO imChatterWithLastest100MsgsVO;
         Iterator<Integer> it = friendIds.iterator();
         int friendId = -1;
-        User user;
+        User friend;
+        List<ImMsg> friendMsgs;
         while(it.hasNext()){
             //每个朋友都要去获取消息和个人信息
             friendId = it.next();
-            imChatterWithLastest100MsgsVO = new ImChatterWithLastest100MsgsVO();
-            user = userRepository.findById(userId);
-
+                    friend = userRepository.findById(friendId).get();
+            imChatterWithLastest100MsgsVO = setWithUser(friend);
+            friendMsgs = new ArrayList<>();
+            for (ImMsg msg :
+                    msgsAsRcvr) {
+                if (msg.getReceiverId() == friendId || msg.getSenderId() == friendId){
+                    friendMsgs.add(msg);
+                }
+            }
+            friendMsgs.sort(new ImMsgComparator());
+            //只要100条信息
+            List<ImMsg> imMsgsLimited100 = friendMsgs.subList(0,friendMsgs.size() > 100?100:friendMsgs.size());
+            //更改已读属性
+            boolean changed = false;
+            for (ImMsg msg :
+                    imMsgsLimited100) {
+                if (!msg.isRead()) {
+                    msg.setRead(true);
+                    changed = true;
+                }
+            }
+            if (changed){
+                imMsgRepository.saveAll(imMsgsLimited100);
+            }
+            imChatterWithLastest100MsgsVO.setLatest100Msgs(friendMsgs);
+            imChatterWithLastest100MsgsVOs.add(imChatterWithLastest100MsgsVO);
         }
+        return ControllerUtil.getDataResult(imChatterWithLastest100MsgsVOs);
+    }
 
+    // 不开事务注解会报错, 因为执行了两次删除操作, 需要事务支持
+    @Override
+    @Transactional
+    public ResponseVO deleteChatterAndMsg(String authorization, Integer thatId) {
+        if (null == thatId){
+            return ControllerUtil.getFalseResultMsgBySelf("thatId为空");
+        }
+        int userId = dataValidate(authorization);
+        if (userId == -1){
+            return ControllerUtil.getFalseResultMsgBySelf("该登录用户无效:" + userId);
+        }
+        imMsgRepository.deleteAllBySenderIdAndReceiverId(userId, thatId);
+        imMsgRepository.deleteAllBySenderIdAndReceiverId(thatId, userId);
+        return ControllerUtil.getSuccessResultBySelf("删除消息记录成功");
 
-        return null;
     }
 
 
@@ -186,11 +232,18 @@ public class ImMsgServiceImpl implements ImMsgService {
     }
 
     private ImChatterWithLastest100MsgsVO setWithUser(User user){
+        System.out.println(user.toString());
         if (user == null){
             return null;
         }
         ImChatterWithLastest100MsgsVO ic = new ImChatterWithLastest100MsgsVO();
-
+        ic.setAuth(user.getIsAuth() == 1?true:false);
+        ic.setCity(user.getCity());
+        ic.setId(user.getId());
+        ic.setImgUrl(null);
+        ic.setLandLord(user.getLandlord() == 1?true:false);
+        ic.setNickName(user.getNickName());
+        return ic;
     }
 
 }

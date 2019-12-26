@@ -45,4 +45,11 @@ public interface ImMsgService {
      */
     ResponseVO getChaterListAndLatestWords(String authorization);
 
+    /**
+     * 删除和这个用户的所有聊天记录
+     * @param authorization
+     * @param thatId
+     * @return
+     */
+    ResponseVO deleteChatterAndMsg(String authorization, Integer thatId);
 }

@@ -14,6 +14,8 @@ public class ImChatterWithLastest100MsgsVO {
 
     private String nickName;
 
+    private String imgUrl;
+
     private String city;
 
     private boolean landLord;
@@ -22,6 +24,14 @@ public class ImChatterWithLastest100MsgsVO {
 
     //最近100条聊天记录
     List<ImMsg> latest100Msgs;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public int getId() {
         return id;

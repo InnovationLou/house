@@ -3,6 +3,7 @@ package xyz.nadev.house.controller;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.service.ImMsgService;
 import xyz.nadev.house.service.TimService;
@@ -57,11 +58,11 @@ public class TimController {
         return imMsgService.receiveFreshMsg(Authorization, senderId);
     }
 
-    @ApiOperation(value = "根据传入的时间段信息 和发送者ID查询历史信息")
+    @ApiOperation(value = "根据传入的时间段信息 和发送者ID查询历史信息 时间段可以不传，默认查询目前往前推一天的聊天记录")
     @GetMapping("/msg/history")
     public ResponseVO getHistoryMsg(@RequestHeader String Authorization
-            , @RequestParam Date start
-            , @RequestParam Date end
+            , @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start
+            , @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end
             , @RequestParam Integer senderId){
         return imMsgService.searchHistoryMsg(Authorization, start, end, senderId);
     }
@@ -73,7 +74,10 @@ public class TimController {
     }
 
     //删除聊天朋友
-
-
+    @DeleteMapping("/chatter/{thatId}")
+    public ResponseVO deleteChatter(@RequestHeader String Authorization
+            ,@PathVariable Integer thatId){
+        return imMsgService.deleteChatterAndMsg(Authorization, thatId);
+    }
 
 }
