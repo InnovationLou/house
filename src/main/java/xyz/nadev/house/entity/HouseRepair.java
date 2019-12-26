@@ -37,6 +37,12 @@ public class HouseRepair {
 	private Integer houseId;
 
 	/**
+	 * 申请报修的用户id
+	 */
+	@Column(name = "user_id",nullable = false)
+	private Integer userId;
+
+	/**
 	 * 联系电话
 	 * default value: null
 	 */

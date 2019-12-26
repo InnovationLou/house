@@ -46,4 +46,8 @@ public class HouseController {
     public ResponseVO browsedHouses(Integer userId) {
         return houseService.getBrowsedHouses(userId);
     }
+
+    @ApiOperation("当前租了哪些房")
+    @GetMapping("/user")
+    public ResponseVO userRelatedHouse(@RequestHeader("Authorization")String token){return houseService.getRelatedHouse(token);}
 }

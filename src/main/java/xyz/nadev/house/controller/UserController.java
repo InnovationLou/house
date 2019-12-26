@@ -4,7 +4,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xyz.nadev.house.entity.House;
+import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
+import xyz.nadev.house.service.HouseRepairService;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
@@ -22,10 +25,13 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    WxPayService wxPayService;
+    HouseService houseService;
 
     @Autowired
-    HouseService houseService;
+    HouseRepairService repairService;
+
+    @Autowired
+    WxPayService wxPayService;
 
 
     @ApiOperation(value = "检查token是否过期")
@@ -101,4 +107,23 @@ public class UserController {
         return userService.getUserHouse(token);
     }
 
+
+    @ApiOperation("房东房源列表")
+    @GetMapping("/house")
+    public ResponseVO rentHouseList(@RequestHeader("Authorization")String token,Boolean isLandlord){
+        return houseService.rentHouseList(isLandlord,token);
+    }
+
+    @ApiOperation("获取所有报修")
+    @GetMapping("/repair")
+    public ResponseVO getRepairList(@RequestHeader("Authorization")String token){
+        return repairService.getRepairListByUserToken(token);
+    }
+
+    @ApiOperation("上传报修")
+    @PutMapping("/repair")
+    public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, House house, String phone, String content,
+                                   HouseRepairImg img){
+        return repairService.uploadRepair(token, house, phone, content,img);
+    }
 }
