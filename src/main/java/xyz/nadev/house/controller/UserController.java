@@ -13,7 +13,6 @@ import xyz.nadev.house.vo.ResponseVO;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
-
 @RestController
 @RequestMapping("/user")
 public class UserController {

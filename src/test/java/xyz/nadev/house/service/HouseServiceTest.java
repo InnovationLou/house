@@ -63,6 +63,8 @@ class HouseServiceTest {
     void getCollectedHouses() {
 //        Integer userId = 10001;
 //        System.out.println(houseService.getCollectedHouses(userId));
+        Integer userId = 10001;
+        System.out.println(houseService.getCollectedHouses(userId.toString()));
     }
 
     @Test

@@ -16,4 +16,9 @@ class TimServiceTest {
     void genUserSig() {
         System.out.println(timService.genUserSig("xiangning"));
     }
+
+    @Test
+    void getMessage(){
+
+    }
 }
