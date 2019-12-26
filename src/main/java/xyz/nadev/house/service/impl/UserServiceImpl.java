@@ -374,6 +374,7 @@ public class UserServiceImpl implements UserService {
                 map.put("gmtCreate", bill.getGmtCreate());
                 map.put("isPaid", bill.getIsPaid());
                 map.put("remark", bill.getRemark());
+                map.put("dead_date",bill.getDeadDate());
                 result.add(map);
             }
             return ControllerUtil.getDataResult(result);

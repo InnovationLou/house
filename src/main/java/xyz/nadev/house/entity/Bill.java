@@ -84,6 +84,9 @@ public class Bill {
 	 * default value: null
 	 */
 	@Column(name = "gmt_create", nullable = true)
-	private java.sql.Time gmtCreate;
+	private java.util.Date  gmtCreate;
+
+	@Column(name = "dead_date", nullable = true)
+	private java.util.Date  deadDate;
 
 }
