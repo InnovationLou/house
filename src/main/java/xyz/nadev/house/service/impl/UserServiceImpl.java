@@ -2,6 +2,7 @@ package xyz.nadev.house.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,24 +13,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import xyz.nadev.house.config.WxPayConfig;
-import xyz.nadev.house.entity.User;
-import xyz.nadev.house.entity.Withdraw;
-import xyz.nadev.house.repository.HouseOrderRepository;
-import xyz.nadev.house.repository.UserRepository;
-import xyz.nadev.house.repository.WithdrawRepository;
+import xyz.nadev.house.entity.Collection;
+import xyz.nadev.house.entity.*;
+import xyz.nadev.house.repository.*;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.util.UUIDUtil;
+import xyz.nadev.house.util.WePayUtil;
 import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -44,6 +42,9 @@ public class UserServiceImpl implements UserService {
     RedisTemplate<String, String> redisTemplate;
 
     @Autowired
+    BrowseRepository browseRepository;
+
+    @Autowired
     WithdrawRepository withdrawRepository;
 
     @Autowired
@@ -51,6 +52,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     WxPayServiceImpl wxPayServiceImpl;
+
+    @Autowired
+    CollectionRepository collectionRepository;
+
+    @Autowired
+    HouseRepository houseRepository;
+
+    @Autowired
+    BillRepository billRepository;
 
     @Autowired
     UserRepository resp;
@@ -166,6 +176,18 @@ public class UserServiceImpl implements UserService {
         String openId = redisTemplate.opsForValue().get(token);
         if (openId == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         User old = findByOpenId(openId);
+        user.setOpenId(null);
+        user.setId(null);
+        user.setIsAuth(null);
+
+        if (old.getIsAuth() != 0) {
+            if (StringUtils.isNotBlank(user.getIdCardBackImg())
+                    || StringUtils.isNotBlank(user.getIdCardFrontImg())) {
+                return ControllerUtil.getFalseResultMsgBySelf("不能重复提交认证信息");
+            }
+        }
+
+
         EntityUtil.update(user, old);
         resp.save(user);
         return ControllerUtil.getSuccessResultBySelf("修改成功");
@@ -224,32 +246,36 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseVO getUserInfo(String token) {
-        User user = findByToken(token);
-        // 抹去openId
-        if (user != null) {
-            user.setOpenId(null);
-        }
-        return ControllerUtil.getSuccessResultBySelf(user);
+        return ControllerUtil.getSuccessResultBySelf(findByToken(token));
     }
 
     /**
      * 用于用户发起提现
      *
      * @param token
-     * @param money
+     * @param request
      * @return
      */
     @Override
-    public ResponseVO launchWithdraw(String token, BigDecimal money, String wxid) {
+    public ResponseVO launchWithdraw(String token, HttpServletRequest request) throws Exception {
         //用token拿到当前用户信息
         User user = findByToken(token);
         if (user == null) {
             log.info("token不存在");
             return null;
         }
-        Withdraw withdraw = new Withdraw();
         String openId = user.getOpenId();
+        // 检查sign
+        if (WePayUtil.checkSign(request, openId) == false) {
+            log.info("sign不正确");
+            return null;
+        }
+        //取出需要的参数
+
+        Withdraw withdraw = new Withdraw();
         try {
+            BigDecimal money = BigDecimal.valueOf(Double.valueOf(request.getParameter("money")));
+            String wxId = request.getParameter("wxId");
             //price1.compareTo()price2
             //price1 大于price2返回1，price1 等于price2返回0，price1 小于price2返回-1
             if (money.compareTo(user.getMoney()) == 1) {
@@ -264,7 +290,7 @@ public class UserServiceImpl implements UserService {
             //保存提现表信息
             withdraw.setGmtCreate(new Date());
             withdraw.setGmtModify(new Date());
-            withdraw.setWxId(wxid);
+            withdraw.setWxId(wxId);
             withdraw.setOpenId(openId);
             withdraw.setMoney(money);
             withdraw.setWithdrawMent(withdrawMent);
@@ -277,6 +303,80 @@ public class UserServiceImpl implements UserService {
             return ControllerUtil.getFalseResultMsgBySelf("保存错误");
         }
         return ControllerUtil.getDataResult(withdraw);
+    }
+
+    @Override
+    public ResponseVO addUserColleection(String token, Integer houseId) {
+        try {
+            //用token拿到当前用户信息（UserId）
+            User user = findByToken(token);
+            if (user == null) {
+                log.info("token不存在");
+                return null;
+            }
+            Integer userId = user.getId();
+            Collection collection = new Collection();
+            collection.setUserId(userId);
+            collection.setHouseId(houseId);
+            collectionRepository.save(collection);
+            return ControllerUtil.getDataResult("收藏成功");
+        } catch (Exception e) {
+            log.info("添加收藏记录失败");
+            return null;
+        }
+
+    }
+
+    @Override
+    public ResponseVO getUserBrowse(String token, Integer limit, Integer start) {
+        try{
+            User user = findByToken(token);
+            if (user == null) {
+                log.info("token不存在");
+                return null;
+            }
+            Integer userId = user.getId();
+            List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit,start);
+            List result = new ArrayList<>();
+            for (Browse browse:browses){
+                Optional house = houseRepository.findById(browse.getHouseId());
+                result.add(house);
+            }
+            return ControllerUtil.getDataResult(result);
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public ResponseVO getUserBill(String token) {
+        try {
+            User user = findByToken(token);
+            if (user == null) {
+                log.info("token不存在");
+                return null;
+            }
+            List result = new ArrayList();
+            List<Bill> bills = billRepository.findByUserId(user.getId());
+            for (Bill bill:bills){
+                List list = new ArrayList();
+                System.out.println("bill: "+bill.toString());
+                Optional<House> house = houseRepository.findById(bill.getHouseId());
+                System.out.println(house.toString());
+                list.add(house.get().getHouseInfo());
+                list.add(house.get().getCashType());
+                list.add(bill.getPayItem());
+                list.add(bill.getMoney());
+                list.add(bill.getGmtCreate());
+                list.add(bill.getIsPaid());
+                list.add(bill.getRemark());
+                result.add(list);
+
+            }
+            return ControllerUtil.getDataResult(result);
+        }catch (Exception e){
+            return null ;
+        }
     }
 
 

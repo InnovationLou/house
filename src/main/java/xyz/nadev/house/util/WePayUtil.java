@@ -686,6 +686,31 @@ public class WePayUtil {
     }
 
 
+    /**
+     * 检查签名的工具
+     * @param request
+     * @return
+     */
+    public static Boolean checkSign(HttpServletRequest request,String openid) throws Exception {
+        Boolean flag= false;
+        String sign = request.getParameter("sign");//签名
+        System.out.println("获得传入的sign为："+sign);
+
+        //检查sigin是否过期
+        Enumeration<?> pNames =  request.getParameterNames();
+        Map<String, String> params = new HashMap<String, String>();
+        while (pNames.hasMoreElements()) {
+            String pName = (String) pNames.nextElement();
+            if("sign".equals(pName)) continue;//sign 在生成签名前应该是不参与排序的,就不放进来了
+            String pValue = (String)request.getParameter(pName);
+            params.put(pName, pValue);
+        }
+        System.out.println("生成的sign："+generateSignature(params, openid));
+        if(sign.equals(generateSignature(params, openid))){
+            flag = true;
+        }
+        return flag;
+    }
 
 
 
