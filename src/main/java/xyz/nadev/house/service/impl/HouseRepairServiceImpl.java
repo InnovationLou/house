@@ -40,15 +40,15 @@ public class HouseRepairServiceImpl implements HouseRepairService {
 	}
 
 	@Override
-	public ResponseVO uploadRepair(String token, House house, String phone, String content, HouseRepairImg img) {
+	public ResponseVO uploadRepair(String token, Integer houseId, String phone,Date repairTime, String content, HouseRepairImg img) {
 		User user=userService.findByToken(token);
 		if(user==null){
 			return ControllerUtil.getFalseResultMsgBySelf("上传失败，非法操作");
 		}
 		HouseRepair repair=new HouseRepair();
 		repair.setContent(content);
-		repair.setGmtCreate(new Date());
-		repair.setHouseId(house.getId());
+		repair.setGmtCreate(repairTime);
+		repair.setHouseId(houseId);
 		repair.setPhone(phone);
 		repair.setStatus(0);
 		repair.setUserId(user.getId());
