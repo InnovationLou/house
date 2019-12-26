@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findByOpenId(String openId);
+    User findById(int userId);
 }

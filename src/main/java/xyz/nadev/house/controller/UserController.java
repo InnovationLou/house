@@ -12,7 +12,6 @@ import xyz.nadev.house.vo.ResponseVO;
 import java.math.BigDecimal;
 
 @Slf4j
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
