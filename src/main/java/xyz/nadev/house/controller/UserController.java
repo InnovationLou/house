@@ -11,6 +11,7 @@ import xyz.nadev.house.service.*;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @Slf4j
 
@@ -122,9 +123,9 @@ public class UserController {
 
     @ApiOperation("上传报修")
     @PutMapping("/repair")
-    public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, House house, String phone, String content,
+    public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, Integer houseId, String phone, Date repairTime, String content,
                                    HouseRepairImg img){
-        return repairService.uploadRepair(token, house, phone, content,img);
+        return repairService.uploadRepair(token, houseId, phone,repairTime, content,img);
     }
 
     @ApiOperation("获得一段时间内的系统通知")
