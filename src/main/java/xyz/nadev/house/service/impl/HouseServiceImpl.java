@@ -14,6 +14,7 @@ import xyz.nadev.house.repository.BrowseRepository;
 import xyz.nadev.house.repository.CollectionRepository;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
+import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 

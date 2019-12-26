@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
+import xyz.nadev.house.service.HouseRepairService;
+import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.vo.ResponseVO;
