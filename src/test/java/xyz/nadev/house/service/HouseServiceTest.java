@@ -61,8 +61,8 @@ class HouseServiceTest {
 
     @Test
     void getCollectedHouses() {
-        Integer userId = 10001;
-        System.out.println(houseService.getCollectedHouses(userId));
+//        Integer userId = 10001;
+//        System.out.println(houseService.getCollectedHouses(userId));
     }
 
     @Test

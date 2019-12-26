@@ -18,18 +18,18 @@ import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
+
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class HouseServiceImpl implements HouseService {
+
     @Autowired
     private HouseRepository resp;
 
@@ -41,9 +41,11 @@ public class HouseServiceImpl implements HouseService {
 
     @Autowired
     UserService userService;
+
     @Autowired
     EntityManager entityManager;
 
+    private static final Integer SINGLE_PAGE_NUM = 10;
 
     @Override
     public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer price, Integer pageNum) {
@@ -52,6 +54,8 @@ public class HouseServiceImpl implements HouseService {
         if (pageNum == null) pageNum = 1;
 
         StringBuilder sqlStr = new StringBuilder("SELECT *");
+
+
         Double lat = house.getLat();
         Double lng = house.getLng();
 
@@ -211,22 +215,22 @@ public class HouseServiceImpl implements HouseService {
         } else
             // 默认距离排序
             sqlStr.append(" ORDER BY distance");
+
         Query query = entityManager.createNativeQuery(sqlStr.toString(), House.class);
 
         // 注入参数
         for (int i = 0; i < parmList.size(); i++) {
             query.setParameter(i + 1, parmList.get(i));
         }
-
-        query.setFirstResult((pageNum - 1) * 10);
-        query.setMaxResults(10);
-
+        query.setFirstResult((pageNum - 1) * SINGLE_PAGE_NUM);
+        query.setMaxResults(SINGLE_PAGE_NUM);
         List<House> result = query.getResultList();
 
         if (result.isEmpty()) {
             return ControllerUtil.getFalseResultMsgBySelf("未查找到数据");
         }
         return ControllerUtil.getSuccessResultBySelf(result);
+
     }
 
     @Override

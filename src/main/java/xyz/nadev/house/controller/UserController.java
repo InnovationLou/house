@@ -11,7 +11,6 @@ import xyz.nadev.house.service.*;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 @Slf4j
 
@@ -103,14 +102,14 @@ public class UserController {
     }
 
     @ApiOperation("用户查看自己签约信息")
-    @GetMapping("/house")
-    public ResponseVO getUserHouse(@RequestHeader("Authorization")String token){
-        return userService.getUserHouse(token);
+    @GetMapping("/sign")
+    public ResponseVO getSignInfo(@RequestHeader("Authorization")String token){
+        return userService.getSignInfo(token);
     }
 
 
     @ApiOperation("房东房源列表")
-    @GetMapping("/house")
+    @GetMapping("/landload/house")
     public ResponseVO rentHouseList(@RequestHeader("Authorization")String token,Boolean isLandlord){
         return houseService.rentHouseList(isLandlord,token);
     }

@@ -122,6 +122,6 @@ public interface UserService {
 
     ResponseVO getUserBill(String token);
 
-    ResponseVO getUserHouse(String token);
+    ResponseVO getSignInfo(String token);
 
 }

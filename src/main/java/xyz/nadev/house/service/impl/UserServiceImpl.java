@@ -385,7 +385,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseVO getUserHouse(String token) {
+    public ResponseVO getSignInfo(String token) {
         User user = findByToken(token);
         if (user == null) {
             log.info("token不存在");
