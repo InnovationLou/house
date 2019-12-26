@@ -95,10 +95,10 @@ public class UserController {
         return userService.getUserBill(token) ;
     }
 
-    @ApiOperation("")
+    @ApiOperation("用户查看自己签约信息")
     @GetMapping("/house")
-    public ResponseVO getUserHouse(){
-        return null;
+    public ResponseVO getUserHouse(@RequestHeader("Authorization")String token){
+        return userService.getUserHouse(token);
     }
 
 }

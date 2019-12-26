@@ -1,6 +1,5 @@
 package xyz.nadev.house.service;
 
-import org.springframework.web.bind.annotation.RequestHeader;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.vo.ResponseVO;
 
@@ -121,6 +120,8 @@ public interface UserService {
      */
     ResponseVO getUserBrowse(String token,Integer limit, Integer start);
 
-    ResponseVO getUserBill(@RequestHeader("Authorization")String token);
+    ResponseVO getUserBill(String token);
+
+    ResponseVO getUserHouse(String token);
 
 }

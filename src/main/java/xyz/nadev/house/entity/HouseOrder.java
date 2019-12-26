@@ -101,4 +101,6 @@ public class HouseOrder {
 	private String payItem;
 	@Column(name = "house_id")
 	private Integer houseId;
+	@Column(name = "lease")
+	private Integer lease;
 }

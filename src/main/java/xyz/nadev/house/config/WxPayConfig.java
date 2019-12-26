@@ -26,4 +26,6 @@ public class WxPayConfig {
     public static final Boolean WITHDRAW_ERROR = false;
     public static final Boolean FINISHED = true;
     public static final Boolean NOT_FINISHED = false;
+    public static final int HOUSE_IS_FULFILL = 1;
+    public static final int HOUSE_NOT_FULFILL = 0;
 }

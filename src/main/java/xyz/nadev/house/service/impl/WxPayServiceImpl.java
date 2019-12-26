@@ -20,10 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -70,6 +67,8 @@ public class WxPayServiceImpl implements WxPayService {
     RefundUserRepository refundUserRepository;
     @Autowired
     BillRepository billRepository;
+    @Autowired
+    HouseSignRepository houseSignRepository;
 
     /**
      * 用于微信统一下单，获得预支付信息
@@ -94,6 +93,12 @@ public class WxPayServiceImpl implements WxPayService {
         String openId = user.getOpenId();
         HouseOrder houseOrder = new HouseOrder();
         try {
+            try {
+                Integer lease =Integer.valueOf(request.getParameter("lease")) ;
+                houseOrder.setLease(lease);
+            }catch (Exception e){
+                log.info("不是租房订单");
+            }
             houseOrder.setTotalFee(money);
             houseOrder.setOutTradeNo(out_trade_no);
             houseOrder.setOpenId(openId);
@@ -204,6 +209,7 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public ResponseVO wxNotify(HttpServletRequest request) throws Exception {
         log.info("-------------开始操作HouseOrder--------------");
+        //支付成功后完成的逻辑目前是更改houseOrder的支付状态，加入Bill账单记录，加入HouseSign签约记录
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
         String line = null;
         StringBuilder sb = new StringBuilder();
@@ -228,6 +234,21 @@ public class WxPayServiceImpl implements WxPayService {
 
             if (houseOrder != null) {
                 try {
+                    //此账单若是cash房租类，并且有记录数
+                    if (houseOrder.getLease()!=null && houseOrder.getPayItem()=="cash"){
+                        HouseSign houseSign = new HouseSign();
+                        houseSign.setId(houseOrder.getUserId());
+                        houseSign.setHouseId(houseOrder.getHouseId());
+                        houseSign.setGmtCreate(new Date());
+                        houseSign.setExpDate(houseOrder.getLease());
+                        //结束日期：起止日期+有效期
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(calendar.MONTH,houseOrder.getLease());
+                        houseSign.setEndCreate(calendar.getTime());
+                        houseSign.setIsFulfill(WxPayConfig.HOUSE_IS_FULFILL);
+                        houseSignRepository.save(houseSign);
+
+                    }
                     houseOrder.setPrepayId(transaction_id);
                     //将订单支付状态设置为已支付
                     houseOrder.setGmtModify(new Date());

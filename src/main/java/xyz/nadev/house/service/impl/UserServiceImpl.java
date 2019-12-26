@@ -61,6 +61,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     BillRepository billRepository;
+    @Autowired
+    HouseSignRepository houseSignRepository;
 
     @Autowired
     UserRepository resp;
@@ -329,21 +331,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO getUserBrowse(String token, Integer limit, Integer start) {
-        try{
+        try {
             User user = findByToken(token);
             if (user == null) {
                 log.info("token不存在");
                 return null;
             }
             Integer userId = user.getId();
-            List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit,start);
+            List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit, start);
             List result = new ArrayList<>();
-            for (Browse browse:browses){
+            for (Browse browse : browses) {
                 Optional house = houseRepository.findById(browse.getHouseId());
                 result.add(house);
             }
             return ControllerUtil.getDataResult(result);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -358,25 +360,61 @@ public class UserServiceImpl implements UserService {
             }
             List result = new ArrayList();
             List<Bill> bills = billRepository.findByUserId(user.getId());
-            for (Bill bill:bills){
+            for (Bill bill : bills) {
                 List list = new ArrayList();
-                System.out.println("bill: "+bill.toString());
+                Map map = new HashMap();
+                System.out.println("bill: " + bill.toString());
                 Optional<House> house = houseRepository.findById(bill.getHouseId());
                 System.out.println(house.toString());
-                list.add(house.get().getHouseInfo());
-                list.add(house.get().getCashType());
-                list.add(bill.getPayItem());
-                list.add(bill.getMoney());
-                list.add(bill.getGmtCreate());
-                list.add(bill.getIsPaid());
-                list.add(bill.getRemark());
-                result.add(list);
+                map.put("houseInfo",house.get().getHouseInfo());
+                map.put("cashType",house.get().getCashType());
+                map.put("houseType",house.get().getHouseType());
+                map.put("payItem",bill.getPayItem());
+                map.put("money",bill.getMoney());
+                map.put("gmtCreate",bill.getGmtCreate());
+                map.put("isPaid",bill.getIsPaid());
+                map.put("remark",bill.getRemark());
+
+                result.add(map);
 
             }
             return ControllerUtil.getDataResult(result);
-        }catch (Exception e){
-            return null ;
+        } catch (Exception e) {
+            return null;
         }
+    }
+
+    @Override
+    public ResponseVO getUserHouse(String token) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return null;
+        }
+        if (user.getLandlord() == 0) {
+            List result = new ArrayList<>();
+            List<HouseSign> houseSigns = houseSignRepository.findByUserId(user.getId());
+            System.out.println("houseSign:"+houseSigns.toString());
+            for (HouseSign houseSign : houseSigns) {
+                Optional<House> house = houseRepository.findById(houseSign.getHouseId());
+                Map<String,Object> map = new HashMap<>();
+                map.put("cashType",house.get().getCash());
+                map.put("houseInfo",house.get().getHouseInfo());
+                map.put("houseType",house.get().getHouseType());
+                map.put("gmtCreate",houseSign.getGmtCreate());
+                map.put("endCreate",houseSign.getEndCreate());
+                map.put("expDate",houseSign.getExpDate());
+                //履行状态：当前日期.compareTo(截止日期)  = 0, < -1, > 1
+                if (new Date().compareTo(houseSign.getEndCreate()) > 0 && houseSign.getIsFulfill() != 0) {
+                    houseSign.setIsFulfill(WxPayConfig.HOUSE_NOT_FULFILL);
+                    houseSignRepository.save(houseSign);
+                }
+                map.put("isFulFill",houseSign.getIsFulfill());
+                result.add(map);
+            }
+            return ControllerUtil.getDataResult(result);
+        }
+        return null;
     }
 
 
