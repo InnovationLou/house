@@ -239,7 +239,6 @@ public class HouseServiceImpl implements HouseService {
     }
 
 
-
     @Override
     public ResponseVO addHouse(House house) {
         House newAdd = resp.save(house);
@@ -263,7 +262,7 @@ public class HouseServiceImpl implements HouseService {
         }
         try {
             //用token拿到当前用户信息（UserId）
-            User user =userService.findByToken(token);
+            User user = userService.findByToken(token);
             if (user == null) {
                 log.info("token不存在");
                 return null;
@@ -273,7 +272,7 @@ public class HouseServiceImpl implements HouseService {
             browse.setUserId(userId);
             browse.setHouseId(id);
             browseRepository.save(browse);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("保存该用户游览记录失败");
         }
         return ControllerUtil.getSuccessResultBySelf(house.get());
@@ -289,7 +288,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public ResponseVO getCollectedHouses(String  token) {
+    public ResponseVO getCollectedHouses(String token) {
 
         User user = userService.findByToken(token);
         if (user == null) {
@@ -297,9 +296,9 @@ public class HouseServiceImpl implements HouseService {
             return null;
         }
         Integer userId = user.getId();
-        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
-        List<Optional<House>> houseList=new ArrayList<>();
-        for (Collection c: collections) {
+        List<Collection> collections = collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList = new ArrayList<>();
+        for (Collection c : collections) {
             houseList.add(resp.findById(c.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
@@ -307,23 +306,23 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO getBrowsedHouses(Integer userId) {
-        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
+        List<Browse> history = browseRepository.findBrowsesByUserId(userId);
 //        List<Browse> history=browseRepository.getBrowseByUserId(userId, limit,start);
-        List houseList=new ArrayList();
-        for (Browse b: history
-             ) {
+        List houseList = new ArrayList();
+        for (Browse b : history
+        ) {
             houseList.add(resp.findById(b.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
     }
 
     @Override
-    public ResponseVO rentHouseList(Boolean isLandlord, String token) {
-        User user=userService.findByToken(token);
-        if(user==null){
+    public ResponseVO rentHouseList(String token) {
+        User user = userService.findByToken(token);
+        if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf("非法操作");
         }
-        if(isLandlord==false){
+        if (user.getLandlord() != 1) {
             return ControllerUtil.getFalseResultMsgBySelf("请先认证房东");
         }
         return ControllerUtil.getDataResult(resp.findByUserId(user.getId()));
@@ -331,8 +330,8 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO getRelatedHouse(String token) {
-        User user=userService.findByToken(token);
-        if(user==null){
+        User user = userService.findByToken(token);
+        if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf("非法操作");
         }
         return ControllerUtil.getDataResult(resp.findHousesByTenantId(user.getId()));

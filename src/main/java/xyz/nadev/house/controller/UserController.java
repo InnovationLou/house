@@ -110,8 +110,8 @@ public class UserController {
 
     @ApiOperation("房东房源列表")
     @GetMapping("/landload/house")
-    public ResponseVO rentHouseList(@RequestHeader("Authorization")String token,Boolean isLandlord){
-        return houseService.rentHouseList(isLandlord,token);
+    public ResponseVO rentHouseList(@RequestHeader("Authorization")String token){
+        return houseService.rentHouseList(token);
     }
 
     @ApiOperation("获取所有报修")
