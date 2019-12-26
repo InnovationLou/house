@@ -138,4 +138,11 @@ public class User {
 	 */
 	@Column(name = "handwritten_signature", nullable = true)
 	private String handwrittenSignature;
+
+	/**
+	 * 是否身份认证
+	 * default value: null
+	 */
+	@Column(name = "is_auth", nullable = true)
+	private Integer isAuth;
 }

@@ -1,10 +1,11 @@
 package xyz.nadev.house.service;
 
+import org.springframework.web.bind.annotation.RequestHeader;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.vo.ResponseVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {
@@ -98,9 +99,28 @@ public interface UserService {
     /**
      * 用于用户发起提现
      * @param token
-     * @param money
+     * @param  request
      * @return
      */
-    ResponseVO launchWithdraw(String token, BigDecimal money ,String wxid);
+    ResponseVO launchWithdraw(String token, HttpServletRequest request) throws Exception;
+
+    /**
+     * 用户添加收藏信息
+     * @param token
+     * @param houseId
+     * @return
+     */
+    ResponseVO addUserColleection(String token,Integer houseId);
+
+    /**
+     * 查看自己游览历史
+     * @param token
+     * @param limit
+     * @param start
+     * @return
+     */
+    ResponseVO getUserBrowse(String token,Integer limit, Integer start);
+
+    ResponseVO getUserBill(@RequestHeader("Authorization")String token);
 
 }

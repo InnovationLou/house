@@ -18,14 +18,14 @@ public class HouseController {
 
     @ApiOperation("条件筛选房屋")
     @GetMapping("")
-    public ResponseVO getHouse(House house, Integer distance, Integer latest, Integer page) {
-        return houseService.findByCondition(house, distance, latest, page);
+    public ResponseVO getHouse(House house, Integer distance, Integer latest, Integer price, Integer page) {
+        return houseService.findByCondition(house, distance, latest, price, page);
     }
 
     @ApiOperation("通过id查house")
     @GetMapping("/{id}")
-    public ResponseVO getHouseById(@PathVariable Integer id) {
-        return houseService.getHouseById(id);
+    public ResponseVO getHouseById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        return houseService.getHouseById(token, id);
     }
 
     @ApiOperation("新增房源信息")
@@ -38,5 +38,12 @@ public class HouseController {
     @PutMapping("")
     public ResponseVO modifyHouse(House house) {
         return houseService.modifyHouse(house);
+    }
+
+
+    @ApiOperation("获取用户浏览过的房源")
+    @GetMapping("/browse")
+    public ResponseVO browsedHouses(Integer userId) {
+        return houseService.getBrowsedHouses(userId);
     }
 }

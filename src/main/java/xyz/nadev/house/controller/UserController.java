@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
+import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.vo.ResponseVO;
 
-import java.math.BigDecimal;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     WxPayService wxPayService;
+
+    @Autowired
+    HouseService houseService;
 
 
     @ApiOperation(value = "检查token是否过期")
@@ -55,14 +59,45 @@ public class UserController {
 
     @ApiOperation("用户发起提现请求")
     @PostMapping("/launchWithdraw")
-    public ResponseVO register(@RequestHeader("Authorization")String token, BigDecimal money, String wxId) {
+    public ResponseVO register(@RequestHeader("Authorization")String token,String sign, Double money, HttpServletRequest request) throws Exception {
         //人工打款，由用户自己输入自己微信号
-        return userService.launchWithdraw(token, money,wxId);
+        return userService.launchWithdraw(token,request);
     }
 
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
-    public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String outTradeNo){
-        return wxPayService.doRefund(outTradeNo, token);
+    public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String sign,String outTradeNo,HttpServletRequest request) throws Exception {
+        return wxPayService.doRefund(token,request);
     }
+
+    @ApiOperation("用户添加收藏房源信息")
+    @PostMapping("/star/house/{houseId}")
+    public ResponseVO collectHouse(@RequestHeader("Authorization")String token,Integer houseId){
+        return userService.addUserColleection(token,houseId);
+    }
+    @ApiOperation("获取用户收藏房源")
+    @GetMapping("/star/house")
+    public ResponseVO collectedHouses(@RequestHeader("Authorization")String token) {
+        return houseService.getCollectedHouses(token);
+    }
+
+
+    @ApiOperation("用户查看自己的浏览历史信息")
+    @GetMapping("/browse")
+    public ResponseVO collections(@RequestHeader("Authorization")String token,Integer limit, Integer start){
+        return userService.getUserBrowse(token,limit,start);
+    }
+
+    @ApiOperation("用户查看自己账单信息")
+    @GetMapping("/bill")
+    public ResponseVO getUserBill(@RequestHeader("Authorization")String token){
+        return userService.getUserBill(token) ;
+    }
+
+    @ApiOperation("")
+    @GetMapping("/house")
+    public ResponseVO getUserHouse(){
+        return null;
+    }
+
 }

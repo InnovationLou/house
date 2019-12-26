@@ -15,7 +15,7 @@ public interface WxPayService {
      * @return
      * @throws Exception
      */
-    ResponseVO unifiedOrder(BigDecimal money, String token, HttpServletRequest request) throws Exception;
+    ResponseVO unifiedOrder(Integer houseId,String payItem,BigDecimal money, String token, HttpServletRequest request) throws Exception;
 
     /**
      * 微信回调处理接口
@@ -35,19 +35,19 @@ public interface WxPayService {
 
     /**
      * 处理提现请求接口
-     * @param withdrawMent
+     * @param request
      * @return
      */
-    ResponseVO dealWithdraw(String withdrawMent, Boolean option);
+    ResponseVO dealWithdraw(HttpServletRequest request);
 
     /**
      * 用户退款
-     * @param outTradeNo
      * @param token
+     * @param request
      * @return
      */
-    ResponseVO doRefund(String outTradeNo, String token);
+    ResponseVO doRefund(String token,HttpServletRequest request) throws Exception;
 
-    ResponseVO paySomeone(String openId,Double money);
+    ResponseVO paySomeone(HttpServletRequest request) throws Exception;
 
 }

@@ -15,7 +15,7 @@ public interface HouseService {
      * @param pageNum  :
      * @return: xyz.nadev.house.vo.ResponseVO
      */
-    ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum);
+    ResponseVO findByCondition(House house, Integer distance, Integer latest,  Integer price, Integer pageNum);
 
     /**
      * 获取所有房源记录
@@ -23,8 +23,6 @@ public interface HouseService {
      * @return
      */
     List<House> getAllHouses();
-
-    ResponseVO houseList();
 
     /**
      * 新增房屋
@@ -45,7 +43,11 @@ public interface HouseService {
      * @param id
      * @return
      */
-    ResponseVO getHouseById(Integer id);
+    ResponseVO getHouseById(String token,Integer id);
 
     House findHouseById(Integer id);
+
+    ResponseVO getCollectedHouses(String token);
+
+    ResponseVO getBrowsedHouses(Integer userId);
 }

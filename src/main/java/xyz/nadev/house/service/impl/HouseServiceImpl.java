@@ -5,18 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import xyz.nadev.house.entity.Browse;
+import xyz.nadev.house.entity.Collection;
 import xyz.nadev.house.entity.House;
-import xyz.nadev.house.service.HouseService;
+import xyz.nadev.house.entity.User;
+import xyz.nadev.house.repository.BrowseRepository;
+import xyz.nadev.house.repository.CollectionRepository;
 import xyz.nadev.house.repository.HouseRepository;
+import xyz.nadev.house.service.HouseService;
+import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
-
-import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,11 +31,20 @@ public class HouseServiceImpl implements HouseService {
     private HouseRepository resp;
 
     @Autowired
+    private CollectionRepository collectionRepository;
+
+    @Autowired
+    private BrowseRepository browseRepository;
+
+    @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    UserService userService;
 
 
     @Override
-    public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer pageNum) {
+    public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer price, Integer pageNum) {
 
         // 不传默认第一页
         if (pageNum == null) pageNum = 1;
@@ -57,6 +72,24 @@ public class HouseServiceImpl implements HouseService {
 
         sqlStr.append(" FROM house WHERE");
 
+        // 市区筛选
+        if (StringUtils.isNotBlank(house.getCity())) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            sqlStr.append(
+                    " house.city = ?"
+            );
+            parmList.add(house.getCity());
+        }
+
+        // 朝向筛选
+        if (StringUtils.isNotBlank(house.getOrientation())) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            sqlStr.append(
+                    " house.orientation = ?"
+            );
+            parmList.add(house.getOrientation());
+        }
+
         // 地区筛选
         if (StringUtils.isNotBlank(house.getDistrict())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
@@ -69,16 +102,15 @@ public class HouseServiceImpl implements HouseService {
         }
 
         // 户型筛选
-        if (null != house.getHouseType() && house.getHouseType() != 0) {
+        if (StringUtils.isNotBlank(house.getHouseType())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
-
             sqlStr.append(
-                    " house.house_type = ?"
+                    " house.house_type LIKE CONCAT(?, '%')"
             );
             parmList.add(house.getHouseType());
         }
 
-        //  是否押一付三
+        // 付款类型
         if (StringUtils.isNotBlank(house.getCashType())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
 
@@ -128,12 +160,38 @@ public class HouseServiceImpl implements HouseService {
                     " house.rent_type = 1");
         }
 
+        // 限制价格区间
+        if (price != null && price != 0) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            switch (price) {
+                case 1:
+                    sqlStr.append(
+                            " house.cash <= 1000");
+                    break;
+                case 2:
+                    sqlStr.append(
+                            " house.cash > 1000 AND house.cash <= 1500");
+                    break;
+                case 3:
+                    sqlStr.append(
+                            " house.cash > 1500 AND house.cash <= 2000");
+                    break;
+                case 4:
+                    sqlStr.append(
+                            " house.cash > 2000 AND house.cash <= 2500");
+                    break;
+                case 5:
+                    sqlStr.append(
+                            " house.cash > 2500");
+                    break;
+            }
+        }
+
         //	如果没有查询条件产生 删除where
         if (sqlStr.toString().endsWith("WHERE")) sqlStr.setLength(sqlStr.length() - 5);
 
         // 限制距离
-        if (distance != null) {
-            log.info(distance.toString());
+        if (distance != null && distance != 0) {
             sqlStr.append(
                     " HAVING distance < ?");
             parmList.add(distance);
@@ -161,8 +219,11 @@ public class HouseServiceImpl implements HouseService {
         query.setFirstResult((pageNum - 1) * 10);
         query.setMaxResults(10);
 
-        List<Object> result = query.getResultList();
+        List<House> result = query.getResultList();
 
+        if (result.isEmpty()) {
+            return ControllerUtil.getFalseResultMsgBySelf("未查找到数据");
+        }
         return ControllerUtil.getSuccessResultBySelf(result);
     }
 
@@ -171,15 +232,7 @@ public class HouseServiceImpl implements HouseService {
         return resp.findAll();
     }
 
-    @Override
-    public ResponseVO houseList() {
-        List<House> list = null;
-        list = getAllHouses();
-        if (list.isEmpty()) {
-            return ControllerUtil.getFalseResultMsgBySelf("当前无房屋数据");
-        }
-        return ControllerUtil.getDataResult(list);
-    }
+
 
     @Override
     public ResponseVO addHouse(House house) {
@@ -196,10 +249,26 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public ResponseVO getHouseById(Integer id) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseVO getHouseById(String token, Integer id) {
         Optional<House> house = resp.findById(id);
         if (!house.isPresent()) {
             return ControllerUtil.getFalseResultMsgBySelf("未找到该房屋");
+        }
+        try {
+            //用token拿到当前用户信息（UserId）
+            User user =userService.findByToken(token);
+            if (user == null) {
+                log.info("token不存在");
+                return null;
+            }
+            Integer userId = user.getId();
+            Browse browse = new Browse();
+            browse.setUserId(userId);
+            browse.setHouseId(id);
+            browseRepository.save(browse);
+        }catch (Exception e){
+            log.info("保存该用户游览记录失败");
         }
         return ControllerUtil.getSuccessResultBySelf(house.get());
     }
@@ -211,5 +280,34 @@ public class HouseServiceImpl implements HouseService {
             return null;
         }
         return house.get();
+    }
+
+    @Override
+    public ResponseVO getCollectedHouses(String  token) {
+
+        User user = userService.findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return null;
+        }
+        Integer userId = user.getId();
+        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList=new ArrayList<>();
+        for (Collection c: collections) {
+            houseList.add(resp.findById(c.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
+    }
+
+    @Override
+    public ResponseVO getBrowsedHouses(Integer userId) {
+        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
+//        List<Browse> history=browseRepository.getBrowseByUserId(userId, limit,start);
+        List houseList=new ArrayList();
+        for (Browse b: history
+             ) {
+            houseList.add(resp.findById(b.getHouseId()));
+        }
+        return ControllerUtil.getDataResult(houseList);
     }
 }
