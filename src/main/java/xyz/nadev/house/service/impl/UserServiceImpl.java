@@ -339,9 +339,15 @@ public class UserServiceImpl implements UserService {
             }
             Integer userId = user.getId();
             List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit, start);
+            if (browses.isEmpty()||browses==null){
+                return ControllerUtil.getFalseResultMsgBySelf("没有找到账单信息");
+            }
             List result = new ArrayList<>();
             for (Browse browse : browses) {
                 Optional house = houseRepository.findById(browse.getHouseId());
+                if (!house.isPresent()){
+                    continue;
+                }
                 result.add(house);
             }
             return ControllerUtil.getDataResult(result);
@@ -360,11 +366,16 @@ public class UserServiceImpl implements UserService {
             }
             List result = new ArrayList();
             List<Bill> bills = billRepository.findByUserId(user.getId());
+            if (bills.isEmpty()){
+                return ControllerUtil.getFalseResultMsgBySelf("没有找到账单信息");
+            }
             for (Bill bill : bills) {
-                List list = new ArrayList();
                 Map map = new HashMap();
                 System.out.println("bill: " + bill.toString());
                 Optional<House> house = houseRepository.findById(bill.getHouseId());
+                if(!house.isPresent()){
+                    continue;
+                }
                 System.out.println(house.toString());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("cashType", house.get().getCashType());
@@ -390,12 +401,19 @@ public class UserServiceImpl implements UserService {
             log.info("token不存在");
             return ControllerUtil.getFalseResultMsgBySelf("token不存在");
         }
+        //不为房东
         if (user.getLandlord() == 0) {
             List result = new ArrayList<>();
             List<HouseSign> houseSigns = houseSignRepository.findByUserId(user.getId());
             System.out.println("houseSign:" + houseSigns.toString());
+            if (houseSigns.isEmpty()||houseSigns==null){
+                return ControllerUtil.getFalseResultMsgBySelf("没有该用户的签约信息");
+            }
             for (HouseSign houseSign : houseSigns) {
                 Optional<House> house = houseRepository.findById(houseSign.getHouseId());
+                if(!house.isPresent()){
+                    continue;
+                }
                 Map<String, Object> map = new HashMap<>();
                 map.put("cashType", house.get().getCash());
                 map.put("houseInfo", house.get().getHouseInfo());
