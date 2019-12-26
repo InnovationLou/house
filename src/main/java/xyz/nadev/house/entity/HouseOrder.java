@@ -1,14 +1,13 @@
 package xyz.nadev.house.entity;
 
 import lombok.Data;
-
-import javax.persistence.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
@@ -35,8 +34,11 @@ public class HouseOrder {
 	 * 用户id
 	 * default value: null
 	 */
+	@Column(name = "user_id", nullable = false)
+	private Integer userId;
 	@Column(name = "open_id", nullable = false)
 	private String openId;
+
 
 	/**
 	 * 随机生成的订单号
@@ -95,4 +97,8 @@ public class HouseOrder {
 	 */
 	@Column(name = "addr_ip", nullable = true)
 	private String addrIp;
+	@Column(name = "pay_item")
+	private String payItem;
+	@Column(name = "house_id")
+	private Integer houseId;
 }

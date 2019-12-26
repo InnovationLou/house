@@ -68,6 +68,8 @@ public class WxPayServiceImpl implements WxPayService {
     TransferRecordRepository transferRecordRepository;
     @Autowired
     RefundUserRepository refundUserRepository;
+    @Autowired
+    BillRepository billRepository;
 
     /**
      * 用于微信统一下单，获得预支付信息
@@ -79,12 +81,12 @@ public class WxPayServiceImpl implements WxPayService {
      * @throws Exception
      */
     @Override
-    public ResponseVO unifiedOrder(BigDecimal money, String token, HttpServletRequest request) throws Exception {
-        //看token是否在,若存在，则添加信息到order表
+    public ResponseVO unifiedOrder(Integer houseId, String payItem, BigDecimal money, String token, HttpServletRequest request) throws Exception {
         //终端IP
         String spbill_create_ip = WePayUtil.getIpAddr(request);
         //12位随机字符串
         String out_trade_no = WePayUtil.getNonceStr();
+        //看token是否在,若存在，则添加信息到order表
         User user = userServiceImpl.findByToken(token);
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf("token不存在");
@@ -95,7 +97,10 @@ public class WxPayServiceImpl implements WxPayService {
             houseOrder.setTotalFee(money);
             houseOrder.setOutTradeNo(out_trade_no);
             houseOrder.setOpenId(openId);
+            houseOrder.setUserId(user.getId());
+            houseOrder.setHouseId(houseId);
             houseOrder.setIsPaid(WxPayConfig.HOUSE_ORDER_NOT_PAID);
+            houseOrder.setPayItem(payItem);
             houseorderRepository.save(houseOrder);
             System.out.println("Openid:" + user.getOpenId() + "order表添加成功");
         } catch (Exception e) {
@@ -219,6 +224,8 @@ public class WxPayServiceImpl implements WxPayService {
         if ("SUCESS".equals(returnCode)) {
             //通过订单号查询订单记录
             HouseOrder houseOrder = houseorderRepository.findByOutTradeNo(out_trade_no);
+            String payItem = houseOrder.getPayItem();
+
             if (houseOrder != null) {
                 try {
                     houseOrder.setPrepayId(transaction_id);
@@ -227,6 +234,16 @@ public class WxPayServiceImpl implements WxPayService {
                     houseOrder.setIsPaid(WxPayConfig.HOUSE_ORDER_PAID);
                     houseOrder.setAddrIp(WePayUtil.getIpAddr(request));
                     houseorderRepository.save(houseOrder);
+                    //若付款成功，则写入bill表。payiTem来表明是付的什么费
+                    Bill bill = new Bill();
+                    bill.setUserId(houseOrder.getUserId());
+                    bill.setHouseId(houseOrder.getHouseId());
+                    bill.setIsPaid(WxPayConfig.HOUSE_ORDER_PAID);
+                    bill.setPayItem(payItem);
+                    bill.setOutTradeNo(out_trade_no);
+                    bill.setMoney(houseOrder.getTotalFee());
+                    billRepository.save(bill);
+
                     resXml = WePayUtil.NOTIFY_SUCCESS;
                     return ControllerUtil.getDataResult(resXml);
                 } catch (Exception e) {
@@ -236,6 +253,7 @@ public class WxPayServiceImpl implements WxPayService {
                     return ControllerUtil.getFalseResultMsgBySelf(resXml);
                 }
             }
+
             return ControllerUtil.getFalseResultMsgBySelf("没有此订单信息");
         }
         return null;
@@ -294,60 +312,69 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseVO dealWithdraw(String withdrawMent, Boolean option) {
-        Withdraw withDraw = withdrawRepository.findByWithdrawMent(withdrawMent);
-        if (withDraw == null) {
-            return ControllerUtil.getFalseResultMsgBySelf("无此提现订单信息");
-        }
-        String openid = withDraw.getOpenId();
-        // 管理员同意就给他打款，不同意就返回提现金额
-        if (option) {
-            // 下面条语句用来调用微信后台支付功能
-            // ResultEntity rs = sendMoneyToWechatUser(withDraw);
-            //log.info("user successfully obtained the money.information:" + rs.toString());
-            //String msg = rs.getMsg();
-            //找到支付单号,填到数据库
-            //withDraw.setWithdrawMent(msg.substring(msg.indexOf("<payment_no><![CDATA[") + "<payment_no><![CDATA[".length(), msg.indexOf("]]></payment_no>")));
-            try {
-                TransferRecord transferRecord = new TransferRecord();
-                withDraw.setGmtModify(new Date());
-                withDraw.setIsFinish(WxPayConfig.FINISHED);
-                transferRecord.setWithdrawMent(withdrawMent);
-                transferRecord.setWxId(withDraw.getWxId());
-                transferRecord.setGmtCreate(new Date());
-                transferRecord.setGmtCreate(new Date());
-                transferRecord.setTransferMoney(withDraw.getMoney());
-                transferRecordRepository.save(transferRecord);
-                withdrawRepository.save(withDraw);
-                return ControllerUtil.getDataResult(withDraw);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ControllerUtil.getFalseResultMsgBySelf("保存提现信息异常");
-            }
-        } else {
-            //拒绝则归还原先提现请求时扣除的佣金金额;
-            try {
-                User user = userRepository.findByOpenId(openid);
-                //将提现金额退还到余额
-                BigDecimal retMoney = user.getMoney().add(withDraw.getMoney());
+    public ResponseVO dealWithdraw(HttpServletRequest request) {
+        try {
+            String withdrawMent = request.getParameter("withdrawMent");
+            Boolean option = Boolean.valueOf(request.getParameter("option"));
 
-                if (user == null) {
-                    return null;
-                } else {
-                    //设置用户余额
-                    user.setMoney(retMoney);
-                    userRepository.save(user);
-                    //设置withdraw
-                    withDraw.setWithdrawStatus(WxPayConfig.WITHDRAW_ERROR);
-                    withDraw.setRemark("管理员拒绝提现，已退回金额");
-                    withdrawRepository.save(withDraw);
-                    return ControllerUtil.getDataResult("已退还提现金额");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ControllerUtil.getFalseResultMsgBySelf("提现退款退还异常");
+            Withdraw withDraw = withdrawRepository.findByWithdrawMent(withdrawMent);
+            if (withDraw == null) {
+                return ControllerUtil.getFalseResultMsgBySelf("无此提现订单信息");
             }
+            String openid = withDraw.getOpenId();
+            // 管理员同意就给他打款，不同意就返回提现金额
+            if (option) {
+                // 下面条语句用来调用微信后台支付功能
+                // ResultEntity rs = sendMoneyToWechatUser(withDraw);
+                //log.info("user successfully obtained the money.information:" + rs.toString());
+                //String msg = rs.getMsg();
+                //找到支付单号,填到数据库
+                //withDraw.setWithdrawMent(msg.substring(msg.indexOf("<payment_no><![CDATA[") + "<payment_no><![CDATA[".length(), msg.indexOf("]]></payment_no>")));
+                try {
+                    TransferRecord transferRecord = new TransferRecord();
+                    withDraw.setGmtModify(new Date());
+                    withDraw.setIsFinish(WxPayConfig.FINISHED);
+                    transferRecord.setWithdrawMent(withdrawMent);
+                    transferRecord.setWxId(withDraw.getWxId());
+                    transferRecord.setGmtCreate(new Date());
+                    transferRecord.setGmtCreate(new Date());
+                    transferRecord.setTransferMoney(withDraw.getMoney());
+                    transferRecordRepository.save(transferRecord);
+                    withdrawRepository.save(withDraw);
+                    return ControllerUtil.getDataResult(withDraw);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ControllerUtil.getFalseResultMsgBySelf("保存提现信息异常");
+                }
+            } else {
+                //拒绝则归还原先提现请求时扣除的佣金金额;
+                try {
+                    User user = userRepository.findByOpenId(openid);
+                    //将提现金额退还到余额
+                    BigDecimal retMoney = user.getMoney().add(withDraw.getMoney());
+
+                    if (user == null) {
+                        return null;
+                    } else {
+                        //设置用户余额
+                        user.setMoney(retMoney);
+                        userRepository.save(user);
+                        //设置withdraw
+                        withDraw.setWithdrawStatus(WxPayConfig.WITHDRAW_ERROR);
+                        withDraw.setRemark("管理员拒绝提现，已退回金额");
+                        withdrawRepository.save(withDraw);
+                        return ControllerUtil.getDataResult("已退还提现金额");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ControllerUtil.getFalseResultMsgBySelf("提现退款退还异常");
+                }
+            }
+        } catch (Exception e) {
+            log.info("获取必要参数参数withdrawMent和option错误");
+            return null;
         }
+
     }
 
     /**
@@ -441,7 +468,7 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public ResponseVO paySomeone(HttpServletRequest request) throws Exception {
         Optional<User> user = userRepository.findById(Integer.valueOf(request.getParameter("userId")));
-        if (!user.isPresent()){
+        if (!user.isPresent()) {
             log.info("查找userId失败");
             return null;
         }
@@ -460,7 +487,7 @@ public class WxPayServiceImpl implements WxPayService {
             saveUser.setMoney(newMoney);
             userRepository.save(saveUser);
             return ControllerUtil.getDataResult(user);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

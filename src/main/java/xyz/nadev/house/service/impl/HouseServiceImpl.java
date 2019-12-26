@@ -5,22 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.nadev.house.entity.Browse;
 import xyz.nadev.house.entity.Collection;
 import xyz.nadev.house.entity.House;
+import xyz.nadev.house.entity.User;
 import xyz.nadev.house.repository.BrowseRepository;
 import xyz.nadev.house.repository.CollectionRepository;
-import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
+import xyz.nadev.house.service.HouseService;
+import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
-
-import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,6 +38,9 @@ public class HouseServiceImpl implements HouseService {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    UserService userService;
 
 
     @Override
@@ -227,6 +232,8 @@ public class HouseServiceImpl implements HouseService {
         return resp.findAll();
     }
 
+
+
     @Override
     public ResponseVO addHouse(House house) {
         House newAdd = resp.save(house);
@@ -242,10 +249,26 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public ResponseVO getHouseById(Integer id) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseVO getHouseById(String token, Integer id) {
         Optional<House> house = resp.findById(id);
         if (!house.isPresent()) {
             return ControllerUtil.getFalseResultMsgBySelf("未找到该房屋");
+        }
+        try {
+            //用token拿到当前用户信息（UserId）
+            User user =userService.findByToken(token);
+            if (user == null) {
+                log.info("token不存在");
+                return null;
+            }
+            Integer userId = user.getId();
+            Browse browse = new Browse();
+            browse.setUserId(userId);
+            browse.setHouseId(id);
+            browseRepository.save(browse);
+        }catch (Exception e){
+            log.info("保存该用户游览记录失败");
         }
         return ControllerUtil.getSuccessResultBySelf(house.get());
     }
@@ -260,10 +283,17 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public ResponseVO getCollectedHouses(Integer userId) {
-        List<Collection> collections = collectionRepository.findCollectionsByUserId(userId);
-        List<Optional<House>> houseList = new ArrayList<>();
-        for (Collection c : collections) {
+    public ResponseVO getCollectedHouses(String  token) {
+
+        User user = userService.findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return null;
+        }
+        Integer userId = user.getId();
+        List<Collection> collections=collectionRepository.findCollectionsByUserId(userId);
+        List<Optional<House>> houseList=new ArrayList<>();
+        for (Collection c: collections) {
             houseList.add(resp.findById(c.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
@@ -271,10 +301,11 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO getBrowsedHouses(Integer userId) {
-        List<Browse> history = browseRepository.findBrowsesByUserId(userId);
-        List houseList = new ArrayList();
-        for (Browse b : history
-        ) {
+        List<Browse> history=browseRepository.findBrowsesByUserId(userId);
+//        List<Browse> history=browseRepository.getBrowseByUserId(userId, limit,start);
+        List houseList=new ArrayList();
+        for (Browse b: history
+             ) {
             houseList.add(resp.findById(b.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);

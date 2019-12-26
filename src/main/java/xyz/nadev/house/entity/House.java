@@ -1,13 +1,13 @@
 package xyz.nadev.house.entity;
 
 import lombok.Data;
-
-import javax.persistence.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
 
 /**
  * 房源信息
@@ -345,4 +345,5 @@ public class House {
 	 */
 	@Column(name = "inspection", nullable = true)
 	private String inspection;
+
 }

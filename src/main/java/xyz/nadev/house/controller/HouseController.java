@@ -24,8 +24,8 @@ public class HouseController {
 
     @ApiOperation("通过id查house")
     @GetMapping("/{id}")
-    public ResponseVO getHouseById(@PathVariable Integer id) {
-        return houseService.getHouseById(id);
+    public ResponseVO getHouseById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        return houseService.getHouseById(token, id);
     }
 
     @ApiOperation("新增房源信息")
@@ -40,11 +40,6 @@ public class HouseController {
         return houseService.modifyHouse(house);
     }
 
-    @ApiOperation("获取用户收藏房源")
-    @GetMapping("/Collection/{id}")
-    public ResponseVO collectedHouses(@PathVariable Integer userId) {
-        return houseService.getCollectedHouses(userId);
-    }
 
     @ApiOperation("获取用户浏览过的房源")
     @GetMapping("/browse")

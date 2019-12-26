@@ -43,11 +43,11 @@ public interface HouseService {
      * @param id
      * @return
      */
-    ResponseVO getHouseById(Integer id);
+    ResponseVO getHouseById(String token,Integer id);
 
     House findHouseById(Integer id);
 
-    ResponseVO getCollectedHouses(Integer userId);
+    ResponseVO getCollectedHouses(String token);
 
     ResponseVO getBrowsedHouses(Integer userId);
 }
