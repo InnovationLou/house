@@ -2,6 +2,7 @@ package xyz.nadev.house.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -167,6 +168,18 @@ public class UserServiceImpl implements UserService {
         String openId = redisTemplate.opsForValue().get(token);
         if (openId == null) return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         User old = findByOpenId(openId);
+        user.setOpenId(null);
+        user.setId(null);
+        user.setIsAuth(null);
+
+        if (old.getIsAuth() != 0) {
+            if (StringUtils.isNotBlank(user.getIdCardBackImg())
+                    || StringUtils.isNotBlank(user.getIdCardFrontImg())) {
+                return ControllerUtil.getFalseResultMsgBySelf("不能重复提交认证信息");
+            }
+        }
+
+
         EntityUtil.update(user, old);
         resp.save(user);
         return ControllerUtil.getSuccessResultBySelf("修改成功");

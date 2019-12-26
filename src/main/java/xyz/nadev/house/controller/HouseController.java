@@ -18,8 +18,8 @@ public class HouseController {
 
     @ApiOperation("条件筛选房屋")
     @GetMapping("")
-    public ResponseVO getHouse(House house, Integer distance, Integer latest, Integer page) {
-        return houseService.findByCondition(house, distance, latest, page);
+    public ResponseVO getHouse(House house, Integer distance, Integer latest, Integer price, Integer page) {
+        return houseService.findByCondition(house, distance, latest, price, page);
     }
 
     @ApiOperation("通过id查house")
@@ -42,13 +42,13 @@ public class HouseController {
 
     @ApiOperation("获取用户收藏房源")
     @GetMapping("/Collection/{id}")
-    public ResponseVO collectedHouses(@PathVariable Integer userId){
+    public ResponseVO collectedHouses(@PathVariable Integer userId) {
         return houseService.getCollectedHouses(userId);
     }
 
     @ApiOperation("获取用户浏览过的房源")
     @GetMapping("/browse")
-    public ResponseVO browsedHouses(Integer userId){
+    public ResponseVO browsedHouses(Integer userId) {
         return houseService.getBrowsedHouses(userId);
     }
 }
