@@ -12,11 +12,14 @@ import xyz.nadev.house.entity.House;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.repository.BrowseRepository;
 import xyz.nadev.house.repository.CollectionRepository;
-import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.service.HouseService;
+import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
+
+import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,10 +40,9 @@ public class HouseServiceImpl implements HouseService {
     private BrowseRepository browseRepository;
 
     @Autowired
-    EntityManager entityManager;
-
-    @Autowired
     UserService userService;
+    @Autowired
+    EntityManager entityManager;
 
 
     @Override
@@ -309,5 +311,26 @@ public class HouseServiceImpl implements HouseService {
             houseList.add(resp.findById(b.getHouseId()));
         }
         return ControllerUtil.getDataResult(houseList);
+    }
+
+    @Override
+    public ResponseVO rentHouseList(Boolean isLandlord, String token) {
+        User user=userService.findByToken(token);
+        if(user==null){
+            return ControllerUtil.getFalseResultMsgBySelf("非法操作");
+        }
+        if(isLandlord==false){
+            return ControllerUtil.getFalseResultMsgBySelf("请先认证房东");
+        }
+        return ControllerUtil.getDataResult(resp.findByUserId(user.getId()));
+    }
+
+    @Override
+    public ResponseVO getRelatedHouse(String token) {
+        User user=userService.findByToken(token);
+        if(user==null){
+            return ControllerUtil.getFalseResultMsgBySelf("非法操作");
+        }
+        return ControllerUtil.getDataResult(resp.findHousesByTenantId(user.getId()));
     }
 }
