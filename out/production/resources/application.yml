@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: false
+
+  servlet:
+    multipart:
+      # 设置单个文件和单个请求大小限制
+      # 修改此处需同时修改COSUtil中的 FILE_SIZE_LIMIT
+      max-file-size: 20MB
+      max-request-size: 200MB
+wx:
+  app:
+    id: wxf23c68d0aea36deb
+    secret: 65ba3bb66a33a05102a5e35252aaa0ee
+  mch:
+    id: 1567855211
+    secret: JKLo0o0o0JKLo0o0o0JKLo0o0o0JKLo0
+  url:
+    notify: 127.0.0.1:8080/pay/wxNotify
+    pay: https://api.mch.weixin.qq.com/pay/unifiedorder
+    transfer: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
+    refund: https://api.mch.weixin.qq.com/secapi/pay/refund
+  trade:
+    type: JSAPI
+  body: 小鱼公寓-充值订单-微信小程序
+  desc: happy
+  certPath: D:\wxCertUtil\WXCertUtil\cert\apiclient_cert.p12
+
+
+tim:
+  app-id: 1400295853
+  app-key: b3a3378b9e1317307b58e32468fc49929cf5d5ea1ca9676cb8a6be50d5c11f69
+
+cos:
+  access-key: AKID9D8uVYC9g3GJCuCp23tY2KjxBHDy9xEK
+  secret-key: D1f9TcaF2ynRvESbbP6d6gTOMKTbtHh8
+  region: ap-chengdu
+  bucket-name: fish-house-1252272257
