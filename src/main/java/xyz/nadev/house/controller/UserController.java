@@ -4,7 +4,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xyz.nadev.house.entity.House;
+import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
+import xyz.nadev.house.service.HouseRepairService;
+import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.service.WxPayService;
 import xyz.nadev.house.vo.ResponseVO;
@@ -19,6 +23,12 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    HouseService houseService;
+
+    @Autowired
+    HouseRepairService repairService;
 
     @Autowired
     WxPayService wxPayService;
@@ -65,5 +75,24 @@ public class UserController {
     @PostMapping("/refund/{outTradeNo}")
     public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String outTradeNo){
         return wxPayService.doRefund(outTradeNo, token);
+    }
+
+    @ApiOperation("房东房源列表")
+    @GetMapping("/house")
+    public ResponseVO rentHouseList(@RequestHeader("Authorization")String token,Boolean isLandlord){
+        return houseService.rentHouseList(isLandlord,token);
+    }
+
+    @ApiOperation("获取所有报修")
+    @GetMapping("/repair")
+    public ResponseVO getRepairList(@RequestHeader("Authorization")String token){
+        return repairService.getRepairListByUserToken(token);
+    }
+
+    @ApiOperation("上传报修")
+    @PutMapping("/repair")
+    public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, House house, String phone, String content,
+                                   HouseRepairImg img){
+        return repairService.uploadRepair(token, house, phone, content,img);
     }
 }

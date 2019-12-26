@@ -52,4 +52,8 @@ public interface HouseService {
     ResponseVO getCollectedHouses(Integer userId);
 
     ResponseVO getBrowsedHouses(Integer userId);
+
+    ResponseVO rentHouseList(Boolean isLandlord, String token);
+
+    ResponseVO getRelatedHouse(String token);
 }
