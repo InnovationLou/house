@@ -87,6 +87,16 @@ public class HouseServiceImpl implements HouseService {
             parmList.add(house.getCity());
         }
 
+        // 名称筛选
+        if (StringUtils.isNotBlank(house.getHouseInfo())) {
+            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+            sqlStr.append(
+                    " (house.house_info LIKE CONCAT('%',?,'%') OR house.title LIKE CONCAT('%',?,'%'))"
+            );
+            parmList.add(house.getHouseInfo());
+            parmList.add(house.getHouseInfo());
+        }
+
         // 朝向筛选
         if (StringUtils.isNotBlank(house.getOrientation())) {
             if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
@@ -304,17 +314,6 @@ public class HouseServiceImpl implements HouseService {
         return ControllerUtil.getDataResult(houseList);
     }
 
-    @Override
-    public ResponseVO getBrowsedHouses(Integer userId) {
-        List<Browse> history = browseRepository.findBrowsesByUserId(userId);
-//        List<Browse> history=browseRepository.getBrowseByUserId(userId, limit,start);
-        List houseList = new ArrayList();
-        for (Browse b : history
-        ) {
-            houseList.add(resp.findById(b.getHouseId()));
-        }
-        return ControllerUtil.getDataResult(houseList);
-    }
 
     @Override
     public ResponseVO rentHouseList(String token) {

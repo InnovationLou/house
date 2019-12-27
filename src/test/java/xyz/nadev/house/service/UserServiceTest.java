@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import xyz.nadev.house.entity.User;
+import xyz.nadev.house.repository.BrowseRepository;
 
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ class UserServiceTest {
 
     @Autowired
     UserService userService;
+
 
     @Test
     void findAll() {
@@ -84,4 +86,6 @@ class UserServiceTest {
     void findByToken() {
         System.out.println(userService.findByToken("a297939a253d47a2afc411956b376f09"));
     }
+
+
 }

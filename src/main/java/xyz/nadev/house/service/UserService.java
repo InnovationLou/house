@@ -114,11 +114,10 @@ public interface UserService {
     /**
      * 查看自己游览历史
      * @param token
-     * @param limit
-     * @param start
+     * @param page
      * @return
      */
-    ResponseVO getUserBrowse(String token,Integer limit, Integer start);
+    ResponseVO findUserBrowse(String token, Integer page);
 
     ResponseVO getUserBill(String token);
 

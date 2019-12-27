@@ -3,13 +3,16 @@ package xyz.nadev.house.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.graalvm.compiler.asm.sparc.SPARCAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import xyz.nadev.house.config.WxPayConfig;
@@ -25,6 +28,7 @@ import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -330,30 +334,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseVO getUserBrowse(String token, Integer limit, Integer start) {
-        try {
-            User user = findByToken(token);
-            if (user == null) {
-                log.info("token不存在");
-                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
-            }
-            Integer userId = user.getId();
-            List<Browse> browses = browseRepository.getBrowseByUserId(userId, limit, start);
-            if (browses.isEmpty()||browses==null){
-                return ControllerUtil.getFalseResultMsgBySelf("没有找到账单信息");
-            }
-            List result = new ArrayList<>();
-            for (Browse browse : browses) {
-                Optional house = houseRepository.findById(browse.getHouseId());
-                if (!house.isPresent()){
-                    continue;
-                }
-                result.add(house);
-            }
-            return ControllerUtil.getDataResult(result);
-        } catch (Exception e) {
-            return null;
+    public ResponseVO findUserBrowse(String token, Integer page) {
+        User user = findByToken(token);
+        if (user == null) {
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
+//        Pageable pageable = (Pageable) PageRequest.of(1, 10);
+//
+//
+//        List<Map> mapList = new ArrayList<>();
+//        List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(), pageable);
+//        if (browses.isEmpty())return ControllerUtil.getFalseResultMsgBySelf("没有收藏记录");
+//        for (Browse b:browses
+//             ) {
+//            Map<String, Object> map;
+//
+//        }
+        return ControllerUtil.getSuccessResultBySelf("");
+
     }
 
     @Override
@@ -366,14 +364,14 @@ public class UserServiceImpl implements UserService {
             }
             List result = new ArrayList();
             List<Bill> bills = billRepository.findByUserId(user.getId());
-            if (bills.isEmpty()){
+            if (bills.isEmpty()) {
                 return ControllerUtil.getFalseResultMsgBySelf("没有找到账单信息");
             }
             for (Bill bill : bills) {
                 Map map = new HashMap();
                 System.out.println("bill: " + bill.toString());
                 Optional<House> house = houseRepository.findById(bill.getHouseId());
-                if(!house.isPresent()){
+                if (!house.isPresent()) {
                     continue;
                 }
                 System.out.println(house.toString());
@@ -385,7 +383,7 @@ public class UserServiceImpl implements UserService {
                 map.put("gmtCreate", bill.getGmtCreate());
                 map.put("isPaid", bill.getIsPaid());
                 map.put("remark", bill.getRemark());
-                map.put("dead_date",bill.getDeadDate());
+                map.put("dead_date", bill.getDeadDate());
                 result.add(map);
             }
             return ControllerUtil.getDataResult(result);
@@ -406,12 +404,12 @@ public class UserServiceImpl implements UserService {
             List result = new ArrayList<>();
             List<HouseSign> houseSigns = houseSignRepository.findByUserId(user.getId());
             System.out.println("houseSign:" + houseSigns.toString());
-            if (houseSigns.isEmpty()||houseSigns==null){
+            if (houseSigns.isEmpty() || houseSigns == null) {
                 return ControllerUtil.getFalseResultMsgBySelf("没有该用户的签约信息");
             }
             for (HouseSign houseSign : houseSigns) {
                 Optional<House> house = houseRepository.findById(houseSign.getHouseId());
-                if(!house.isPresent()){
+                if (!house.isPresent()) {
                     continue;
                 }
                 Map<String, Object> map = new HashMap<>();

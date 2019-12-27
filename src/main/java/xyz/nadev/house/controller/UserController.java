@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.nadev.house.entity.House;
 import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.*;
@@ -66,69 +65,70 @@ public class UserController {
 
     @ApiOperation("用户发起提现请求")
     @PostMapping("/launchWithdraw")
-    public ResponseVO register(@RequestHeader("Authorization")String token,String sign, Double money, HttpServletRequest request) throws Exception {
+    public ResponseVO register(@RequestHeader("Authorization") String token, String sign, Double money, HttpServletRequest request) throws Exception {
         //人工打款，由用户自己输入自己微信号
-        return userService.launchWithdraw(token,request);
+        return userService.launchWithdraw(token, request);
     }
 
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
-    public ResponseVO refundToUser(@RequestHeader("Authorization")String token,String sign,String outTradeNo,HttpServletRequest request) throws Exception {
-        return wxPayService.doRefund(token,request);
+    public ResponseVO refundToUser(@RequestHeader("Authorization") String token, String sign, String outTradeNo, HttpServletRequest request) throws Exception {
+        return wxPayService.doRefund(token, request);
     }
 
     @ApiOperation("用户添加收藏房源信息")
     @PostMapping("/star/house/{houseId}")
-    public ResponseVO collectHouse(@RequestHeader("Authorization")String token,Integer houseId){
-        return userService.addUserColleection(token,houseId);
+    public ResponseVO collectHouse(@RequestHeader("Authorization") String token, Integer houseId) {
+        return userService.addUserColleection(token, houseId);
     }
+
     @ApiOperation("获取用户收藏房源")
     @GetMapping("/star/house")
-    public ResponseVO collectedHouses(@RequestHeader("Authorization")String token) {
+    public ResponseVO collectedHouses(@RequestHeader("Authorization") String token) {
         return houseService.getCollectedHouses(token);
     }
 
     @ApiOperation("用户查看自己的浏览历史信息")
     @GetMapping("/browse")
-    public ResponseVO collections(@RequestHeader("Authorization")String token,Integer limit, Integer start){
-        return userService.getUserBrowse(token,limit,start);
+    public ResponseVO collections(@RequestHeader("Authorization") String token, Integer page) {
+        return userService.findUserBrowse(token, page);
     }
 
     @ApiOperation("用户查看自己账单信息")
     @GetMapping("/bill")
-    public ResponseVO getUserBill(@RequestHeader("Authorization")String token){
-        return userService.getUserBill(token) ;
+    public ResponseVO getUserBill(@RequestHeader("Authorization") String token) {
+        return userService.getUserBill(token);
     }
 
     @ApiOperation("用户查看自己签约信息")
     @GetMapping("/sign")
-    public ResponseVO getSignInfo(@RequestHeader("Authorization")String token){
+    public ResponseVO getSignInfo(@RequestHeader("Authorization") String token) {
         return userService.getSignInfo(token);
     }
 
 
     @ApiOperation("房东房源列表")
     @GetMapping("/landload/house")
-    public ResponseVO rentHouseList(@RequestHeader("Authorization")String token){
+    public ResponseVO rentHouseList(@RequestHeader("Authorization") String token) {
         return houseService.rentHouseList(token);
     }
 
     @ApiOperation("获取所有报修")
     @GetMapping("/repair")
-    public ResponseVO getRepairList(@RequestHeader("Authorization")String token){
+    public ResponseVO getRepairList(@RequestHeader("Authorization") String token) {
         return repairService.getRepairListByUserToken(token);
     }
 
     @ApiOperation("上传报修")
     @PutMapping("/repair")
-    public ResponseVO uploadRepair(@RequestHeader("Authorization")String token, Integer houseId, String phone, Date repairTime, String content,
-                                   HouseRepairImg img){
-        return repairService.uploadRepair(token, houseId, phone,repairTime, content,img);
+    public ResponseVO uploadRepair(@RequestHeader("Authorization") String token, Integer houseId, String phone, Date repairTime, String content,
+                                   HouseRepairImg img) {
+        return repairService.uploadRepair(token, houseId, phone, repairTime, content, img);
     }
 
     @ApiOperation("获得一段时间内的系统通知")
     @GetMapping("/notifier/{days}")
-    public ResponseVO getNotifiesInMonth(@PathVariable Integer days){
+    public ResponseVO getNotifiesInMonth(@PathVariable Integer days) {
         return messageService.getNotifies(days);
     }
 }

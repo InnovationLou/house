@@ -12,7 +12,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     List<Store> findByType(String type);
 
-    @Query(value = "SELECT * FROM store WHERE type = ?1 AND (address LIKE CONCAT('%',?2,'%') OR name LIKE CONCAT('%',?2,'%'))",
+    @Query(value = "SELECT * FROM store WHERE address LIKE CONCAT('%',?1,'%') OR name LIKE CONCAT('%',?1,'%')",
             nativeQuery = true)
-    List<Store> search(String type, String keyword);
+    List<Store> search(String keyword);
 }

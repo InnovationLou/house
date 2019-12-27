@@ -67,9 +67,4 @@ class HouseServiceTest {
         System.out.println(houseService.getCollectedHouses(userId.toString()));
     }
 
-    @Test
-    void getBrowsedHouses() {
-        Integer userId = 10001;
-        System.out.println(houseService.getBrowsedHouses(userId));
-    }
 }
