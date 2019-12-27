@@ -346,7 +346,7 @@ public class UserServiceImpl implements UserService {
             return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         List list = new ArrayList();
-        Pageable pageable = (Pageable) PageRequest.of(1, 10);
+        Pageable pageable = (Pageable) PageRequest.of(0, 10);
         List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(),pageable);
         if (browses.isEmpty()) {
             return ControllerUtil.getFalseResultMsgBySelf("无游览信息");
