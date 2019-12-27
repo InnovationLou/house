@@ -6,12 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import xyz.nadev.house.entity.Browse;
+import xyz.nadev.house.entity.*;
 import xyz.nadev.house.entity.Collection;
-import xyz.nadev.house.entity.House;
-import xyz.nadev.house.entity.User;
 import xyz.nadev.house.repository.BrowseRepository;
 import xyz.nadev.house.repository.CollectionRepository;
+import xyz.nadev.house.repository.FavorStoreRepository;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.service.UserService;
@@ -42,6 +41,9 @@ public class HouseServiceImpl implements HouseService {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    FavorStoreRepository favorStoreRepository;
 
     private static final Integer SINGLE_PAGE_NUM = 10;
 
@@ -361,6 +363,23 @@ public class HouseServiceImpl implements HouseService {
         Map<String, Boolean> map = new HashMap<>();
         Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(), houseId);
         if (collection == null) {
+            map.put("isfavor", false);
+        } else {
+            map.put("isfavor", true);
+        }
+        return ControllerUtil.getDataResult(map);
+    }
+
+    @Override
+    public ResponseVO storeIsFavor(String token, Integer storeId) {
+        User user = userService.findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        Map<String, Boolean> map = new HashMap<>();
+        FavorStore favorStore = favorStoreRepository.findByUserIdAndStoreId(user.getId(), storeId);
+        if (favorStore == null) {
             map.put("isfavor", false);
         } else {
             map.put("isfavor", true);

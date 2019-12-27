@@ -340,13 +340,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseVO findUserBrowse(String token, Integer page) {
+    public ResponseVO findUserBrowse(String token, Integer page,Integer size) {
         User user = findByToken(token);
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         List list = new ArrayList();
-        Pageable pageable = (Pageable) PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(page-1, size);
         List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(),pageable);
         if (browses.isEmpty()) {
             return ControllerUtil.getFalseResultMsgBySelf("无游览信息");
@@ -405,6 +405,15 @@ public class UserServiceImpl implements UserService {
                 map.put("remark", bill.getRemark());
                 map.put("dead_date", bill.getDeadDate());
                 map.put("payDate", bill.getPayDate());
+                map.put("payDetail1",bill.getPayDetail1());
+                map.put("payDetail2",bill.getPayDetail2());
+                map.put("payDetailFee1",bill.getPayDetailFee1());
+                map.put("payDetailFee2",bill.getPayDetailFee2());
+                map.put("waterUse",bill.getWaterUse());
+                map.put("waterUntPrice",bill.getWaterUntPrice());
+                map.put("eleUse",bill.getEleUse());
+                map.put("eleUntPrice",bill.getEleUntPrice());
+
                 result.add(map);
             }
             return ControllerUtil.getDataResult(result);

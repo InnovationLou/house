@@ -1,5 +1,6 @@
 package xyz.nadev.house.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ public class HouseController {
     @GetMapping("/{houseId}/isfavor")
     public ResponseVO houseIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer houseId) {
         return houseService.houseIsFavor(token, houseId);
+    }
+    @ApiOperation("判断用户是否收藏了该生活服务")
+    @GetMapping("/{storeId}/isfavor")
+    public ResponseVO storeIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer storeId){
+        return houseService.storeIsFavor(token, storeId);
     }
 
 }

@@ -54,4 +54,6 @@ public interface HouseService {
     ResponseVO getRelatedHouse(String token);
 
     ResponseVO houseIsFavor(String token, Integer houseId);
+
+    ResponseVO storeIsFavor(String token,Integer storeId);
 }

@@ -90,8 +90,8 @@ public class UserController {
 
     @ApiOperation("用户查看自己的浏览历史信息")
     @GetMapping("/browse")
-    public ResponseVO collections(@RequestHeader("Authorization") String token, Integer page) {
-        return userService.findUserBrowse(token, page);
+    public ResponseVO collections(@RequestHeader("Authorization") String token, Integer page ,Integer size) {
+        return userService.findUserBrowse(token, page ,size);
     }
 
     @ApiOperation("用户查看自己账单信息")

@@ -117,7 +117,7 @@ public interface UserService {
      * @param page
      * @return
      */
-    ResponseVO findUserBrowse(String token, Integer page);
+    ResponseVO findUserBrowse(String token, Integer page,Integer size);
 
     /**
      * 获得用户账单信息
