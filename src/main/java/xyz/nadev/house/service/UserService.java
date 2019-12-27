@@ -167,5 +167,7 @@ public interface UserService {
     ResponseVO cancelUserStarStore(String token,Integer storeId);
 
 
+    ResponseVO certifyLandlord(String token,String authImgUrl);
 
+    ResponseVO recommendList();
 }
