@@ -276,7 +276,7 @@ public class UserServiceImpl implements UserService {
         User user = findByToken(token);
         if (user == null) {
             log.info("token不存在");
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("sign不正确");
         }
         String openId = user.getOpenId();
         // 检查sign
@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
             }
             return ControllerUtil.getDataResult(result);
         } catch (Exception e) {
-            return null;
+            return ControllerUtil.getFalseResultMsgBySelf("获得用户账单失败");
         }
     }
 

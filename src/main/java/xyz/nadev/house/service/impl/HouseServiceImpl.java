@@ -268,24 +268,32 @@ public class HouseServiceImpl implements HouseService {
         if (!house.isPresent()) {
             return ControllerUtil.getFalseResultMsgBySelf("未找到该房屋");
         }
-        try {
-            //用token拿到当前用户信息（UserId）
-            User user = userService.findByToken(token);
-            if (user == null) {
-                log.info("token不存在");
-                return null;
+
+        //用token拿到当前用户信息（UserId）
+        User user = userService.findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return null;
+        }
+
+        Browse browse = browseRepository.findByUserIdAndHouseId(user.getId(), id);
+        if (browse == null) {
+            try {
+                Integer userId = user.getId();
+                browse = new Browse();
+                browse.setUserId(userId);
+                browse.setHouseId(id);
+                browseRepository.save(browse);
+            } catch (Exception e) {
+                log.info("保存该用户游览记录失败");
             }
-            Integer userId = user.getId();
-            Browse browse = new Browse();
-            browse.setUserId(userId);
-            browse.setHouseId(id);
+        }else {
+            //更新一下游览时间
+            browse.setGmtCreate(new Date());
             browseRepository.save(browse);
-        } catch (Exception e) {
-            log.info("保存该用户游览记录失败");
         }
         return ControllerUtil.getSuccessResultBySelf(house.get());
     }
-
     @Override
     public House findHouseById(Integer id) {
         Optional<House> house = resp.findById(id);

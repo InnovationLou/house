@@ -15,5 +15,7 @@ public interface BrowseRepository extends JpaRepository<Browse, Long>{
             countQuery = "select count(*) from browse b where b.user_id=?1  order by b.gmt_create desc",
             nativeQuery = true)
     List<Browse> findBrowseByUserId(Integer userId, Pageable pageable);
+    Browse findByUserIdAndHouseId(Integer userId,Integer houseId);
+
 
 }
