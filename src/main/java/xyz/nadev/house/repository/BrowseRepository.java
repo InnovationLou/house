@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface BrowseRepository extends JpaRepository<Browse, Long>{
+    List<Browse> findBrowseByUserId(Integer userId);
 
     @Query(value = "select * from browse where browse.user_id=?1  order by browse.gmt_create desc" ,
             countQuery = "select count(*) from browse where browse.user_id=?1",

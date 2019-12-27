@@ -3,16 +3,15 @@ package xyz.nadev.house.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.graalvm.compiler.asm.sparc.SPARCAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import xyz.nadev.house.config.WxPayConfig;
@@ -28,7 +27,6 @@ import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.print.Pageable;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -347,6 +345,20 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
+        List list = new ArrayList();
+        Pageable pageable = (Pageable) PageRequest.of(1, 10);
+        List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(),pageable);
+        if (browses.isEmpty()) {
+            return ControllerUtil.getFalseResultMsgBySelf("无游览信息");
+        }
+        for (Browse browse : browses) {
+            Optional<House> house = houseRepository.findById(browse.getHouseId());
+            if (!house.isPresent()) {
+                continue;
+            }
+            list.add(house);
+        }
+        return ControllerUtil.getDataResult(list);
 //        Pageable pageable = (Pageable) PageRequest.of(1, 10);
 //
 //
@@ -358,8 +370,6 @@ public class UserServiceImpl implements UserService {
 //            Map<String, Object> map;
 //
 //        }
-        return ControllerUtil.getSuccessResultBySelf("");
-
     }
 
     @Override
@@ -383,6 +393,8 @@ public class UserServiceImpl implements UserService {
                     continue;
                 }
                 System.out.println(house.toString());
+                map.put("userId",bill.getUserId());
+                map.put("houseId",bill.getHouseId());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("cashType", house.get().getCashType());
                 map.put("houseType", house.get().getHouseType());
@@ -392,6 +404,7 @@ public class UserServiceImpl implements UserService {
                 map.put("isPaid", bill.getIsPaid());
                 map.put("remark", bill.getRemark());
                 map.put("dead_date", bill.getDeadDate());
+                map.put("payDate", bill.getPayDate());
                 result.add(map);
             }
             return ControllerUtil.getDataResult(result);
@@ -421,6 +434,8 @@ public class UserServiceImpl implements UserService {
                     continue;
                 }
                 Map<String, Object> map = new HashMap<>();
+                map.put("userId",houseSign.getUserId());
+                map.put("houseId",houseSign.getHouseId());
                 map.put("cashType", house.get().getCash());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("houseType", house.get().getHouseType());
