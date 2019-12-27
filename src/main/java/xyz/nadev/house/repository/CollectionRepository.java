@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CollectionRepository extends JpaRepository<Collection, Long>{
     List<Collection> findCollectionsByUserId(Integer userId);
+    Collection findByUserIdAndHouseId(Integer userId, Integer houseId);
+
 }

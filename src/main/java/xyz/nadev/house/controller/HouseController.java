@@ -44,4 +44,11 @@ public class HouseController {
     @ApiOperation("当前租了哪些房")
     @GetMapping("/user")
     public ResponseVO userRelatedHouse(@RequestHeader("Authorization")String token){return houseService.getRelatedHouse(token);}
+
+    @ApiOperation("判断用户是否收藏了该房源信息")
+    @GetMapping("/{houseId}/isfavor")
+    public ResponseVO houseIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer houseId) {
+        return houseService.houseIsFavor(token, houseId);
+    }
+
 }

@@ -119,8 +119,53 @@ public interface UserService {
      */
     ResponseVO findUserBrowse(String token, Integer page);
 
+    /**
+     * 获得用户账单信息
+     * @param token
+     * @return
+     */
     ResponseVO getUserBill(String token);
 
+    /**
+     *  获得用户签约信息
+     * @param token
+     * @return
+     */
     ResponseVO getSignInfo(String token);
+
+
+
+    /**
+     * 获得用户收藏商店信息
+     * @param token
+     * @return
+     */
+    ResponseVO getUserStarStore(String token);
+
+    /**
+     * 增加用户收藏信息
+     * @param token
+     * @param storeId
+     * @return
+     */
+    ResponseVO addUserStarStore(String token,Integer storeId);
+
+    /**
+     * 用户取消收藏房源
+     * @param token
+     * @param houseId
+     * @return
+     */
+    ResponseVO cancelUserStarHouse(String token,Integer houseId);
+
+    /**
+     * 用户取消收藏商店
+     * @param token
+     * @param storeId
+     * @return
+     */
+    ResponseVO cancelUserStarStore(String token,Integer storeId);
+
+
 
 }

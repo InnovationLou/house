@@ -19,12 +19,10 @@ import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -334,5 +332,22 @@ public class HouseServiceImpl implements HouseService {
             return ControllerUtil.getFalseResultMsgBySelf("非法操作");
         }
         return ControllerUtil.getDataResult(resp.findHousesByTenantId(user.getId()));
+    }
+
+    @Override
+    public ResponseVO houseIsFavor(String token, Integer houseId) {
+        User user = userService.findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        Map<String, Boolean> map = new HashMap<>();
+        Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(), houseId);
+        if (collection == null) {
+            map.put("isfavor", false);
+        } else {
+            map.put("isfavor", true);
+        }
+        return ControllerUtil.getDataResult(map);
     }
 }

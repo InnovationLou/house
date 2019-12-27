@@ -131,4 +131,28 @@ public class UserController {
     public ResponseVO getNotifiesInMonth(@PathVariable Integer days) {
         return messageService.getNotifies(days);
     }
+
+    @ApiOperation("获取用户收藏的商店及信息")
+    @GetMapping("/star/store")
+    public ResponseVO getUserStarStore(@RequestHeader("Authorization")String token){
+        return userService.getUserStarStore(token);
+    }
+
+    @ApiOperation("用户添加商店收藏")
+    @PostMapping("/star/store/{storeId}")
+    public ResponseVO addUserStarStore(@RequestHeader("Authorization")String token,@PathVariable Integer storeId){
+        return userService.addUserStarStore(token,storeId);
+    }
+
+    @ApiOperation("取消收藏房屋")
+    @DeleteMapping("/star/house/{houseId}")
+    public ResponseVO cancelUserStarHouse(@RequestHeader("Authorization")String token,@PathVariable Integer houseId){
+        return userService.cancelUserStarHouse(token,houseId);
+    }
+
+    @ApiOperation("取消收藏商店")
+    @DeleteMapping("/star/store/{storeId}")
+    public ResponseVO cancelUserStarStore(@RequestHeader("Authorization")String token,@PathVariable Integer storeId){
+        return userService.cancelUserStarStore(token,storeId);
+    }
 }

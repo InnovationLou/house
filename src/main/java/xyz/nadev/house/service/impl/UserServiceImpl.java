@@ -65,8 +65,16 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     BillRepository billRepository;
+
+    @Autowired
+    StoreRepository storeRepository;
+
     @Autowired
     HouseSignRepository houseSignRepository;
+
+
+    @Autowired
+    FavorStoreRepository favorStoreRepository;
 
     @Autowired
     UserRepository resp;
@@ -392,6 +400,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
     public ResponseVO getSignInfo(String token) {
         User user = findByToken(token);
@@ -429,7 +438,81 @@ public class UserServiceImpl implements UserService {
             }
             return ControllerUtil.getDataResult(result);
         }
-        return null;
+        return ControllerUtil.getFalseResultMsgBySelf("房东无法获得信息");
+    }
+
+    @Override
+    public ResponseVO getUserStarStore(String token) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        List result = new ArrayList();
+        List<FavorStore> favorStores = favorStoreRepository.findAllByUserId(user.getId());
+        if (favorStores.isEmpty()) return ControllerUtil.getFalseResultMsgBySelf("用户收藏商店信息为空");
+        for (FavorStore favorStore : favorStores) {
+            Optional<Store> store = storeRepository.findById(favorStore.getStoreId());
+            if (!store.isPresent()) continue;
+            result.add(store);
+        }
+        return ControllerUtil.getDataResult(result);
+    }
+
+    @Override
+    public ResponseVO addUserStarStore(String token, Integer storeId) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        FavorStore favorStore = favorStoreRepository.findByUserIdAndStoreId(user.getId(), storeId);
+        if (favorStore != null) {
+            return ControllerUtil.getFalseResultMsgBySelf("请勿重复收藏");
+        }
+        favorStore = new FavorStore();
+        favorStore.setUserId(user.getId());
+        favorStore.setStoreId(storeId);
+        favorStoreRepository.save(favorStore);
+        return ControllerUtil.getDataResult("收藏成功");
+    }
+
+    @Override
+    public ResponseVO cancelUserStarHouse(String token, Integer houseId) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(), houseId);
+        if (collection == null) {
+            return ControllerUtil.getFalseResultMsgBySelf("你没有收藏该房屋");
+        }
+        try {
+            collectionRepository.delete(collection);
+        } catch (Exception e) {
+            return ControllerUtil.getFalseResultMsgBySelf("取消收藏房屋失败");
+        }
+        return ControllerUtil.getSuccessResultBySelf("取消收藏房屋成功");
+    }
+
+    @Override
+    public ResponseVO cancelUserStarStore(String token, Integer storeId) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        FavorStore favorStore = favorStoreRepository.findByUserIdAndStoreId(user.getId(), storeId);
+        if (favorStore == null) {
+            return ControllerUtil.getFalseResultMsgBySelf("你没有收藏该商店");
+        }
+        try {
+            favorStoreRepository.delete(favorStore);
+        } catch (Exception e) {
+            return ControllerUtil.getFalseResultMsgBySelf("取消收藏商店失败");
+        }
+        return ControllerUtil.getSuccessResultBySelf("取消收藏商店成功");
     }
 
 }
