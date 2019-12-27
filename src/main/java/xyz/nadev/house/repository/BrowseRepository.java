@@ -12,10 +12,11 @@ import java.util.List;
 public interface BrowseRepository extends JpaRepository<Browse, Long>{
     List<Browse> findBrowseByUserId(Integer userId);
 
-    @Query(value = "select * from browse b where b.user_id=?1  order by b.gmt_create desc" ,
-            countQuery = "select count(*) from browse b where b.user_id=?1  order by b.gmt_create desc",
+    @Query(value = "select * from browse where browse.user_id=?1  order by browse.gmt_create desc" ,
+            countQuery = "select count(*) from browse where browse.user_id=?1",
             nativeQuery = true)
     List<Browse> findBrowseByUserId(Integer userId, Pageable pageable);
+
     Browse findByUserIdAndHouseId(Integer userId,Integer houseId);
 
 
