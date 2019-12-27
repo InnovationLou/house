@@ -38,8 +38,8 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public ResponseVO search(String keyword) {
-        List<Store> storeList = resp.search(keyword);
+    public ResponseVO search(String type, String keyword) {
+        List<Store> storeList = resp.search(type, keyword);
         if (storeList.isEmpty()) {
             return ControllerUtil.getFalseResultMsgBySelf("未查询到数据");
         }

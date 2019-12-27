@@ -21,6 +21,8 @@ public class YamlConfig {
     @Value("${cos.bucket-name}")
     String bucketName;
 
+    @Value("${cos.domain}")
+    String domain;
 
     @Bean
     public void initStatic() {
@@ -28,5 +30,8 @@ public class YamlConfig {
         COSUtil.setAccessKey(accessKey);
         COSUtil.setRegion(region);
         COSUtil.setSecretKey(secretKey);
+        if (!domain.endsWith("/"))
+            domain += "/";
+        COSUtil.setDomain(domain);
     }
 }

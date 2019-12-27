@@ -31,9 +31,11 @@ public class COSUtil {
 
     public static String bucketName;
 
+    public static String domain;
+
 
     // 图片 URL 有效期 二十年 毒奶?
-    public static final Long EXPIRATION_ADD_TIME = 3600L * 1000 * 24 * 365 * 20;
+//    public static final Long EXPIRATION_ADD_TIME = 3600L * 1000 * 24 * 365 * 20;
 
 
     public static ResponseVO uploadImg(MultipartFile file, String imgType) {
@@ -52,17 +54,12 @@ public class COSUtil {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             // 从输入流上传必须制定content length, 否则http客户端可能会缓存所有数据，存在内存OOM的情况
             objectMetadata.setContentLength(file.getSize());
-
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(bucketName, key, file.getInputStream(), objectMetadata);
             // 设置存储类型, 默认是标准(Standard), 低频(standard_ia)
             putObjectRequest.setStorageClass(StorageClass.Standard);
-            PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);
-            // putobjectResult会返回文件的etag
-            String etag = putObjectResult.getETag();
-            Date expiration = new Date(new Date().getTime() + EXPIRATION_ADD_TIME);
-            URL url = cosclient.generatePresignedUrl(bucketName, key, expiration);
-            return ControllerUtil.getSuccessResultBySelf(url);
+            cosclient.putObject(putObjectRequest);
+            return ControllerUtil.getSuccessResultBySelf(domain + key);
         } catch (CosServiceException e) {
             log.error("CosServiceException: {}", e.toString());
         } catch (CosClientException e) {
@@ -89,4 +86,7 @@ public class COSUtil {
         COSUtil.bucketName = bucketName;
     }
 
+    public static void setDomain(String domain) {
+        COSUtil.domain = domain;
+    }
 }

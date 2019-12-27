@@ -6,6 +6,7 @@ import xyz.nadev.house.vo.ResponseVO;
 public interface StoreService {
     /**
      * 根据商铺类型查找
+     *
      * @param type :
      * @return: xyz.nadev.house.vo.ResponseVO
      */
@@ -13,5 +14,5 @@ public interface StoreService {
 
     ResponseVO findById(Integer id);
 
-    ResponseVO search(String keyword);
+    ResponseVO search(String type, String keyword);
 }

@@ -88,7 +88,6 @@ public class UserController {
         return houseService.getCollectedHouses(token);
     }
 
-
     @ApiOperation("用户查看自己的浏览历史信息")
     @GetMapping("/browse")
     public ResponseVO collections(@RequestHeader("Authorization")String token,Integer limit, Integer start){

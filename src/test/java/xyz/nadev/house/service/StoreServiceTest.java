@@ -23,7 +23,5 @@ class StoreServiceTest {
 
     @Test
     void search() {
-        System.out.println(storeService.search("成华区"));
-        System.out.println(storeService.search("宜宾"));
     }
 }
