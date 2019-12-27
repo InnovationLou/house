@@ -85,14 +85,23 @@ public class HouseServiceImpl implements HouseService {
             parmList.add(house.getCity());
         }
 
-        // 名称筛选
+        // title和 houseinfo筛选
         if (StringUtils.isNotBlank(house.getHouseInfo())) {
-            if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
-            sqlStr.append(
-                    " (house.house_info LIKE CONCAT('%',?,'%') OR house.title LIKE CONCAT('%',?,'%'))"
-            );
-            parmList.add(house.getHouseInfo());
-            parmList.add(house.getHouseInfo());
+            String[] words = house.getHouseInfo().trim().split(" ");
+            //  拆分搜索关键词
+            for (String w : words
+            ) {
+                // 排除空格中的空格
+                if (StringUtils.isNotBlank(w.trim())) {
+                    if (!sqlStr.toString().endsWith("WHERE")) sqlStr.append(" AND");
+                    sqlStr.append(
+                            " (house.house_info LIKE CONCAT('%',?,'%') OR house.title LIKE CONCAT('%',?,'%'))"
+                    );
+                    parmList.add(w);
+                    parmList.add(w);
+                }
+            }
+
         }
 
         // 朝向筛选
