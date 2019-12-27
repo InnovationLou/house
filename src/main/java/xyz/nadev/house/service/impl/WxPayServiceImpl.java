@@ -263,6 +263,7 @@ public class WxPayServiceImpl implements WxPayService {
                     bill.setPayItem(payItem);
                     bill.setOutTradeNo(out_trade_no);
                     bill.setMoney(houseOrder.getTotalFee());
+                    bill.setPayDate(new Date());
                     billRepository.save(bill);
 
                     resXml = WePayUtil.NOTIFY_SUCCESS;

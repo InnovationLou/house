@@ -88,5 +88,7 @@ public class Bill {
 
 	@Column(name = "dead_date", nullable = true)
 	private java.util.Date  deadDate;
+	@Column(name = "pay_date", nullable = true)
+	private java.util.Date  payDate;
 
 }
