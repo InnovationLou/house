@@ -20,7 +20,7 @@ wx:
     id: 1567855211
     secret: JKLo0o0o0JKLo0o0o0JKLo0o0o0JKLo0
   url:
-    notify: 127.0.0.1:8080/pay/wxNotify
+    notify: https://nadev.xyz/pay/wxNotify
     pay: https://api.mch.weixin.qq.com/pay/unifiedorder
     transfer: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
     refund: https://api.mch.weixin.qq.com/secapi/pay/refund
