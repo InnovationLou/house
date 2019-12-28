@@ -53,6 +53,9 @@ public class UserServiceImpl implements UserService {
     HouseOrderRepository houseOrderRepository;
 
     @Autowired
+    RecommedRepository recommedRepository;
+
+    @Autowired
     WxPayServiceImpl wxPayServiceImpl;
 
     @Autowired
@@ -525,5 +528,29 @@ public class UserServiceImpl implements UserService {
         }
         return ControllerUtil.getSuccessResultBySelf("取消收藏商店成功");
     }
+
+    @Override
+    public ResponseVO certifyLandlord(String token,String authImgUrl) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        if(user.getLandlord()==0 && user.getAuthImgUrl()==null){
+            user.setAuthImgUrl(authImgUrl);
+            resp.save(user);
+            return ControllerUtil.getSuccessResultBySelf("上传完成，等待管理员认证");
+        }
+        if(user.getLandlord()==0 && user.getAuthImgUrl()!=null){
+            return ControllerUtil.getFalseResultMsgBySelf("已上传，请勿重复上传");
+        }
+        return ControllerUtil.getSuccessResultBySelf("恭喜您，已认证成为房东");
+    }
+
+    @Override
+    public ResponseVO recommendList() {
+        return ControllerUtil.getDataResult(recommedRepository.findAll());
+    }
+
 
 }

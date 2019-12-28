@@ -1,6 +1,7 @@
 package xyz.nadev.house.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +114,12 @@ public class UserController {
         return houseService.rentHouseList(token);
     }
 
+    @ApiOperation("认证房东")
+    @PostMapping("/landlord/certify")
+    public ResponseVO certifyLandlord(@RequestHeader("Authorization") String token,String authImgUrl){
+        return userService.certifyLandlord(token,authImgUrl);
+    }
+
     @ApiOperation("获取所有报修")
     @GetMapping("/repair")
     public ResponseVO getRepairList(@RequestHeader("Authorization") String token) {
@@ -154,5 +161,11 @@ public class UserController {
     @DeleteMapping("/star/store/{storeId}")
     public ResponseVO cancelUserStarStore(@RequestHeader("Authorization") String token, @PathVariable Integer storeId) {
         return userService.cancelUserStarStore(token, storeId);
+    }
+
+    @ApiOperation("获取特色推荐")
+    @GetMapping("/rcmd")
+    public ResponseVO getRecommendList(){
+        return userService.recommendList();
     }
 }
