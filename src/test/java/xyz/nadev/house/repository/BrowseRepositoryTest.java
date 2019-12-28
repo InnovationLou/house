@@ -7,6 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class BrowseRepositoryTest {
 
@@ -15,7 +17,8 @@ class BrowseRepositoryTest {
 
     @Test
     void findBrowseByUserId() {
-        Pageable pageable = PageRequest.of(0,10);
-        System.out.println(browseRepository.findBrowseByUserId( 6, pageable));
+        Pageable pageable = PageRequest.of(2,10);
+        System.out.println("结果为："+browseRepository.findBrowseByUserId(6, pageable));
+
     }
 }

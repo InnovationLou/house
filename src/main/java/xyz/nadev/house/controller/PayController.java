@@ -32,7 +32,7 @@ public class PayController {
 
     @ApiOperation(value = "微信回调接口")
     @PostMapping("/wxNotify")
-    public ResponseVO notify(HttpServletRequest request) throws Exception {
+    public String notify(HttpServletRequest request) throws Exception {
         return wxPayService.wxNotify(request);
     }
 

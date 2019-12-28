@@ -207,7 +207,7 @@ public class WxPayServiceImpl implements WxPayService {
      * @throws Exception
      */
     @Override
-    public ResponseVO wxNotify(HttpServletRequest request) throws Exception {
+    public String wxNotify(HttpServletRequest request) throws Exception {
         log.info("-------------开始操作HouseOrder--------------");
         //支付成功后完成的逻辑目前是更改houseOrder的支付状态，加入Bill账单记录，加入HouseSign签约记录
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
@@ -266,20 +266,20 @@ public class WxPayServiceImpl implements WxPayService {
                     bill.setMoney(houseOrder.getTotalFee());
                     bill.setPayDate(new Date());
                     billRepository.save(bill);
-
                     resXml = WePayUtil.NOTIFY_SUCCESS;
-                    return ControllerUtil.getDataResult(resXml);
+                    return resXml;
                 } catch (Exception e) {
                     log.error("orderSecretRepository.save(orderSecret)异常发生");
                     resXml = WePayUtil.NOTIFY_FAIL_SERVER_ERROR;
                     log.error(resXml);
-                    return ControllerUtil.getFalseResultMsgBySelf(resXml);
+                    return resXml;
                 }
             }
-
-            return ControllerUtil.getFalseResultMsgBySelf("没有此订单信息");
+            resXml = WePayUtil.NOTIFY_FAIL_UNKNOWN_DATA;
+            return resXml;
         }
-        return ControllerUtil.getFalseResultMsgBySelf("订单返回结果失败");
+        resXml = WePayUtil.NOTIFY_FAIL_WRONG_RETURN_CODE;
+        return resXml;
     }
 
     /**

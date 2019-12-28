@@ -73,13 +73,13 @@ public class UserController {
 
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
-    public ResponseVO refundToUser(@RequestHeader("Authorization") String token, String sign, String outTradeNo, HttpServletRequest request) throws Exception {
+    public ResponseVO refundToUser(@RequestHeader("Authorization") String token, String sign, @PathVariable String outTradeNo, HttpServletRequest request) throws Exception {
         return wxPayService.doRefund(token, request);
     }
 
     @ApiOperation("用户添加收藏房源信息")
     @PostMapping("/star/house/{houseId}")
-    public ResponseVO collectHouse(@RequestHeader("Authorization") String token, Integer houseId) {
+    public ResponseVO collectHouse(@RequestHeader("Authorization") String token,Integer houseId) {
         return userService.addUserColleection(token, houseId);
     }
 

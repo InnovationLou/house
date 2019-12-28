@@ -23,7 +23,7 @@ public interface WxPayService {
      * @return
      * @throws Exception
      */
-    ResponseVO wxNotify(HttpServletRequest request) throws Exception;
+    String wxNotify(HttpServletRequest request) throws Exception;
 
     /**
      * 付钱给提现那边
