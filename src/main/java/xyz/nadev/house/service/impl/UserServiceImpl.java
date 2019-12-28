@@ -273,7 +273,7 @@ public class UserServiceImpl implements UserService {
         //用token拿到当前用户信息
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
+            log.info(RespCode.MSG_WITHOUT_AUTH);
             return null;
         }
         String openId = user.getOpenId();
@@ -323,8 +323,8 @@ public class UserServiceImpl implements UserService {
             //用token拿到当前用户信息（UserId）
             User user = findByToken(token);
             if (user == null) {
-                log.info("token不存在");
-                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+                log.info(RespCode.MSG_WITHOUT_AUTH);
+                return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
             }
             Integer userId = user.getId();
             Collection collection = new Collection();
@@ -340,14 +340,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseVO findUserBrowse(String token, Integer page,Integer size) {
+    public ResponseVO findUserBrowse(String token, Integer page) {
         User user = findByToken(token);
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         List list = new ArrayList();
-        Pageable pageable = PageRequest.of(page-1, size);
-        List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(),pageable);
+        Pageable pageable = PageRequest.of(--page, 10);
+        List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(), pageable);
         if (browses.isEmpty()) {
             return ControllerUtil.getFalseResultMsgBySelf("无游览信息");
         }
@@ -359,17 +359,7 @@ public class UserServiceImpl implements UserService {
             list.add(house);
         }
         return ControllerUtil.getDataResult(list);
-//        Pageable pageable = (Pageable) PageRequest.of(1, 10);
-//
-//
-//        List<Map> mapList = new ArrayList<>();
-//        List<Browse> browses = browseRepository.findBrowseByUserId(user.getId(), pageable);
-//        if (browses.isEmpty())return ControllerUtil.getFalseResultMsgBySelf("没有收藏记录");
-//        for (Browse b:browses
-//             ) {
-//            Map<String, Object> map;
-//
-//        }
+
     }
 
     @Override
@@ -377,8 +367,8 @@ public class UserServiceImpl implements UserService {
         try {
             User user = findByToken(token);
             if (user == null) {
-                log.info("token不存在");
-                return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+                log.info(RespCode.MSG_WITHOUT_AUTH);
+                return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
             }
             List result = new ArrayList();
             List<Bill> bills = billRepository.findByUserId(user.getId());
@@ -393,8 +383,8 @@ public class UserServiceImpl implements UserService {
                     continue;
                 }
                 System.out.println(house.toString());
-                map.put("userId",bill.getUserId());
-                map.put("houseId",bill.getHouseId());
+                map.put("userId", bill.getUserId());
+                map.put("houseId", bill.getHouseId());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("cashType", house.get().getCashType());
                 map.put("houseType", house.get().getHouseType());
@@ -405,14 +395,14 @@ public class UserServiceImpl implements UserService {
                 map.put("remark", bill.getRemark());
                 map.put("dead_date", bill.getDeadDate());
                 map.put("payDate", bill.getPayDate());
-                map.put("payDetail1",bill.getPayDetail1());
-                map.put("payDetail2",bill.getPayDetail2());
-                map.put("payDetailFee1",bill.getPayDetailFee1());
-                map.put("payDetailFee2",bill.getPayDetailFee2());
-                map.put("waterUse",bill.getWaterUse());
-                map.put("waterUntPrice",bill.getWaterUntPrice());
-                map.put("eleUse",bill.getEleUse());
-                map.put("eleUntPrice",bill.getEleUntPrice());
+                map.put("payDetail1", bill.getPayDetail1());
+                map.put("payDetail2", bill.getPayDetail2());
+                map.put("payDetailFee1", bill.getPayDetailFee1());
+                map.put("payDetailFee2", bill.getPayDetailFee2());
+                map.put("waterUse", bill.getWaterUse());
+                map.put("waterUntPrice", bill.getWaterUntPrice());
+                map.put("eleUse", bill.getEleUse());
+                map.put("eleUntPrice", bill.getEleUntPrice());
 
                 result.add(map);
             }
@@ -426,8 +416,7 @@ public class UserServiceImpl implements UserService {
     public ResponseVO getSignInfo(String token) {
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         //不为房东
         if (user.getLandlord() == 0) {
@@ -468,8 +457,7 @@ public class UserServiceImpl implements UserService {
     public ResponseVO getUserStarStore(String token) {
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         List result = new ArrayList();
         List<FavorStore> favorStores = favorStoreRepository.findAllByUserId(user.getId());
@@ -486,8 +474,8 @@ public class UserServiceImpl implements UserService {
     public ResponseVO addUserStarStore(String token, Integer storeId) {
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            log.info(RespCode.MSG_WITHOUT_AUTH);
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         FavorStore favorStore = favorStoreRepository.findByUserIdAndStoreId(user.getId(), storeId);
         if (favorStore != null) {
@@ -504,8 +492,8 @@ public class UserServiceImpl implements UserService {
     public ResponseVO cancelUserStarHouse(String token, Integer houseId) {
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            log.info(RespCode.MSG_WITHOUT_AUTH);
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(), houseId);
         if (collection == null) {
@@ -523,8 +511,8 @@ public class UserServiceImpl implements UserService {
     public ResponseVO cancelUserStarStore(String token, Integer storeId) {
         User user = findByToken(token);
         if (user == null) {
-            log.info("token不存在");
-            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+            log.info(RespCode.MSG_WITHOUT_AUTH);
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
         FavorStore favorStore = favorStoreRepository.findByUserIdAndStoreId(user.getId(), storeId);
         if (favorStore == null) {

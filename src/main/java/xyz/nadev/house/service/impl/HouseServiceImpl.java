@@ -49,7 +49,7 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ResponseVO findByCondition(House house, Integer distance, Integer latest, Integer price, Integer pageNum) {
-
+        //
         // 不传默认第一页
         if (pageNum == null) pageNum = 1;
 

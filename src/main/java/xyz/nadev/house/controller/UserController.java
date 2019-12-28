@@ -90,8 +90,8 @@ public class UserController {
 
     @ApiOperation("用户查看自己的浏览历史信息")
     @GetMapping("/browse")
-    public ResponseVO collections(@RequestHeader("Authorization") String token, Integer page ,Integer size) {
-        return userService.findUserBrowse(token, page ,size);
+    public ResponseVO collections(@RequestHeader("Authorization") String token, Integer page) {
+        return userService.findUserBrowse(token, page);
     }
 
     @ApiOperation("用户查看自己账单信息")
@@ -134,25 +134,25 @@ public class UserController {
 
     @ApiOperation("获取用户收藏的商店及信息")
     @GetMapping("/star/store")
-    public ResponseVO getUserStarStore(@RequestHeader("Authorization")String token){
+    public ResponseVO getUserStarStore(@RequestHeader("Authorization") String token) {
         return userService.getUserStarStore(token);
     }
 
     @ApiOperation("用户添加商店收藏")
     @PostMapping("/star/store/{storeId}")
-    public ResponseVO addUserStarStore(@RequestHeader("Authorization")String token,@PathVariable Integer storeId){
-        return userService.addUserStarStore(token,storeId);
+    public ResponseVO addUserStarStore(@RequestHeader("Authorization") String token, @PathVariable Integer storeId) {
+        return userService.addUserStarStore(token, storeId);
     }
 
     @ApiOperation("取消收藏房屋")
     @DeleteMapping("/star/house/{houseId}")
-    public ResponseVO cancelUserStarHouse(@RequestHeader("Authorization")String token,@PathVariable Integer houseId){
-        return userService.cancelUserStarHouse(token,houseId);
+    public ResponseVO cancelUserStarHouse(@RequestHeader("Authorization") String token, @PathVariable Integer houseId) {
+        return userService.cancelUserStarHouse(token, houseId);
     }
 
     @ApiOperation("取消收藏商店")
     @DeleteMapping("/star/store/{storeId}")
-    public ResponseVO cancelUserStarStore(@RequestHeader("Authorization")String token,@PathVariable Integer storeId){
-        return userService.cancelUserStarStore(token,storeId);
+    public ResponseVO cancelUserStarStore(@RequestHeader("Authorization") String token, @PathVariable Integer storeId) {
+        return userService.cancelUserStarStore(token, storeId);
     }
 }
