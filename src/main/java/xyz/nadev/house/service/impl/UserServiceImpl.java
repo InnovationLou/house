@@ -329,10 +329,15 @@ public class UserServiceImpl implements UserService {
                 log.info(RespCode.MSG_WITHOUT_AUTH);
                 return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
             }
+            Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(),houseId);
+            if (collection != null) {
+                return ControllerUtil.getFalseResultMsgBySelf("请勿重复收藏");
+            }
             Integer userId = user.getId();
-            Collection collection = new Collection();
+            collection = new Collection();
             collection.setUserId(userId);
             collection.setHouseId(houseId);
+            collection.setGmtCreate(new Date());
             collectionRepository.save(collection);
             return ControllerUtil.getDataResult("收藏成功");
         } catch (Exception e) {

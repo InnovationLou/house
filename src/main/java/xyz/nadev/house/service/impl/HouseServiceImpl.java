@@ -362,6 +362,7 @@ public class HouseServiceImpl implements HouseService {
         }
         Map<String, Boolean> map = new HashMap<>();
         Collection collection = collectionRepository.findByUserIdAndHouseId(user.getId(), houseId);
+
         if (collection == null) {
             map.put("isfavor", false);
         } else {
