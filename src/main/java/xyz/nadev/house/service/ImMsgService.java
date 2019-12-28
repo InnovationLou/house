@@ -45,6 +45,15 @@ public interface ImMsgService {
      */
     ResponseVO getChaterListAndLatestWords(String authorization);
 
+
+    /**
+     * 根据传入的auth信息找到对应用户的朋友和是否有新消息
+     * @param authorization
+     * @return 包含朋友的基础信息和最近的一句聊天话
+     */
+    ResponseVO getChatterListAndHasNewMessage(String authorization);
+
+
     /**
      * 删除和这个用户的所有聊天记录
      * @param authorization

@@ -13,6 +13,7 @@ import xyz.nadev.house.repository.UserRepository;
 import xyz.nadev.house.service.ImMsgService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
+import xyz.nadev.house.vo.ImChatterHasNewMessage;
 import xyz.nadev.house.vo.ImChatterWithLastest100MsgsVO;
 import xyz.nadev.house.vo.ResponseVO;
 
@@ -94,7 +95,8 @@ public class ImMsgServiceImpl implements ImMsgService {
         while (it.hasNext()){
             tmp = it.next();
             // 移除: 未读 || 早了 || 晚了
-            if (!tmp.isRead() || tmp.getGmtSend().getTime() < start.getTime()
+            // 2019-12-28 19:15:xx 是否已读不要了
+            if (/*!tmp.isRead() ||*/ tmp.getGmtSend().getTime() < start.getTime()
                     || tmp.getGmtSend().getTime() > end.getTime()){
                 it.remove();
             }
@@ -131,13 +133,13 @@ public class ImMsgServiceImpl implements ImMsgService {
                 new ArrayList<>();
         ImChatterWithLastest100MsgsVO imChatterWithLastest100MsgsVO;
         Iterator<Integer> it = friendIds.iterator();
-        int friendId = -1;
+        int friendId;
         User friend;
         List<ImMsg> friendMsgs;
         while(it.hasNext()){
             //每个朋友都要去获取消息和个人信息
             friendId = it.next();
-                    friend = userRepository.findById(friendId).get();
+            friend = userRepository.findById(friendId).get();
             imChatterWithLastest100MsgsVO = setWithUser(friend);
             friendMsgs = new ArrayList<>();
             for (ImMsg msg :
@@ -165,6 +167,51 @@ public class ImMsgServiceImpl implements ImMsgService {
             imChatterWithLastest100MsgsVOs.add(imChatterWithLastest100MsgsVO);
         }
         return ControllerUtil.getDataResult(imChatterWithLastest100MsgsVOs);
+    }
+
+    @Override
+    public ResponseVO getChatterListAndHasNewMessage(String authorization) {
+        int userId = /*!authorization.equals("dv5svsvPYA")?*/dataValidate(authorization)/*:9*/;
+        if (userId == -1){
+            return ControllerUtil.getFalseResultMsgBySelf("错误，没有用户信息");
+        }
+        // 使用set处理获取朋友IDs
+        List<ImMsg> msgsAsRcvr = imMsgRepository.findAllByReceiverId(userId);
+        //找朋友
+        HashSet<Integer> chatterIds = new HashSet<>();
+        for (ImMsg msg:
+             msgsAsRcvr) {
+            chatterIds.add(msg.getSenderId());
+        }
+        ImChatterHasNewMessage imChatterHasNewMessage;
+        List<ImChatterHasNewMessage> imChatterHasNewMessages = new ArrayList<>();
+        Iterator<Integer> it = chatterIds.iterator();
+        int friendId;   // 朋友的Id
+        int msgCount;   // 未读消息的条数
+        User friend;
+        while(it.hasNext()){
+            friendId = it.next();
+            List<ImMsg> friendMsgs = new ArrayList<>();
+            for (ImMsg msg:
+                    msgsAsRcvr) {
+                // 未读
+                if (msg.getSenderId() == friendId && !msg.isRead()){
+                    friendMsgs.add(msg);
+                }
+            }
+            friend = userRepository.findById(friendId).get();
+            imChatterHasNewMessage = setImChatterHasNewMessageWithUser(friend);
+            msgCount = friendMsgs.size();
+
+            if (msgCount > 0){
+                friendMsgs.sort(new ImMsgComparator());
+                imChatterHasNewMessage.setLatestMessage(friendMsgs.get(msgCount - 1));
+                imChatterHasNewMessage.setHasNewMessage(true);
+                imChatterHasNewMessage.setMessageNumber(msgCount);
+            }
+            imChatterHasNewMessages.add(imChatterHasNewMessage);
+        }
+        return ControllerUtil.getDataResult(imChatterHasNewMessages);
     }
 
     // 不开事务注解会报错, 因为执行了两次删除操作, 需要事务支持
@@ -245,5 +292,18 @@ public class ImMsgServiceImpl implements ImMsgService {
         ic.setNickName(user.getNickName());
         return ic;
     }
+
+    private ImChatterHasNewMessage setImChatterHasNewMessageWithUser(User user){
+        ImChatterHasNewMessage ic = new ImChatterHasNewMessage();
+        ic.setId(user.getId());
+        ic.setAuth(user.getIsAuth() == 1?true:false);
+        ic.setCity(user.getCity());
+        ic.setImgUrl(null);
+        ic.setNickName(user.getNickName());
+        ic.setLandLord(user.getLandlord() == 1?true:false);
+        return ic;
+    }
+
+
 
 }
