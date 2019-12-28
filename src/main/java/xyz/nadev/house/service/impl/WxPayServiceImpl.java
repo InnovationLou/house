@@ -227,13 +227,14 @@ public class WxPayServiceImpl implements WxPayService {
         String returnCode = (String) map.get("return_code");
         String out_trade_no = (String) map.get("out_trade_no");
         String transaction_id = (String) map.get("transaction_id");
-        if ("SUCESS".equals(returnCode)) {
+        if ("SUCCESS".equals(returnCode)) {
             //通过订单号查询订单记录
             HouseOrder houseOrder = houseorderRepository.findByOutTradeNo(out_trade_no);
             String payItem = houseOrder.getPayItem();
 
             if (houseOrder != null) {
                 try {
+                    log.info("我进来了·······");
                     //此账单若是cash房租类，并且有记录数
                     if (houseOrder.getLease() != null && houseOrder.getPayItem() == "cash") {
                         HouseSign houseSign = new HouseSign();
