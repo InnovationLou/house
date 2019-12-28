@@ -51,10 +51,6 @@ public class HouseController {
     public ResponseVO houseIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer houseId) {
         return houseService.houseIsFavor(token, houseId);
     }
-    @ApiOperation("判断用户是否收藏了该生活服务")
-    @GetMapping("/{storeId}/isfavor")
-    public ResponseVO storeIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer storeId){
-        return houseService.storeIsFavor(token, storeId);
-    }
+
 
 }

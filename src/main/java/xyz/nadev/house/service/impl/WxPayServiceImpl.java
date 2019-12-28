@@ -107,7 +107,7 @@ public class WxPayServiceImpl implements WxPayService {
             houseOrder.setIsPaid(WxPayConfig.HOUSE_ORDER_NOT_PAID);
             houseOrder.setPayItem(payItem);
             houseorderRepository.save(houseOrder);
-            System.out.println("Openid:" + user.getOpenId() + "order表添加成功");
+            System.out.println("Openid:" + user.getOpenId() + "的order表添加成功，待支付");
         } catch (Exception e) {
             log.error("用户表无此OpenID，添加失败");
             return ControllerUtil.getFalseResultMsgBySelf("用户表无此OpenID，添加失败");
@@ -228,10 +228,10 @@ public class WxPayServiceImpl implements WxPayService {
         String out_trade_no = (String) map.get("out_trade_no");
         String transaction_id = (String) map.get("transaction_id");
         if ("SUCCESS".equals(returnCode)) {
+            log.info("用户支付成功");
             //通过订单号查询订单记录
             HouseOrder houseOrder = houseorderRepository.findByOutTradeNo(out_trade_no);
             String payItem = houseOrder.getPayItem();
-
             if (houseOrder != null) {
                 try {
                     log.info("我进来了·······");

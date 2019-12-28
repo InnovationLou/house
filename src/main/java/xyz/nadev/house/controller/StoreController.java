@@ -3,11 +3,9 @@ package xyz.nadev.house.controller;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.Store;
+import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.StoreImgService;
 import xyz.nadev.house.service.StoreService;
 import xyz.nadev.house.vo.ResponseVO;
@@ -23,6 +21,9 @@ public class StoreController {
 
     @Autowired
     StoreImgService storeImgService;
+
+    @Autowired
+    HouseService houseService;
 
     @ApiOperation("根据类型返回店铺数据列表 如 '餐饮美食'")
     @GetMapping("/list/{type}")
@@ -46,5 +47,11 @@ public class StoreController {
     @GetMapping("/search/{keyword}")
     public ResponseVO search(@PathVariable String keyword) {
         return storeService.search(keyword);
+    }
+
+    @ApiOperation("判断用户是否收藏了该生活服务")
+    @GetMapping("/{storeId}/isfavor")
+    public ResponseVO storeIsFavor(@RequestHeader("Authorization") String token, @PathVariable Integer storeId){
+        return houseService.storeIsFavor(token, storeId);
     }
 }
