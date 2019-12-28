@@ -37,9 +37,10 @@ public class HouseRepair {
 	private Integer houseId;
 
 	/**
-	 * 申请报修的用户id
+	 * 报修用户ID
+	 * default value: null
 	 */
-	@Column(name = "user_id",nullable = false)
+	@Column(name = "user_id", nullable = true)
 	private Integer userId;
 
 	/**
@@ -70,4 +71,18 @@ public class HouseRepair {
 	@Column(name = "gmt_create", nullable = false)
 	@CreatedDate
 	private java.util.Date gmtCreate;
+
+	/**
+	 * 房源名字
+	 * default value: null
+	 */
+	@Column(name = "house_info", nullable = true)
+	private String houseInfo;
+
+	/**
+	 * null
+	 * default value: null
+	 */
+	@Column(name = "house_img_url", nullable = true)
+	private String houseImgUrl;
 }

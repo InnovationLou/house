@@ -8,11 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.nadev.house.entity.*;
 import xyz.nadev.house.entity.Collection;
-import xyz.nadev.house.repository.BrowseRepository;
-import xyz.nadev.house.repository.CollectionRepository;
-import xyz.nadev.house.repository.FavorStoreRepository;
+import xyz.nadev.house.repository.*;
 import xyz.nadev.house.service.HouseService;
-import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
@@ -44,6 +41,12 @@ public class HouseServiceImpl implements HouseService {
 
     @Autowired
     FavorStoreRepository favorStoreRepository;
+
+    @Autowired
+    HouseSignRepository houseSignRepository;
+
+    @Autowired
+    HouseRepository houseRepository;
 
     private static final Integer SINGLE_PAGE_NUM = 10;
 
@@ -349,6 +352,17 @@ public class HouseServiceImpl implements HouseService {
         User user = userService.findByToken(token);
         if (user == null) {
             return ControllerUtil.getFalseResultMsgBySelf("非法操作");
+        }
+        List<HouseSign> houseSigns =  houseSignRepository.findByUserId(user.getId());
+        List list = new ArrayList();
+        if (houseSigns.isEmpty()){return ControllerUtil.getFalseResultMsgBySelf("没有相关签约");}
+        for (HouseSign houseSign:houseSigns){
+            Date date = new Date();
+            if (date.compareTo(houseSign.getEndDate())>0 || houseSign.getIsPaid()==0||houseSign.getIsDeleted()==1||houseSign.getIsFulfill()==0){
+                continue;
+            }
+            House house = findHouseById(houseSign.getHouseId());
+            list.add(house);
         }
         return ControllerUtil.getDataResult(resp.findHousesByTenantId(user.getId()));
     }

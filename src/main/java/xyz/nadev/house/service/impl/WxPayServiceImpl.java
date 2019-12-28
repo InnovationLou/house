@@ -245,8 +245,9 @@ public class WxPayServiceImpl implements WxPayService {
                         //结束日期：起止日期+有效期
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(calendar.MONTH, houseOrder.getLease());
-                        houseSign.setEndCreate(calendar.getTime());
+                        houseSign.setEndDate(calendar.getTime());
                         houseSign.setIsFulfill(WxPayConfig.HOUSE_IS_FULFILL);
+
                         houseSignRepository.save(houseSign);
 
                     }

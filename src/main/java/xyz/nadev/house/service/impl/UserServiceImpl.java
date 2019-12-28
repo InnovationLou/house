@@ -445,11 +445,11 @@ public class UserServiceImpl implements UserService {
                 map.put("cashType", house.get().getCash());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("houseType", house.get().getHouseType());
-                map.put("gmtCreate", houseSign.getGmtCreate());
-                map.put("endCreate", houseSign.getEndCreate());
+                map.put("startCreate", houseSign.getGmtCreate());
+                map.put("endCreate", houseSign.getEndDate());
                 map.put("expDate", houseSign.getExpDate());
                 //履行状态：当前日期.compareTo(截止日期)  = 0, < -1, > 1
-                if (new Date().compareTo(houseSign.getEndCreate()) > 0 && houseSign.getIsFulfill() != 0) {
+                if (new Date().compareTo(houseSign.getEndDate()) > 0 && houseSign.getIsFulfill() != 0) {
                     houseSign.setIsFulfill(WxPayConfig.HOUSE_NOT_FULFILL);
                     houseSignRepository.save(houseSign);
                 }
