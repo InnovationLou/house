@@ -170,4 +170,6 @@ public interface UserService {
     ResponseVO certifyLandlord(String token,String authImgUrl);
 
     ResponseVO recommendList();
+
+    ResponseVO getUserAllGetMoney(String token);
 }

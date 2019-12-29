@@ -227,12 +227,12 @@ public class WxPayServiceImpl implements WxPayService {
         String returnCode = (String) map.get("return_code");
         String out_trade_no = (String) map.get("out_trade_no");
         String transaction_id = (String) map.get("transaction_id");
-        if ("SUCCESS".equals(returnCode)) {
-            log.info("用户支付成功");
-            //通过订单号查询订单记录
-            HouseOrder houseOrder = houseorderRepository.findByOutTradeNo(out_trade_no);
-            String payItem = houseOrder.getPayItem();
-            if (houseOrder != null) {
+        //通过订单号查询订单记录
+        HouseOrder houseOrder = houseorderRepository.findByOutTradeNo(out_trade_no);
+        String payItem = houseOrder.getPayItem();
+        if (houseOrder != null) {
+            if ("SUCCESS".equals(returnCode)) {
+                log.info("用户支付成功");
                 try {
                     log.info("我进来了·······");
                     //此账单若是cash房租类，并且有记录数
@@ -245,11 +245,14 @@ public class WxPayServiceImpl implements WxPayService {
                         //结束日期：起止日期+有效期
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(calendar.MONTH, houseOrder.getLease());
+                        houseSign.setStartDate(new Date());
                         houseSign.setEndDate(calendar.getTime());
                         houseSign.setIsFulfill(WxPayConfig.HOUSE_IS_FULFILL);
-
+                        houseSign.setIsOut(0);
+                        houseSign.setIsDeleted(0);
+                        houseSign.setIsPaid(1);
+                        houseSign.setOutTradeNo(out_trade_no);
                         houseSignRepository.save(houseSign);
-
                     }
                     houseOrder.setPrepayId(transaction_id);
                     //将订单支付状态设置为已支付
@@ -276,10 +279,10 @@ public class WxPayServiceImpl implements WxPayService {
                     return resXml;
                 }
             }
-            resXml = WePayUtil.NOTIFY_FAIL_UNKNOWN_DATA;
+            resXml = WePayUtil.NOTIFY_FAIL_WRONG_RETURN_CODE;
             return resXml;
         }
-        resXml = WePayUtil.NOTIFY_FAIL_WRONG_RETURN_CODE;
+        resXml = WePayUtil.NOTIFY_FAIL_UNKNOWN_DATA;
         return resXml;
     }
 

@@ -445,7 +445,7 @@ public class UserServiceImpl implements UserService {
                 map.put("cashType", house.get().getCash());
                 map.put("houseInfo", house.get().getHouseInfo());
                 map.put("houseType", house.get().getHouseType());
-                map.put("startCreate", houseSign.getGmtCreate());
+                map.put("startCreate", houseSign.getStartDate());
                 map.put("endCreate", houseSign.getEndDate());
                 map.put("expDate", houseSign.getExpDate());
                 //履行状态：当前日期.compareTo(截止日期)  = 0, < -1, > 1
@@ -555,6 +555,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO recommendList() {
         return ControllerUtil.getDataResult(recommedRepository.findAll());
+    }
+
+    @Override
+    public ResponseVO getUserAllGetMoney(String token) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        List<Withdraw> withdraw = withdrawRepository.findByOpenId(user.getOpenId());
+        BigDecimal allMoney = BigDecimal.valueOf(0.00);
+        for (Withdraw withdraw1:withdraw){
+            if (withdraw1!=null&&withdraw1.getIsFinish()){
+                allMoney.add(withdraw1.getMoney());
+            }
+        }
+        return ControllerUtil.getDataResult(allMoney);
     }
 
 

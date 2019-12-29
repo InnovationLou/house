@@ -168,4 +168,10 @@ public class UserController {
     public ResponseVO getRecommendList(){
         return userService.recommendList();
     }
+
+    @ApiOperation("获得用户已提现金额")
+    @GetMapping("/allGetMoney")
+    public ResponseVO getUserAllGetMoney(@RequestHeader("Authorization") String token){
+        return userService.getUserAllGetMoney(token);
+    }
 }
