@@ -18,7 +18,9 @@ public class MessageServiceImpl implements MessageService {
 	public ResponseVO getNotifies(Integer days) {
 		Date now=new Date();
 		// milliseconds
-		Date old=new Date(now.getTime()-days*24*3600 * 1000);
+		Date old=new Date(now.getTime() - days * 24 * 3600 * 1000l);
+		System.out.println("现在:" + now.getTime() + ", " + new Date(now.getTime()));
+		System.out.println("过去:" + old.getTime() + ", " + new Date(old.getTime()));
 		return ControllerUtil.getDataResult(resp.findByGmtCreateBetween(old,now));
 	}
 }
