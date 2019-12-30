@@ -193,4 +193,9 @@ public class UserController {
             String idCardNum){
         return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum);
     }
+    @ApiOperation("获取用户组了的房的列表")
+    @PostMapping("/myrented")
+    public ResponseVO getMyRentedHouse( @RequestHeader("Authorization") String token){
+        return userService.getMyRentedHouse(token);
+    }
 }

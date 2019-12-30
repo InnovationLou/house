@@ -613,4 +613,21 @@ public class UserServiceImpl implements UserService {
         houseSignRepository.save(houseSign);
         return ControllerUtil.getSuccessResultBySelf("签约成功");
     }
+
+    @Override
+    public ResponseVO getMyRentedHouse(String token) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        List<HouseSign> houseSigns = houseSignRepository.findByUserId(user.getId());
+        if (null != houseSigns && houseSigns.size() > 0){
+            for(int i=0; i<houseSigns.size(); i++){
+                int houseId = houseSigns.get(i).getHouseId();
+                houseSigns.get(i).setHouse(houseRepository.findById(houseId).get());
+            }
+        }
+        return ControllerUtil.getDataResult(houseSigns);
+    }
 }
