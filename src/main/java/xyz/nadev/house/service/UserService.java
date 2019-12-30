@@ -172,4 +172,6 @@ public interface UserService {
     ResponseVO recommendList();
 
     ResponseVO getUserAllGetMoney(String token);
+
+    ResponseVO certifyUser(String token, String idcardFront, String idcardBack);
 }

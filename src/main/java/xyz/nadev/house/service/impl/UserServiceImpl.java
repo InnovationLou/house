@@ -574,5 +574,27 @@ public class UserServiceImpl implements UserService {
         return ControllerUtil.getDataResult(allMoney);
     }
 
-
+    @Override
+    public ResponseVO certifyUser(String token, String idcardFront, String idcardBack) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("未登录");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        if(user.getIsAuth() == 0 && null == user.getIdCardFrontImg()){
+            // 未认证
+            user.setIdCardFrontImg(idcardFront);
+            user.setIdCardBackImg(idcardBack);
+            resp.save(user);
+            return ControllerUtil.getSuccessResultBySelf("成功上传认证信息,请等待管理员认证通过!");
+        } else {
+            if (user.getIsAuth() > 0){
+                return ControllerUtil.getSuccessResultBySelf("你已认证通过,请勿重复认证");
+            }
+            if (user.getIdCardFrontImg() != null){
+                return ControllerUtil.getSuccessResultBySelf("正在认证中,请稍后再试");
+            }
+        }
+        return ControllerUtil.getFalseResultMsgBySelf("未知错误");
+    }
 }

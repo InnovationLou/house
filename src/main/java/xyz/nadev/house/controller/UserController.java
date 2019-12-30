@@ -120,6 +120,14 @@ public class UserController {
         return userService.certifyLandlord(token,authImgUrl);
     }
 
+    @ApiOperation("用户认证")
+    @PostMapping("/certify")
+    public ResponseVO certifyUser(@RequestHeader("Authorization") String token
+            ,@RequestParam  String idcardFront
+            ,@RequestParam String idcardBack){
+        return userService.certifyUser(token,idcardFront, idcardBack);
+    }
+
     @ApiOperation("获取所有报修")
     @GetMapping("/repair")
     public ResponseVO getRepairList(@RequestHeader("Authorization") String token) {
