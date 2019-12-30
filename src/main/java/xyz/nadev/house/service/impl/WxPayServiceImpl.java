@@ -236,7 +236,7 @@ public class WxPayServiceImpl implements WxPayService {
                 try {
                     log.info("我进来了·······");
                     //此账单若是cash房租类，并且有记录数
-                    if (houseOrder.getLease() != null && houseOrder.getPayItem() == "cash") {
+                    if (houseOrder.getLease() != null && "cash".equals(houseOrder.getPayItem())) {
                         HouseSign houseSign = new HouseSign();
                         houseSign.setId(houseOrder.getUserId());
                         houseSign.setHouseId(houseOrder.getHouseId());
@@ -412,7 +412,7 @@ public class WxPayServiceImpl implements WxPayService {
      * @return
      */
     @Override
-    public ResponseVO doRefund(String token, HttpServletRequest request) throws Exception {
+    public ResponseVO doRefund(String token, HttpServletRequest request,String outTradeNo) throws Exception {
         //看token是否在,若存在，则添加信息到order表
         User user = userServiceImpl.findByToken(token);
         if (user == null) {
@@ -426,12 +426,11 @@ public class WxPayServiceImpl implements WxPayService {
         }
 
         try {
-            // 提取参数，失败则抛出异常
-            String outTradeNo = request.getParameter("outTradeNo");
+
             RefundUser refundUser = new RefundUser();
             HouseOrder houseOrder = houseorderRepository.findByOpenIdAndOutTradeNo(openId, outTradeNo);
             if (houseOrder == null) {
-                log.info("失败,无此订单信息，获得的OpenId：" + token + "  outTradeNo: " + outTradeNo);
+                log.info("失败,无此订单信息，获得的OpenId：" + user.getOpenId() + "  outTradeNo: " + outTradeNo);
                 return ControllerUtil.getFalseResultMsgBySelf("无此订单记录");
             }
             BigDecimal refundMoney = houseOrder.getTotalFee();

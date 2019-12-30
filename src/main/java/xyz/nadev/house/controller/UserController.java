@@ -74,7 +74,7 @@ public class UserController {
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
     public ResponseVO refundToUser(@RequestHeader("Authorization") String token, String sign, @PathVariable String outTradeNo, HttpServletRequest request) throws Exception {
-        return wxPayService.doRefund(token, request);
+        return wxPayService.doRefund(token, request,outTradeNo);
     }
 
     @ApiOperation("用户添加收藏房源信息")
@@ -181,5 +181,16 @@ public class UserController {
     @GetMapping("/allGetMoney")
     public ResponseVO getUserAllGetMoney(@RequestHeader("Authorization") String token){
         return userService.getUserAllGetMoney(token);
+    }
+    @ApiOperation("用户和房东签约")
+    @PostMapping("/{houseId}/sign")
+    public ResponseVO postSignInfo(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer houseId,
+            String handWriteImgUrl,
+            String contractImgUrl,
+            String userName,
+            String idCardNum){
+        return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum);
     }
 }

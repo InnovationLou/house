@@ -46,7 +46,7 @@ public interface WxPayService {
      * @param request
      * @return
      */
-    ResponseVO doRefund(String token,HttpServletRequest request) throws Exception;
+    ResponseVO doRefund(String token,HttpServletRequest request,String outTradeNo) throws Exception;
 
     ResponseVO paySomeone(HttpServletRequest request) throws Exception;
 

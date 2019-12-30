@@ -174,4 +174,5 @@ public interface UserService {
     ResponseVO getUserAllGetMoney(String token);
 
     ResponseVO certifyUser(String token, String idcardFront, String idcardBack);
+    ResponseVO postSignInfo(String token,Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum);
 }
