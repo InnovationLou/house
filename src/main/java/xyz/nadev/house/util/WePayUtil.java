@@ -704,6 +704,8 @@ public class WePayUtil {
             if("sign".equals(pName)) continue;//sign 在生成签名前应该是不参与排序的,就不放进来了
             String pValue = (String)request.getParameter(pName);
             params.put(pName, pValue);
+//            logger.info(pName+":"+pValue);
+            System.out.println("pname:"+pName+"=pValue"+pValue);
         }
         System.out.println("生成的sign："+generateSignature(params, openid));
         if(sign.equals(generateSignature(params, openid))){

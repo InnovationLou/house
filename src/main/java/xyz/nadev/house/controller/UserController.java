@@ -74,7 +74,7 @@ public class UserController {
     @ApiOperation("用户发起退款请求")
     @PostMapping("/refund/{outTradeNo}")
     public ResponseVO refundToUser(@RequestHeader("Authorization") String token, String sign, @PathVariable String outTradeNo, HttpServletRequest request) throws Exception {
-        return wxPayService.doRefund(token, request);
+        return wxPayService.doRefund(token, request,outTradeNo);
     }
 
     @ApiOperation("用户添加收藏房源信息")
