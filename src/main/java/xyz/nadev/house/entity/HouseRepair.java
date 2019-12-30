@@ -1,5 +1,6 @@
 package xyz.nadev.house.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -88,6 +89,7 @@ public class HouseRepair {
 	@Column(name = "house_img_url", nullable = true)
 	private String houseImgUrl;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Column(name = "repaire_time")
 	private Date repaireTime;
 
