@@ -47,21 +47,21 @@ public class House {
 	 * 是否发布
 	 * default value: 0
 	 */
-	@Column(name = "released", nullable = false)
-	private Integer released;
+	@Column(name = "released", nullable = true)
+	private Integer released = 1;
 
 	/**
 	 * 是否出租
 	 * default value: 0
 	 */
-	@Column(name = "rented", nullable = false)
-	private Integer rented;
+	@Column(name = "rented", nullable = true)
+	private Integer rented = 0;
 
 	/**
 	 * 房客,租房者id
 	 * default value: null
 	 */
-	@Column(name = "tenant_id", nullable = false)
+	@Column(name = "tenant_id", nullable = true)
 	private Integer tenantId;
 
 	/**

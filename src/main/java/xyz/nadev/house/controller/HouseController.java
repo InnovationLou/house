@@ -5,14 +5,22 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xyz.nadev.house.entity.User;
+import xyz.nadev.house.service.UserService;
+import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.vo.ResponseVO;
 import xyz.nadev.house.entity.House;
 import xyz.nadev.house.service.HouseService;
+
+import java.util.Date;
 
 @Slf4j
 @RestController
 @RequestMapping("/house")
 public class HouseController {
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     HouseService houseService;
@@ -31,7 +39,12 @@ public class HouseController {
 
     @ApiOperation("新增房源信息")
     @PostMapping("")
-    public ResponseVO AddHouse(House house) {
+    public ResponseVO AddHouse(@RequestHeader("Authorization") String token, House house) {
+        User user = userService.findByToken(token);
+        if (null == user){
+            return ControllerUtil.getFalseResultMsgBySelf("没有找到用户信息");
+        }
+        house = setNoneBusinessFields(user.getId(), house);
         return houseService.addHouse(house);
     }
 
@@ -52,5 +65,15 @@ public class HouseController {
         return houseService.houseIsFavor(token, houseId);
     }
 
+
+    // ---------- private methods ------------- //
+    private House setNoneBusinessFields(Integer userId, House house){
+        house.setUserId(userId);
+        house.setGmtCreate(new Date());
+        house.setReleased(1);
+        house.setId(null);
+        house.setGmtModify(new Date());
+        return house;
+    }
 
 }
