@@ -597,7 +597,8 @@ public class UserServiceImpl implements UserService {
         }
         return ControllerUtil.getFalseResultMsgBySelf("未知错误");
     }
-    public ResponseVO postSignInfo(String token, Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum) {
+    public ResponseVO postSignInfo(String token, Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum,            Date startDate,
+                                   Date endDate) {
         User user = findByToken(token);
         if (user == null) {
             log.info("token不存在");
@@ -610,6 +611,8 @@ public class UserServiceImpl implements UserService {
         houseSign.setContractImg(contractImgUrl);
         houseSign.setUserName(userName);
         houseSign.setIdcardNum(idCardNum);
+        houseSign.setStartDate(startDate);
+        houseSign.setEndDate(endDate);
         houseSignRepository.save(houseSign);
         return ControllerUtil.getSuccessResultBySelf("签约成功");
     }

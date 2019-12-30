@@ -5,6 +5,7 @@ import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -174,7 +175,8 @@ public interface UserService {
     ResponseVO getUserAllGetMoney(String token);
 
     ResponseVO certifyUser(String token, String idcardFront, String idcardBack);
-    ResponseVO postSignInfo(String token,Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum);
+    ResponseVO postSignInfo(String token,Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum,            Date startDate,
+                            Date endDate);
 
     /**
      * 获取我租到的房源信息

@@ -190,8 +190,10 @@ public class UserController {
             String handWriteImgUrl,
             String contractImgUrl,
             String userName,
-            String idCardNum){
-        return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum);
+            String idCardNum,
+            Date startDate,
+            Date endDate){
+        return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum,startDate, endDate);
     }
     @ApiOperation("获取用户组了的房的列表")
     @PostMapping("/myrented")
