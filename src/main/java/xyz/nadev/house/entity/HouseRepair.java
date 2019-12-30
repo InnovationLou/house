@@ -1,5 +1,6 @@
 package xyz.nadev.house.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.Date;
 
 /**
  * 报修信息表
@@ -85,6 +88,10 @@ public class HouseRepair {
 	 */
 	@Column(name = "house_img_url", nullable = true)
 	private String houseImgUrl;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "repaire_time")
+	private Date repaireTime;
 
 	@Transient
 	private House house;
