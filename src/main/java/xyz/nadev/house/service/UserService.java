@@ -172,4 +172,6 @@ public interface UserService {
     ResponseVO recommendList();
 
     ResponseVO getUserAllGetMoney(String token);
+
+    ResponseVO postSignInfo(String token,Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum);
 }

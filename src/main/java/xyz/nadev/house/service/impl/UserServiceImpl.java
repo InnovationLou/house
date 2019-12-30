@@ -574,5 +574,23 @@ public class UserServiceImpl implements UserService {
         return ControllerUtil.getDataResult(allMoney);
     }
 
+    @Override
+    public ResponseVO postSignInfo(String token, Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum) {
+        User user = findByToken(token);
+        if (user == null) {
+            log.info("token不存在");
+            return ControllerUtil.getFalseResultMsgBySelf("token不存在");
+        }
+        HouseSign houseSign = new HouseSign();
+        houseSign.setUserId(user.getId());
+        houseSign.setHouseId(houseId);
+        houseSign.setHandWriteImg(handWriteImgUrl);
+        houseSign.setContractImg(contractImgUrl);
+        houseSign.setUserName(userName);
+        houseSign.setIdcardNum(idCardNum);
+        houseSignRepository.save(houseSign);
+        return ControllerUtil.getSuccessResultBySelf("签约成功");
+    }
+
 
 }

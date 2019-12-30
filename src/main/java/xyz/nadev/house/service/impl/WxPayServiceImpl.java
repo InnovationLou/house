@@ -236,7 +236,7 @@ public class WxPayServiceImpl implements WxPayService {
                 try {
                     log.info("我进来了·······");
                     //此账单若是cash房租类，并且有记录数
-                    if (houseOrder.getLease() != null && houseOrder.getPayItem() == "cash") {
+                    if (houseOrder.getLease() != null && "cash".equals(houseOrder.getPayItem())) {
                         HouseSign houseSign = new HouseSign();
                         houseSign.setId(houseOrder.getUserId());
                         houseSign.setHouseId(houseOrder.getHouseId());

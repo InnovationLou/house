@@ -174,4 +174,15 @@ public class UserController {
     public ResponseVO getUserAllGetMoney(@RequestHeader("Authorization") String token){
         return userService.getUserAllGetMoney(token);
     }
+    @ApiOperation("用户和房东签约")
+    @PostMapping("/{houseId}/sign")
+    public ResponseVO postSignInfo(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer houseId,
+            String handWriteImgUrl,
+            String contractImgUrl,
+            String userName,
+            String idCardNum){
+        return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum);
+    }
 }
