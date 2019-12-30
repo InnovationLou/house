@@ -57,7 +57,7 @@ public class HouseRepairServiceImpl implements HouseRepairService {
 		}
 		HouseRepair repair=new HouseRepair();
 		repair.setContent(content);
-		repair.setGmtCreate(repairTime);
+		repair.setRepaireTime(repairTime);
 		repair.setHouseId(houseId);
 		repair.setPhone(phone);
 		repair.setStatus(0);
