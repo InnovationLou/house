@@ -85,4 +85,7 @@ public class HouseRepair {
 	 */
 	@Column(name = "house_img_url", nullable = true)
 	private String houseImgUrl;
+
+	@Transient
+	private House house;
 }

@@ -7,6 +7,7 @@ import xyz.nadev.house.entity.HouseRepair;
 import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.repository.HouseRepairImgRepository;
+import xyz.nadev.house.repository.HouseRepository;
 import xyz.nadev.house.service.HouseRepairService;
 import xyz.nadev.house.repository.HouseRepairRepository;
 import xyz.nadev.house.service.UserService;
@@ -28,6 +29,11 @@ public class HouseRepairServiceImpl implements HouseRepairService {
 	private HouseRepairImgRepository imgRepository;
 
 	@Autowired
+	private HouseRepository houseRepository;
+
+
+
+	@Autowired
 	private UserService userService;
 	@Override
 	public ResponseVO getRepairListByUserToken(String token) {
@@ -36,6 +42,10 @@ public class HouseRepairServiceImpl implements HouseRepairService {
 			return ControllerUtil.getFalseResultMsgBySelf("非法操作");
 		}
 		List<HouseRepair> list=repairRepository.findHouseRepairsByUserId(user.getId());
+		for (HouseRepair hr :
+				list) {
+			hr.setHouse(houseRepository.findById(hr.getHouseId()).get());
+		}
 		return ControllerUtil.getDataResult(list);
 	}
 
