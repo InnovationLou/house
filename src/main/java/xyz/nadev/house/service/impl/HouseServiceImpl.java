@@ -12,6 +12,7 @@ import xyz.nadev.house.repository.*;
 import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
+import xyz.nadev.house.util.EntityUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
 
@@ -268,11 +269,17 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public ResponseVO modifyHouse(House house) {
-        if (house == null) {
+    public ResponseVO modifyHouse(House newHouse) {
+        if (newHouse == null) {
             return ControllerUtil.getFalseResultMsgBySelf("传入数据非法");
         }
-        return ControllerUtil.getSuccessResultBySelf(resp.save(house));
+        Integer id = newHouse.getId();
+        if (id == null || id < 0){
+            return ControllerUtil.getFalseResultMsgBySelf("非法ID传入" + id);
+        }
+        House oldHouse = houseRepository.findById(id).get();
+        EntityUtil.update(newHouse,oldHouse);
+        return ControllerUtil.getSuccessResultBySelf(resp.save(oldHouse));
     }
 
     @Override

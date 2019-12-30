@@ -140,4 +140,10 @@ public class HouseSign {
 	 */
 	@Column(name = "is_deleted", nullable = true)
 	private Integer isDeleted;
+
+	/**
+	 * 哈哈, vo属性, 与数据库无关
+	 */
+	@Transient
+	private House house;
 }

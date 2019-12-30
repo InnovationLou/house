@@ -120,6 +120,14 @@ public class UserController {
         return userService.certifyLandlord(token,authImgUrl);
     }
 
+    @ApiOperation("用户认证")
+    @PostMapping("/certify")
+    public ResponseVO certifyUser(@RequestHeader("Authorization") String token
+            ,@RequestParam  String idcardFront
+            ,@RequestParam String idcardBack){
+        return userService.certifyUser(token,idcardFront, idcardBack);
+    }
+
     @ApiOperation("获取所有报修")
     @GetMapping("/repair")
     public ResponseVO getRepairList(@RequestHeader("Authorization") String token) {
@@ -184,5 +192,10 @@ public class UserController {
             String userName,
             String idCardNum){
         return userService.postSignInfo(token,houseId,handWriteImgUrl,contractImgUrl, userName,idCardNum);
+    }
+    @ApiOperation("获取用户组了的房的列表")
+    @PostMapping("/myrented")
+    public ResponseVO getMyRentedHouse( @RequestHeader("Authorization") String token){
+        return userService.getMyRentedHouse(token);
     }
 }

@@ -173,5 +173,13 @@ public interface UserService {
 
     ResponseVO getUserAllGetMoney(String token);
 
+    ResponseVO certifyUser(String token, String idcardFront, String idcardBack);
     ResponseVO postSignInfo(String token,Integer houseId,String handWriteImgUrl, String contractImgUrl,String userName,String idCardNum);
+
+    /**
+     * 获取我租到的房源信息
+     * @param token
+     * @return
+     */
+    ResponseVO getMyRentedHouse(String token);
 }

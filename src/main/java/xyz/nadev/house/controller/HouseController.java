@@ -1,9 +1,9 @@
 package xyz.nadev.house.controller;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.UserService;
@@ -18,6 +18,9 @@ import java.util.Date;
 @RestController
 @RequestMapping("/house")
 public class HouseController {
+
+    @Value("${contract}")
+    private final static String CONTRACT = "https://image.ruankun.xyz/2.jpg";
 
     @Autowired
     UserService userService;
@@ -65,6 +68,17 @@ public class HouseController {
         return houseService.houseIsFavor(token, houseId);
     }
 
+    @ApiOperation("获取合同图片")
+    @GetMapping("/contract")
+    public ResponseVO contract() {
+        return ControllerUtil.getSuccessResultBySelf(getContractImg());
+    }
+
+
+
+    private String getContractImg(){
+        return CONTRACT;
+    }
 
     // ---------- private methods ------------- //
     private House setNoneBusinessFields(Integer userId, House house){
