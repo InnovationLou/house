@@ -48,4 +48,10 @@ public class PayController {
         return wxPayService.paySomeone(request);
     }
 
+    @ApiOperation(value = "获得提现列表")
+    @GetMapping("/withdraw")
+    public ResponseVO getWithdrawList(){
+        return wxPayService. getWithdrawList();
+    }
+
 }
