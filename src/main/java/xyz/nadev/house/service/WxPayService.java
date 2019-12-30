@@ -50,4 +50,6 @@ public interface WxPayService {
 
     ResponseVO paySomeone(HttpServletRequest request) throws Exception;
 
+    ResponseVO getWithdrawList();
+
 }

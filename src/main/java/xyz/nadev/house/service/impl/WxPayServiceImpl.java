@@ -518,4 +518,9 @@ public class WxPayServiceImpl implements WxPayService {
         }
     }
 
+    @Override
+    public ResponseVO getWithdrawList() {
+        return ControllerUtil.getDataResult( withdrawRepository.findAll());
+    }
+
 }
