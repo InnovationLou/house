@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import xyz.nadev.house.entity.HouseRepairImg;
 import xyz.nadev.house.entity.User;
 import xyz.nadev.house.service.*;
+import xyz.nadev.house.util.ControllerUtil;
+import xyz.nadev.house.util.DateUtil;
 import xyz.nadev.house.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -136,9 +138,13 @@ public class UserController {
 
     @ApiOperation("上传报修")
     @PutMapping("/repair")
-    public ResponseVO uploadRepair(@RequestHeader("Authorization") String token, Integer houseId, String phone, Date repairTime, String content,
+    public ResponseVO uploadRepair(@RequestHeader("Authorization") String token, Integer houseId, String phone, String repairTime, String content,
                                    HouseRepairImg img) {
-        return repairService.uploadRepair(token, houseId, phone, repairTime, content, img);
+        Date date = DateUtil.getDateTimeByStr(repairTime);
+        if (null == date){
+            return ControllerUtil.getFalseResultMsgBySelf("时间格式错误yyyy-MM-dd HH:mm:ss-->" + repairTime);
+        }
+        return repairService.uploadRepair(token, houseId, phone, date, content, img);
     }
 
     @ApiOperation("获得一段时间内的系统通知")
