@@ -70,16 +70,26 @@ public class TimController {
     @Deprecated
     @ApiOperation(value = "获取和用户聊过天的人")
     @GetMapping("/chatter/new")
-    public ResponseVO getChatterListAndLatestWords(@RequestHeader String Authorization){
-        // TODO
+    public ResponseVO getChatterListAndHasNewMessage(@RequestHeader String Authorization){
         return imMsgService.getChatterListAndHasNewMessage(Authorization);
     }
 
     @Deprecated
     @ApiOperation(value = "获取和用户聊过天的人以及是否有新消息,包含消息条数和最近的一条消息")
     @GetMapping("/chatter")
-    public ResponseVO getChatterListAndHasNewMessage(@RequestHeader String Authorization){
-        // TODO
+    public ResponseVO getChatterListAndLatestWords(@RequestHeader String Authorization){
+        return imMsgService.getChaterListAndLatestWords(Authorization);
+    }
+
+    @ApiOperation(value = "获取和用户聊过天的人以及是否有新消息,包含消息条数和最近的一条消息")
+    @GetMapping("/v2/chatter/new")
+    public ResponseVO getChatterListAndHasNewMessageV2(@RequestHeader String Authorization){
+        return imMsgService.getChatterListAndHasNewMessage(Authorization);
+    }
+
+    @ApiOperation(value = "获取和用户聊过天的人")
+    @GetMapping("/v2/chatter")
+    public ResponseVO getChatterListAndLatestWordsV2(@RequestHeader String Authorization){
         return imMsgService.getChaterListAndLatestWords(Authorization);
     }
 
