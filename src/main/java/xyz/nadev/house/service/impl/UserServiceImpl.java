@@ -604,6 +604,7 @@ public class UserServiceImpl implements UserService {
             log.info("token不存在");
             return ControllerUtil.getFalseResultMsgBySelf("token不存在");
         }
+        Optional<House> house = houseRepository.findById(houseId);
         HouseSign houseSign = new HouseSign();
         houseSign.setUserId(user.getId());
         houseSign.setHouseId(houseId);
@@ -614,7 +615,17 @@ public class UserServiceImpl implements UserService {
         houseSign.setStartDate(startDate);
         houseSign.setEndDate(endDate);
         houseSignRepository.save(houseSign);
+        //签约完成后，将租房账单加入bill
+        Bill bill = new Bill();
+        bill.setHouseId(houseId);
+        bill.setUserId(user.getId());
+        bill.setPayItem("cash");
+        bill.setMoney(BigDecimal.valueOf(house.get().getCash()));
+        bill.setDeadDate(endDate);
+        billRepository.save(bill);
         return ControllerUtil.getSuccessResultBySelf("签约成功");
+
+
     }
 
     @Override
