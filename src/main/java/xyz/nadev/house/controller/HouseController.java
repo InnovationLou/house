@@ -20,7 +20,7 @@ import java.util.Date;
 public class HouseController {
 
     @Value("${contract}")
-    private final static String CONTRACT = "https://image.ruankun.xyz/2.jpg";
+    private String CONTRACT = "https://image.ruankun.xyz/2.jpg";
 
     @Autowired
     UserService userService;
