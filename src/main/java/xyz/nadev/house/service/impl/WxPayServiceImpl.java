@@ -390,6 +390,9 @@ public class WxPayServiceImpl implements WxPayService {
                         userRepository.save(user);
                         //设置withdraw
                         withDraw.setWithdrawStatus(WxPayConfig.WITHDRAW_ERROR);
+                        withDraw.setIsCheckPass(false);
+                        withDraw.setIsCheck(false);
+                        withDraw.setIsFinish(false);
                         withDraw.setRemark("管理员拒绝提现，已退回金额");
                         withdrawRepository.save(withDraw);
                         return ControllerUtil.getDataResult("已退还提现金额");
