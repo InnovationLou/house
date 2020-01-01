@@ -90,4 +90,9 @@ public class HouseController {
         return house;
     }
 
+    @ApiOperation(value = "房东查看自己租客账单信息")
+    @GetMapping("/roomer")
+    public ResponseVO getRoomerBill(@RequestHeader("Authorization") String token){
+        return houseService.getRoomerBill(token);
+    }
 }

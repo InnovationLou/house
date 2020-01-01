@@ -56,4 +56,6 @@ public interface HouseService {
     ResponseVO houseIsFavor(String token, Integer houseId);
 
     ResponseVO storeIsFavor(String token,Integer storeId);
+
+    ResponseVO getRoomerBill(String token);
 }

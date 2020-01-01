@@ -13,6 +13,7 @@ import xyz.nadev.house.service.HouseService;
 import xyz.nadev.house.service.UserService;
 import xyz.nadev.house.util.ControllerUtil;
 import xyz.nadev.house.util.EntityUtil;
+import xyz.nadev.house.util.constant.RespCode;
 import xyz.nadev.house.vo.ResponseVO;
 
 
@@ -48,6 +49,9 @@ public class HouseServiceImpl implements HouseService {
 
     @Autowired
     HouseRepository houseRepository;
+
+    @Autowired
+    BillRepository billRepository;
 
     private static final Integer SINGLE_PAGE_NUM = 10;
 
@@ -407,5 +411,17 @@ public class HouseServiceImpl implements HouseService {
             map.put("isfavor", true);
         }
         return ControllerUtil.getDataResult(map);
+    }
+
+    @Override
+    public ResponseVO getRoomerBill(String token) {
+        User user =userService.findByToken(token);
+        if (user == null) {
+            log.info(RespCode.MSG_WITHOUT_AUTH);
+            return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
+        }
+        List<Bill> bill = billRepository.findByHouseId(user.getId());
+        if (bill.isEmpty())return ControllerUtil.getFalseResultMsgBySelf("您的房屋暂时没账单哦");
+        return ControllerUtil.getDataResult(bill);
     }
 }
