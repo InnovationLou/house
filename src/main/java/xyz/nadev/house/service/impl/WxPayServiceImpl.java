@@ -361,6 +361,8 @@ public class WxPayServiceImpl implements WxPayService {
                     TransferRecord transferRecord = new TransferRecord();
                     withDraw.setGmtModify(new Date());
                     withDraw.setIsFinish(WxPayConfig.FINISHED);
+                    withDraw.setIsCheck(false);
+                    withDraw.setIsCheckPass(false);
                     transferRecord.setWithdrawMent(withdrawMent);
                     transferRecord.setWxId(withDraw.getWxId());
                     transferRecord.setGmtCreate(new Date());
