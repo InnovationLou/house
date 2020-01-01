@@ -709,10 +709,17 @@ public class WePayUtil {
 //            logger.info(pName+":"+pValue);
             System.out.println("pname:"+pName+"=pValue"+pValue);
         }
-        System.out.println("生成的sign："+generateSignature(params, openid));
-        if(sign.equals(generateSignature(params, openid))){
+        String prestr = WePayUtil.createLinkString(params);
+        System.out.println("排序后的签名字段：" + prestr);
+        String mysign = WePayUtil.sign(prestr, openid, "utf-8").toUpperCase();
+        System.out.println( mysign);
+        if (sign.equals(mysign)){
             flag = true;
         }
+//        System.out.println("生成的sign："+generateSignature(params, openid));
+//        if(sign.equals(generateSignature(params, openid))){
+//            flag = true;
+//        }
         return flag;
     }
 

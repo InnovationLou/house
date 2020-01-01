@@ -280,10 +280,29 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         String openId = user.getOpenId();
-        // 检查sign
+
+        String sign = request.getParameter("sign");//签名
+        System.out.println("获得传入的sign为："+sign);
+        //检查sigin是否过期
+        Enumeration<?> pNames =  request.getParameterNames();
+        Map<String, String> params = new HashMap<String, String>();
+        while (pNames.hasMoreElements()) {
+            String pName = (String) pNames.nextElement();
+            if("sign".equals(pName)) continue;//sign 在生成签名前应该是不参与排序的,就不放进来了
+            String pValue = (String)request.getParameter(pName);
+            params.put(pName, pValue);
+//            logger.info(pName+":"+pValue);
+            System.out.println("pname:"+pName+"=pValue"+pValue);
+        }
+        String prestr = WePayUtil.createLinkString(params);
+        System.out.println("排序后的签名字段：" + prestr);
+        String mysign = WePayUtil.sign(prestr, openId, "utf-8").toUpperCase();
+        System.out.println( mysign);
+
+
         if (WePayUtil.checkSign(request, openId) == false) {
             log.info("sign不正确");
-            return ControllerUtil.getFalseResultMsgBySelf("sign不正确");
+            return ControllerUtil.getFalseResultMsgBySelf("sign不正确,参数为:"+mysign);
         }
         //取出需要的参数
 
