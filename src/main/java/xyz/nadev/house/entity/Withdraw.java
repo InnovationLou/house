@@ -94,4 +94,18 @@ public class Withdraw {
 	 */
 	@Column(name = "remark", nullable = true)
 	private String remark;
+
+	/**
+	 * 审核中，0位通过，1通过
+	 * default value: 1
+	 */
+	@Column(name = "is_check", nullable = true)
+	private Boolean isCheck;
+
+	/**
+	 * 打款中，0未打款，1 已经打款
+	 * default value: 0
+	 */
+	@Column(name = "is_check_pass", nullable = true)
+	private Boolean isCheckPass;
 }

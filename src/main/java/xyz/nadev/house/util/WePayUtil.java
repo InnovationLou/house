@@ -380,6 +380,8 @@ public class WePayUtil {
                 sb.append(k).append("=").append(data.get(k).trim()).append("&");
         }
         sb.append("key=").append(key);
+        System.out.println("拼接的结果为："+sb.toString());
+
         if (SignType.MD5.equals(signType)) {
             return MD5(sb.toString()).toUpperCase();
         }

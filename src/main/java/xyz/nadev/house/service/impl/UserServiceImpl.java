@@ -308,6 +308,7 @@ public class UserServiceImpl implements UserService {
             withdraw.setWxId(wxId);
             withdraw.setOpenId(openId);
             withdraw.setMoney(money);
+            withdraw.setIsCheck(true);
             withdraw.setWithdrawMent(withdrawMent);
             withdraw.setWithdrawStatus(WxPayConfig.WITHDRAW_NO_ERROR);
             withdraw.setIsFinish(WxPayConfig.NOT_FINISHED);
