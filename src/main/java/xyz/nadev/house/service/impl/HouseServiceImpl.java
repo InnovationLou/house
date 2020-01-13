@@ -420,8 +420,14 @@ public class HouseServiceImpl implements HouseService {
             log.info(RespCode.MSG_WITHOUT_AUTH);
             return ControllerUtil.getFalseResultMsgBySelf(RespCode.MSG_WITHOUT_AUTH);
         }
-        List<Bill> bill = billRepository.findByHouseId(user.getId());
-        if (bill.isEmpty())return ControllerUtil.getFalseResultMsgBySelf("您的房屋暂时没账单哦");
-        return ControllerUtil.getDataResult(bill);
+        //查找房东的houseId
+        List<House> houseLists = houseRepository.findByUserId(user.getId());
+        if (houseLists.isEmpty())return ControllerUtil.getFalseResultMsgBySelf("您的房屋暂时没账单哦");
+        List list = new ArrayList();
+        for (House house : houseLists){
+            List<Bill> bills = billRepository.findByHouseId(house.getId());
+            list.addAll(bills);
+        }
+        return ControllerUtil.getDataResult(list);
     }
 }

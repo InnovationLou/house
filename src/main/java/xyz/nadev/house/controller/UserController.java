@@ -68,7 +68,7 @@ public class UserController {
 
     @ApiOperation("用户发起提现请求")
     @PostMapping("/launchWithdraw")
-    public ResponseVO register(@RequestHeader("Authorization") String token, String sign, Double money, HttpServletRequest request) throws Exception {
+    public ResponseVO register(@RequestHeader("Authorization") String token, String sign, Double money, String wxId,HttpServletRequest request) throws Exception {
         //人工打款，由用户自己输入自己微信号
         return userService.launchWithdraw(token, request);
     }

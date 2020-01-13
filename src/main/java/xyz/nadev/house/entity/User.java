@@ -145,4 +145,7 @@ public class User {
 	 */
 	@Column(name = "is_auth", nullable = true)
 	private Integer isAuth;
+
+	@Column(name = "phone")
+	private String phone;
 }
