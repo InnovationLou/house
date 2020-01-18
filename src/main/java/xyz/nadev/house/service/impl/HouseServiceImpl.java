@@ -283,7 +283,7 @@ public class HouseServiceImpl implements HouseService {
         }
         House oldHouse = houseRepository.findById(id).get();
         EntityUtil.update(newHouse,oldHouse);
-        return ControllerUtil.getSuccessResultBySelf(resp.save(oldHouse));
+        return ControllerUtil.getSuccessResultBySelf(resp.save(newHouse));
     }
 
     @Override
