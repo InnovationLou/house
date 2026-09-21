@@ -1,0 +1,52 @@
+# Apple Intelligence / Siri / Private Cloud Compute rules
+# Intended for Mihomo/Clash rule-provider with:
+#   behavior: domain
+#   format: yaml
+#
+# Scope: Apple Intelligence, Siri, PCC relay/bootstrap, Private Relay
+# support paths that can affect Apple Intelligence initialization, plus
+# selected CloudKit/model asset endpoints used by Apple system intelligence.
+#
+# Updated: 2026-09-21
+
+payload:
+  # Siri / Search / capability
+  - 'guzzoni.apple.com'
+  - 'seed.siri.apple.com'
+  - '+.smoot.apple.com'
+  - 'gspe1-ssl.ls.apple.com'
+
+  # PCC / Apple Intelligence relay
+  - '+.apple-relay.apple.com'
+  - '+.apple-relay.cloudflare.com'
+  - '+.apple-relay.fastly-edge.com'
+  - '+.apple-relay.akamaized.net'
+  - '+.apple-relay.mask.apple-dns.net'
+  - '+.apple-carry-relay.cloudflare.com'
+  - '+.cp4.cloudflare.com'
+
+  # iCloud Private Relay bootstrap / mask endpoints
+  - 'mask-api.icloud.com'
+  - 'mask-api.fe.apple-dns.net'
+  - 'mask-api.fe2.apple-dns.net'
+  - 'mask-t.apple-dns.net'
+  - 'mask.apple-dns.net'
+  - '+.mask.icloud.com'
+  - '+.mask-h2.icloud.com'
+  - 'mask-boot.icloud.com'
+  - 'mask-canary.icloud.com'
+
+  # iCloud / CloudKit support paths
+  - '+.gateway.icloud.com'
+  - 'probe.icloud.com'
+  - 'metrics.icloud.com'
+  - '+.apple-cloudkit.com'
+  - 'binary-blob-repository.apple.com'
+  - 'p67-keyvalueservice.icloud.com'
+  - 'p106-keyvalueservice.icloud.com'
+  - '+.icloud-content.com'
+
+  # Apple Intelligence / Photos assets
+  - '+.apps.mzstatic.com'
+  - 'aapps.mzstatic.com'
+  - '+.apple-livephotos.com'
