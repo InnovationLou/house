@@ -1,0 +1,40 @@
+# Steam / Steam Friends / Chat rules
+# Intended for Mihomo/Clash rule-provider with:
+#   behavior: domain
+#   format: yaml
+#
+# Focus: Steam client/app, login, store/community, friends/chat,
+# profile/avatar/static assets and mobile/API endpoints.
+# Large game-download CDN coverage is intentionally limited.
+#
+# Updated: 2026-09-21
+
+payload:
+  # Core Steam
+  - '+.steampowered.com'
+  - '+.steamcommunity.com'
+  - '+.steamgames.com'
+  - '+.steamserver.net'
+  - '+.steamstatic.com'
+  - '+.steamusercontent.com'
+  - '+.steam-api.com'
+  - '+.s.team'
+  - '+.steam.tv'
+
+  # Friends / chat
+  - '+.steam-chat.com'
+
+  # API / mobile / community assets
+  - 'api.steampowered.com'
+  - 'steammobile.akamaized.net'
+  - 'steamcommunity-a.akamaihd.net'
+  - 'steamstore-a.akamaihd.net'
+  - 'steamusercontent-a.akamaihd.net'
+  - 'steamuserimages-a.akamaihd.net'
+  - 'steamcdn-a.akamaihd.net'
+
+  # Optional client/community support
+  - 'steambroadcast.akamaized.net'
+  - 'steamvideo-a.akamaihd.net'
+  - '+.steamstat.us'
+  - '+.valvesoftware.com'
