@@ -1,0 +1,55 @@
+#!name=Apple AI Diagnostic (Shadowrocket)
+#!desc=Apple Intelligence/PCC diagnostic module. Forces Apple AI and broad Apple service families through policy "悠兔" and disables UDP/443 (QUIC) to force TCP fallback. No MITM.
+#!system=ios
+
+[Rule]
+# --- Diagnostic: disable QUIC/HTTP3 globally while this module is enabled ---
+AND,((PROTOCOL,UDP),(DST-PORT,443)),REJECT-NO-DROP
+
+# --- Apple Intelligence / Siri / PCC exact endpoints ---
+DOMAIN,guzzoni.apple.com,悠兔
+DOMAIN,seed.siri.apple.com,悠兔
+DOMAIN-SUFFIX,smoot.apple.com,悠兔
+DOMAIN,gspe1-ssl.ls.apple.com,悠兔
+
+DOMAIN-SUFFIX,apple-relay.apple.com,悠兔
+DOMAIN-SUFFIX,apple-relay.cloudflare.com,悠兔
+DOMAIN-SUFFIX,apple-relay.fastly-edge.com,悠兔
+DOMAIN-SUFFIX,apple-relay.akamaized.net,悠兔
+DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,悠兔
+DOMAIN-SUFFIX,apple-carry-relay.cloudflare.com,悠兔
+DOMAIN-SUFFIX,cp4.cloudflare.com,悠兔
+
+DOMAIN,mask-api.icloud.com,悠兔
+DOMAIN,mask-api.fe.apple-dns.net,悠兔
+DOMAIN,mask-api.fe2.apple-dns.net,悠兔
+DOMAIN,mask-t.apple-dns.net,悠兔
+DOMAIN,mask.apple-dns.net,悠兔
+DOMAIN-SUFFIX,mask.icloud.com,悠兔
+DOMAIN-SUFFIX,mask-h2.icloud.com,悠兔
+DOMAIN,mask-boot.icloud.com,悠兔
+DOMAIN,mask-canary.icloud.com,悠兔
+
+DOMAIN-SUFFIX,gateway.icloud.com,悠兔
+DOMAIN,probe.icloud.com,悠兔
+DOMAIN,metrics.icloud.com,悠兔
+DOMAIN-SUFFIX,apple-cloudkit.com,悠兔
+DOMAIN,binary-blob-repository.apple.com,悠兔
+DOMAIN,p67-keyvalueservice.icloud.com,悠兔
+DOMAIN,p106-keyvalueservice.icloud.com,悠兔
+DOMAIN-SUFFIX,icloud-content.com,悠兔
+DOMAIN-SUFFIX,apps.mzstatic.com,悠兔
+DOMAIN,aapps.mzstatic.com,悠兔
+DOMAIN-SUFFIX,apple-livephotos.com,悠兔
+
+# --- Broad diagnostic coverage ---
+# Keep these only for diagnosis. They intentionally proxy a large portion of Apple traffic.
+DOMAIN-SUFFIX,apple.com,悠兔
+DOMAIN-SUFFIX,icloud.com,悠兔
+DOMAIN-SUFFIX,apple-dns.net,悠兔
+DOMAIN-SUFFIX,mzstatic.com,悠兔
+DOMAIN-SUFFIX,aaplimg.com,悠兔
+DOMAIN-SUFFIX,cdn-apple.com,悠兔
+
+# --- Catch Apple-owned IPv4 flows that arrive without a hostname ---
+IP-CIDR,17.0.0.0/8,悠兔,no-resolve
